@@ -94,3 +94,4 @@ server to `/jp-platform` and break the screenshot scripts, which address the roo
 - The mobile countdown reads `hh:mm:ss` where Figma writes four groups, `08:12:36:35`.
 - The mobile artwork is the desktop image re-cropped; Figma feeds those frames a wider 4:1 export.
 - The Drops & Wins header reads `DROPS & WINS`; Figma node 1:3556 is literally `drop&wins`.
+- The mobile tournament subtitle is the real copy clamped to two lines; Figma writes "Best Slots, Huge Wins!!".

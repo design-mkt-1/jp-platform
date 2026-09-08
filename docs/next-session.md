@@ -63,6 +63,11 @@ the review report.
 - **The promo banners at 390px** (1:6195 / 1:6247 / 1:6282) — the desktop banner was being squeezed
   to 339px with JOIN NOW clipped off the edge. Figma draws a 358x220 card there instead;
   `PromoBannerMobile` is that card.
+  Two things surfaced only when measured: the promo header's fixed 160px rule refused to shrink at
+  390px and pushed the page to 414px wide — `SectionHeader` now lets it shrink below 767px only,
+  desktop stays exactly 160 — and the tournament's 51-character subtitle wrapped to three lines in
+  the design's 190px column, so it is clamped to two with an ellipsis (Figma's mobile copy is the
+  short "Best Slots, Huge Wins!!").
 - **Crash Games** (1:3230), **Must-Play Slots** (1:3285), **Bonus Buy** (1:3364), **Megaways**
   (1:3456), **Jackpots** (1:3485), **Drops & Wins** (1:3548), **Egypt** (1:3635) — all seven have
   Popular's structure and match it: 28px header, See All (206), 203x264 cards, one or two grids.
@@ -113,6 +118,8 @@ sixty game cards have accessible names, or does a screen reader announce "link" 
   each scene against our 4.92:1 banner, so the crop can match the framing but not the zoom.
 - The Drops & Wins header reads `DROPS & WINS`. Figma node 1:3556 is literally `drop&wins`, which
   renders `DROP&WINS`.
+- The mobile tournament subtitle is the real copy, clamped to two lines; Figma writes the short
+  "Best Slots, Huge Wins!!" there.
 
 ## Things worth remembering about this codebase
 

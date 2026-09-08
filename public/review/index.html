@@ -1530,6 +1530,15 @@ skillNames: "resource:figma-design-to-code".
           aproape. Iar subtitlul roții scrie <em>everyday</em> unde Figma are greșeala de tipar
           <em>EVERY DAT</em>.
         </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Două lucruri au ieșit la iveală abia la măsurat. Linia fixă de 160px din antetul rândurilor
+          promo refuza să se strângă la 390px și împingea pagina la 414px lățime; nodul 1:6194
+          desenează pe mobil linia elastică, deci <code>SectionHeader</code> o lasă acum să se
+          scurteze doar sub 767px, iar pe desktop rămâne exact 160. Și subtitlul real al turneului,
+          51 de caractere, se rupea pe trei rânduri în coloana de 190px a design-ului și împingea
+          pastila cu 9px sub cardul de 220; e tăiat la două rânduri cu puncte de suspensie, acolo
+          unde Figma pune copy-ul scurt <em>Best Slots, Huge Wins!!</em>.
+        </p>
         <div class="ba">
           <figure><img src="cmp/figma-mob-promo-tournament.png" alt="Bannerul de turneu pe mobil în Figma"><figcaption>Figma — turneu</figcaption></figure>
           <figure><img src="cmp/app-mob-promo-tournament.png" alt="Bannerul de turneu pe mobil în implementare"><figcaption>Implementare — turneu</figcaption></figure>
