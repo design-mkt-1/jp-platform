@@ -86,6 +86,16 @@ with a different filter, compared under Popular.
 Two have never been seen at all, in code or on screen: `empty-search-state-desktop` (1:4321) and
 `mobile-providers-no-results` (1:2218).
 
+### 2b. Mobile tab bar links 404 on the live site
+
+Measured on the deployed site at 390px on 2026-09-08: the bottom tab bar's `Live Casino`, `Sport`
+and `Promos` links point at `/live-casino`, `/sport`, `/promos`, which do not exist in the static
+export. Next prefetches them on mobile, so the console shows three 404s on every load, and a tap
+lands on GitHub's 404 page. Desktop has no such links. Options: `prefetch={false}` and `href="#"`
+until those pages exist, or stub pages. Not touched in this session — it is a routing decision, not
+a design one. Also found the same day and fixed: with Reduce Motion on, the providers marquee made
+the page 3307px wide (commit 4e4be67).
+
 ### 3. Change requests still open
 
 | What                                         | Why it matters                                                                                                                                                    |
