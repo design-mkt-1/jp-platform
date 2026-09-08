@@ -82,6 +82,37 @@ export default function PromoBannerMobile({
         className={`object-cover ${ARTWORK_POSITION[data.variant]}`}
       />
 
+      {/*
+       * A scrim, on the two cards that write over the scene and not on the wheel.
+       *
+       * The text was never painted *under* the artwork — `document.elementFromPoint` at the end
+       * of the lottery subtitle's first line returns its `<p>`, not the `<img>` — so this is not
+       * a z-order fix and a `z-10` on the text would have changed nothing. It is contrast. The
+       * lottery copy is long enough that "now" lands on the lit phone in the middle of the
+       * scene, where `text-subtitle` measured 1.68:1 against its own local background at 390.
+       * Neither of the other two dials moves: the crop is fixed (see `ARTWORK_POSITION`) and the
+       * 190px column cannot narrow without `line-clamp-2` eating "open".
+       *
+       * An ellipse anchored to the left edge, 400 wide against a 358 card so that the fade is
+       * still running when it reaches the right edge and never draws a line of its own. Sitting
+       * here, between the image and the body, it needs no z-index at all — it precedes both the
+       * text and the join pill in the paint order, which is what a version bounded to the text
+       * column could not do: at 106px tall on the lottery card and 140px on the tournament, it
+       * either seamed under the subtitle or greyed out the pill.
+       *
+       * The wheel is excluded by owner decision (node 1:6282, do not touch), and it is the one
+       * card that does not need it: its copy is amber on the dark left of its own crop.
+       */}
+      {isWheel ? null : (
+        <div
+          aria-hidden
+          className={[
+            'absolute inset-y-0 left-0 w-[400px]',
+            'bg-[radial-gradient(100%_100%_at_0%_50%,var(--bg-card)_45%,transparent_100%)]',
+          ].join(' ')}
+        />
+      )}
+
       {isWheel ? <WheelBody data={data} /> : <TournamentBody data={data} />}
     </section>
   )

@@ -197,8 +197,18 @@ lista devine un depozit de culori ad-hoc și ne întoarcem exact la problema pe 
 | `#A5A6B5`       | `text-subtitle`   | `--text-subtitle`   | `1:6254`                              | subtitlul cardului promo de mobil                                            |
 | `#F2C146`       | `amber-soft`      | `--amber-soft`      | `1:6255`                              | pastila „join + timer" de pe cardul promo de mobil, plină                    |
 | `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | textul scris **pe** pastila aceea: eticheta butonului, „Time left" și ceasul |
+| `#36BCFF` ²     | — (doar SVG)      | —                   | `1:2239`, `1:4323`                    | lupa din câmpul de căutare de furnizori (`public/images/icons/search-blue.svg`) |
 
 ¹ Figma scrie `#65616A`. Ridicat la `#7F7A85` pentru AA — vezi „Abateri de contrast" mai jos.
+
+² Decizie de proprietar, 2026-09-09. Fișierul nostru desena lupa cu `#007AFF`, albastrul scris
+în ambele UI Kit-uri;Figma exportă `#36BCFF` pe ambele noduri (verificat cu `get_design_context` pe `1:2239`, care
+întoarce `stroke="#36BCFF"`). Nu se adaugă nicio variabilă CSS și niciun token Tailwind: singurul
+consumator al culorii e chiar fișierul SVG, iar `Icon` îl servește prin `next/image` cu
+`unoptimized`, adică un `<img src>` către fișierul exportat — nu există loc în care o clasă
+Tailwind să poată ajunge la stroke. Aceeași valoare mai apare, tot ca hex în SVG, în
+`bonus-buy.svg`. Dacă vreodată culoarea ajunge să fie scrisă și în CSS, atunci — și abia atunci —
+primește variabilă în `globals.css` plus token în `tailwind.config.ts`.
 
 Niciuna dintre cele trei nu apare în cele două UI Kit-uri: tabelele de la §2 sunt transcrierea lor
 completă (26 de swatch-uri Desktop, 22 Mobile) și nu conțin nici `#A5A6B5`, nici `#09090D`, iar
