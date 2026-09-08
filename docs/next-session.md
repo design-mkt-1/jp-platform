@@ -125,6 +125,15 @@ get built.
 Also found the same day and fixed: with Reduce Motion on, the providers marquee made the page
 3307px wide (commit 4e4be67).
 
+### 2c. Jackpot menu — the Sign out row sits under the tab bar at 844px tall
+
+Measured at 390x844 on `?panel=jackpotMenu` on 2026-09-08: the `Sign out` row spans y 740–780 and
+the bottom tab bar starts at 760, so the bottom 20px of the row is covered. The sheet scrolls 45px,
+so the row is reachable, but the first screen hides it half-way. Figma's frames (1:8260 / 1:8503)
+are taller than 844 and show nothing underneath. Not fixed: it needs a decision — pad the sheet's
+bottom by the bar's height, hide the bar while the sheet is open, or leave it. `JackpotMenu.tsx`
+renders through `Sheet`; `MobileNavBar` is fixed to the bottom of the page.
+
 ### 3. Change requests still open
 
 | What                                         | Why it matters                                                                                                                                                    |
