@@ -1,0 +1,168 @@
+JACKPOT — CUM PORNESTI SESIUNEA URMATOARE
+=========================================
+
+Proiect: demo al platformei de casino Jackpot, construit din fisierul Figma
+2MyylxdZblfGnf05nQacUz. Next.js 15 + TypeScript + Tailwind v3, fara backend.
+
+
+LINK-URI
+--------
+
+Demo                    https://design-mkt-1.github.io/jp-platform/
+Lista de ecrane         https://design-mkt-1.github.io/jp-platform/dev/screens/
+Design vs implementare  https://design-mkt-1.github.io/jp-platform/review/
+Repo                    https://github.com/design-mkt-1/jp-platform
+
+Site-ul e public dar are noindex si robots.txt disallow: e un design nepublicat
+al clientului, cu marci ale altora in el (Pragmatic Play, Visa, Mastercard).
+Link-ul se poate da, dar nu trebuie sa apara in Google.
+
+
+DE CE AI NEVOIE PE CALCULATORUL NOU
+-----------------------------------
+
+- Node 24
+- Git
+- Google Chrome
+
+Chrome-ul e obligatoriu, nu optional. Scripturile de capturi conduc browserul
+instalat pe masina (channel: 'chrome'), nu unul descarcat de Playwright —
+descarcarea aceea a esuat in mediul asta. Deci NU e nevoie de
+`npx playwright install`, doar de Chrome.
+
+
+PORNIRE
+-------
+
+    git clone https://github.com/design-mkt-1/jp-platform.git
+    cd jp-platform
+    npm ci
+    npm run dev
+
+Apoi deschizi http://localhost:3000
+
+Testat: clona curata + npm ci + build complet trec fara erori. 172 de fisiere.
+
+
+PRIMA COMANDA PENTRU CLAUDE
+---------------------------
+
+Deschizi Claude Code in folderul jp-platform si ii dai asta:
+
+    Citeste README.md, docs/next-session.md si docs/build-plan.md.
+    Continuam de la punctul 1: cele 9 randuri de continut necomparate cu Figma.
+    Incepe cu Lottery si Wheel — sunt variante ale aceleiasi componente ca
+    Tournaments, dar nodul 1:3587 deseneaza trei randuri de statistici acolo
+    unde Tournaments are pastile, iar PromoBannerData s-ar putea sa n-aiba camp
+    pentru ele. Verifica inainte sa presupui.
+
+
+CE NU CALATORESTE CU REPO-UL
+----------------------------
+
+Asta e partea pe care nu o poti deduce din cod.
+
+Regulile tale de lucru sunt configuratie LOCALA, nu in repo. Cele doua reguli
+care apar la fiecare mesaj — "nu presupune, verifica" si "explica, nu doar
+raporta" — vin din:
+
+    C:\Users\grosu.b\.claude\settings.json     (sectiunea "hooks")
+    C:\Users\grosu.b\.claude\CLAUDE.md
+
+La fel modul caveman si cele 294 de skill-uri instalate.
+
+Pe alt calculator, fara ele, Claude va da rapoarte seci si va umple golurile cu
+presupuneri plauzibile in loc sa te intrebe — exact comportamentul pe care
+regulile astea il blocheaza. Daca vrei acelasi stil de lucru, copiaza cele doua
+fisiere de mai sus.
+
+Ce calatoreste cu repo-ul: .claude/settings.json din proiect, care activeaza
+doar pluginul ui-ux-pro-max.
+
+NECUNOSCUT: nu stiu daca conectarea la Figma prin MCP merge automat pe celalalt
+calculator. E legata de contul claude.ai, deci probabil da, dar nu am cum sa
+verific de aici. Test rapid in prima sesiune: cere-i sa ruleze get_metadata pe
+fisierul 2MyylxdZblfGnf05nQacUz. Daca raspunde cu pagina "Platform", e in
+regula. Daca nu, trebuie reconectat conectorul Figma.
+
+
+CAPCANA CARE TE COSTA O ORA DACA NU O STII
+------------------------------------------
+
+NU rula `npm run build` cat timp `next dev` este pornit.
+
+Amandoua detin acelasi director .next. Cand se calca reciproc, il corup, si
+TOATE rutele incep sa dea 500 cu mesajul:
+
+    ENOENT: no such file or directory, open
+    .next\static\development\_buildManifest.js.tmp.<caractere aleatoare>
+
+Codul e perfect valid. Pare bug in aplicatie si nu este. S-a intamplat exact
+asa, o data, in sesiunea anterioara.
+
+Pentru asta exista:
+
+    npm run build:check
+
+care trimite build-ul in .next-build si nu poate atinge serverul care ruleaza.
+
+Acelasi lucru se intampla dupa ce editezi next.config.ts cat dev-ul ruleaza:
+Next reporneste singur la schimbarea configului si se calca pe el. Dupa orice
+modificare acolo, opreste si reporneste serverul manual.
+
+
+COMENZI UTILE
+-------------
+
+    npm run dev              server de review pe :3000
+    npm run build:check      build de productie, sigur cat dev ruleaza
+    npx tsc --noEmit
+    npx eslint src --max-warnings=0
+
+    node scripts/shot.mjs <url> <iesire.png> <latime> <inaltime> viewport '<selector|offset>'
+    node scripts/review.mjs <director>        conduce si captureaza toate cele 10 stari
+    node scripts/clean-svg.mjs public/images --dry
+
+
+DEEP-LINK-URI PENTRU O STARE ANUME
+----------------------------------
+
+Se adauga la adresa demo-ului:
+
+    ?auth=prelogin   sau  ?auth=vip     headerul si meniul in starea aceea
+    ?panel=balance                      panoul de sold, nodul Figma 1:4116
+    ?panel=personalInfo                 meniul de cont, nodul 1:4153
+    ?panel=jackpotMenu                  meniul mobil, nodurile 1:8751 / 1:8260 / 1:8503
+    ?q=swe                              starea de sugestii la cautare, nodul 1:4479
+
+Exista pentru ca o stare la care nu poti da link nu poate fi verificata. O
+captura numita "panoul Balance" era, pana sa fie implementate, doar o captura a
+paginii implicite.
+
+
+CE A MAI RAMAS DE FACUT
+-----------------------
+
+Detaliat in docs/next-session.md. Pe scurt, in ordinea stabilita:
+
+1. Noua randuri de continut necomparate cu Figma. Cele mai riscante: Weekly
+   Lottery (1:3524) si Wheel (1:3580).
+2. Cele 13 ecrane din registru, niciunul parcurs comparativ. Doua nu au fost
+   vazute niciodata: empty-search-state-desktop (1:4321) si
+   mobile-providers-no-results (1:2218).
+3. Patru cereri deschise: Badge fara dimensiunea xs, formatCountdown in locul
+   gresit, lipsa lui src/lib/data.ts, starile butonului-iconita.
+4. Accesibilitate — zero verificari rulate pana acum.
+5. Diferentele constiente, de reconfirmat: providerii cu initiale, cardurile cu
+   gradient, moneda GBP, hero-ul mobil ca oferta unica.
+
+
+DOCUMENTE IN REPO
+-----------------
+
+README.md               ce e proiectul, cum se ruleaza
+docs/next-session.md    ce a ramas de facut
+docs/build-plan.md      de ce arhitectura arata asa, si capcanele deja intalnite
+docs/tokens.md          CITESTE INAINTE DE A ATINGE O CULOARE. Fisierul Figma nu
+                        are variabile, deci documentul asta e singura punte
+                        intre design si cod
