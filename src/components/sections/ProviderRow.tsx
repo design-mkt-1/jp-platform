@@ -12,11 +12,14 @@ import SectionHeader from './SectionHeader'
 /**
  * The Leading Providers row of Figma node 1:2649 (1280x340).
  *
- * Node 1:2657 stacks two `Slider-Track-Wrapper` frames, each holding a 1680px row of 140px badges
- * inside a 1280px clip — the design's way of drawing a marquee in a static file. There is no
- * keyframe in globals.css and this component may not add one, so the bands are user-scrollable
- * rails instead of self-animating tracks: same overflowing, edge-to-edge look, no motion nobody
- * asked for. See the change request in the phase report if the marquee is wanted.
+ * Node 1:2657 stacks two `Slider-Track-Wrapper` frames (1:2658 and 1:2919), each holding a 1680px
+ * row of 140px badges inside a 1280px clip — the design's way of drawing a marquee in a static
+ * file. `.animate-marquee` / `.animate-marquee-reverse` in globals.css are those two bands; both
+ * stop under `prefers-reduced-motion`.
+ *
+ * Each track renders its badges twice. The keyframe translates by -50%, which is exactly one copy,
+ * so the moment the first copy leaves the clip the second is sitting where it started and the loop
+ * has no visible seam. Halving the copies would tear it every 40 seconds.
  *
  * Client because of one control: the 40px search button in the header opens the global search.
  * The store is deliberately provider-less, so this island can reach it directly.
@@ -48,6 +51,7 @@ export default function ProviderRow({
   className,
 }: ProviderRowProps) {
   const openSearch = useAppStore((state) => state.openSearch)
+  const secondBand = rotate(list)
 
   const searchButton = (
     <button
@@ -66,11 +70,15 @@ export default function ProviderRow({
       aria-label={section.title}
       className={['flex flex-col gap-5', className].filter(Boolean).join(' ')}
     >
-      <SectionHeader title={section.title} icon={section.icon} action={searchButton} />
+      {/* Node 1:2650 fixes its rule at 160px and pushes the search button to the margin, unlike
+          the games rows whose rule stretches to meet the See All pill. */}
+      <SectionHeader title={section.title} icon={section.icon} action={searchButton} rule="fixed" />
 
-      <div className="flex flex-col">
-        <div className="overflow-x-auto no-scrollbar">
-          <div className="flex w-max">
+      <div className="flex flex-col overflow-hidden">
+        {/* Band one, node 1:2658. Only the first copy of the badges is announced and focusable;
+            the second exists so the wrap has no seam, which is decoration, not information. */}
+        <div className="flex w-max animate-marquee">
+          <div className="flex">
             {list.map((provider) => (
               <ProviderCard
                 key={provider.id}
@@ -79,16 +87,27 @@ export default function ProviderRow({
               />
             ))}
           </div>
+          <div aria-hidden className="flex">
+            {list.map((provider) => (
+              <ProviderCard key={provider.id} provider={provider} />
+            ))}
+          </div>
         </div>
 
         {/*
-          The second band is the same twelve studios again — decoration that fills the row's width,
-          not new information. Hidden from assistive tech and left unlinked so it adds neither a
-          duplicate announcement nor a second set of tab stops.
+          Band two, node 1:2919, travelling the other way. It is the same studios a third and
+          fourth time — decoration that fills the row's height, not new information — so the whole
+          band is hidden from assistive tech and left unlinked: no duplicate announcement, no
+          second set of tab stops.
         */}
-        <div aria-hidden className="overflow-x-auto no-scrollbar">
-          <div className="flex w-max">
-            {rotate(list).map((provider) => (
+        <div aria-hidden className="flex w-max animate-marquee-reverse">
+          <div className="flex">
+            {secondBand.map((provider) => (
+              <ProviderCard key={provider.id} provider={provider} />
+            ))}
+          </div>
+          <div className="flex">
+            {secondBand.map((provider) => (
               <ProviderCard key={provider.id} provider={provider} />
             ))}
           </div>

@@ -48,6 +48,11 @@ export type IconName =
   | 'egypt'
   | 'live-casino'
   | 'search'
+  // UI glyphs rather than section marks: the clear control of the search field (node 1:4319),
+  // the 32x32 disc that opens the balance panel (node 1:4280) and the deposit plus (node 1:5741).
+  | 'close'
+  | 'chevron-down'
+  | 'plus'
 
 export interface Game {
   id: string
@@ -116,6 +121,15 @@ export interface Tournament {
 
 export type PromoVariant = 'tournament' | 'lottery' | 'wheel'
 
+/**
+ * One of the small pills under a promo subtitle. `amber` is the warning tint of nodes 1:3446 and
+ * 1:3538; `neutral` the white-tinted sibling next to it.
+ */
+export interface PromoPill {
+  label: string
+  tone?: 'amber' | 'neutral'
+}
+
 export interface PromoBannerData {
   id: string
   variant: PromoVariant
@@ -124,6 +138,17 @@ export interface PromoBannerData {
   image: string
   ctaLabel: string
   ctaHref: string
+  /** Amber dot plus caption above the title (node 1:3441). Tournament only in the current data. */
+  eyebrow?: string
+  /** Absent rather than empty when the banner draws no pills — the wheel (1:3587) has none. */
+  pills?: PromoPill[]
+  /** "Time left to join" (1:3452) / "Draw ends in:" (1:3544). Omit to hide the timer. */
+  timerLabel?: string
+  /**
+   * ISO 8601 end of the countdown. The clock is derived from this rather than stored as
+   * "08h : 12m : 36s", so a banner cannot show a frozen string once the data file ages.
+   */
+  endsAt?: string
 }
 
 export interface Category {

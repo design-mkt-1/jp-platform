@@ -7,9 +7,34 @@ import type { Provider } from '@/lib/types'
  * The circular provider badge of Figma node 1:2660 (140x140 frame, 112px circle, 14px inset).
  *
  * Only five of the twelve providers have a logo — the Figma slider names exactly Pragmatic,
- * 3 Oaks, BGaming, Nolimit and Spribe. The other seven fall back to their name set in the same
+ * 3 Oaks, BGaming, Nolimit and Spribe. The other seven fall back to their initials set in the same
  * circle, which keeps the row's rhythm intact instead of leaving holes in it.
+ *
+ * Initials rather than the full name: "Hacksaw Gaming" at a size that fits a 112px disc lands
+ * around 11px, which reads as a caption dropped into a logo slot. Two large letters read as a
+ * mark, which is what the slot is for.
  */
+
+/**
+ * "Relax Gaming" → "RG", "NetEnt" → "NE", "Evoplay" → "EV".
+ *
+ * Word boundaries first; a single-word name has no boundaries to use, so it contributes its first
+ * two letters instead. Internal capitals are deliberately not treated as boundaries — "BGaming"
+ * would become "BG" either way, and the rule would turn "NetEnt" into something no reader expects.
+ */
+export function providerInitials(name: string): string {
+  const words = name.split(/\s+/).filter(Boolean)
+
+  if (words.length > 1) {
+    return words
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase()
+  }
+
+  return (words[0] ?? '').slice(0, 2).toUpperCase()
+}
 
 export interface ProviderCardProps {
   provider: Provider
@@ -39,8 +64,13 @@ export default function ProviderCard({ provider, href, className }: ProviderCard
           className="size-[69px] object-contain"
         />
       ) : (
-        <span className="px-3 text-center text-[11px] font-bold uppercase leading-tight tracking-[0.6px] text-label">
-          {provider.name}
+        // Hidden from assistive tech: "RG" is not the name of anything. The full name reaches a
+        // screen reader through the link's aria-label, or the sr-only text of the static branch.
+        <span
+          aria-hidden
+          className="text-[28px] font-extrabold uppercase leading-none tracking-[1px] text-label"
+        >
+          {providerInitials(provider.name)}
         </span>
       )}
     </span>
@@ -65,5 +95,11 @@ export default function ProviderCard({ provider, href, className }: ProviderCard
     )
   }
 
-  return <div className={classes}>{circle}</div>
+  return (
+    <div className={classes}>
+      {circle}
+      {/* The logo branch names itself through the image's alt; the initials branch cannot. */}
+      {logo ? null : <span className="sr-only">{provider.name}</span>}
+    </div>
+  )
 }

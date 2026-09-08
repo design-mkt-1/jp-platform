@@ -1,7 +1,7 @@
 'use client'
 
-import type { ReactNode } from 'react'
 import Button from '../primitives/Button'
+import Icon from '../primitives/Icon'
 import userData from '@/data/user.json'
 import { formatGbp } from '@/lib/format'
 import { useAppStore } from '@/store/useAppStore'
@@ -31,54 +31,13 @@ const FOCUS_RING =
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue'
 
 /**
- * Node 1:4280's glyph was exported as a flattened 32x32 SVG that bakes in its own circle and fill,
- * so it cannot follow the pill it sits in. Redrawn on `currentColor` instead — the same call the
- * SearchInput primitive already makes for its clear control. See the report's change request.
+ * The disc that closes both desktop pills (nodes 1:4280, 1:48).
+ *
+ * `chevron-down.svg` is the whole 32x32 control: the white-6% circle and the #9E9FAB chevron are
+ * both inside the export, so there is no wrapper here to draw a second circle behind it.
  */
-function ChevronDownIcon() {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      className="size-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M4 6.5L8 10.5L12 6.5" />
-    </svg>
-  )
-}
-
-/** Node 1:5741, same reasoning as the chevron. */
-function PlusIcon() {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      className="size-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      aria-hidden
-    >
-      <path d="M8 3.5v9M3.5 8h9" />
-    </svg>
-  )
-}
-
-/** The dark disc that closes both desktop pills (nodes 1:4280, 1:48). */
-function PillAffordance({ children }: { children: ReactNode }) {
-  return (
-    <span
-      aria-hidden
-      className="flex size-8 shrink-0 items-center justify-center rounded-full bg-elevated text-secondary"
-    >
-      {children}
-    </span>
-  )
+function PillAffordance() {
+  return <Icon name="chevron-down" width={32} height={32} className="size-8 shrink-0" />
 }
 
 /** Node 1:8536. The design's three-stop yellow is the brand gold gradient at a smaller radius. */
@@ -125,9 +84,7 @@ export function AccountCluster({ tier }: AccountClusterProps) {
           className={`flex h-10 items-center gap-2 rounded-[20px] bg-card px-2 transition-colors hover:brightness-125 ${FOCUS_RING}`}
         >
           <span className="text-[13px] font-semibold text-primary">{total}</span>
-          <PillAffordance>
-            <ChevronDownIcon />
-          </PillAffordance>
+          <PillAffordance />
         </button>
 
         {isVip ? <VipBadge /> : null}
@@ -147,9 +104,7 @@ export function AccountCluster({ tier }: AccountClusterProps) {
           <span className="max-w-[140px] truncate text-[13px] font-semibold text-primary">
             {user.displayName}
           </span>
-          <PillAffordance>
-            <ChevronDownIcon />
-          </PillAffordance>
+          <PillAffordance />
         </button>
       </div>
 
@@ -177,7 +132,9 @@ export function AccountCluster({ tier }: AccountClusterProps) {
           onClick={openBalance}
           aria-label="Deposit"
           className={[
-            'flex size-8 shrink-0 items-center justify-center rounded-[20px] text-page',
+            // No text colour: `plus.svg` is a flat white stroke (node 1:5741), not a currentColor
+            // outline, so nothing here can tint it.
+            'flex size-8 shrink-0 items-center justify-center rounded-[20px]',
             'border border-solid border-[color:color-mix(in_srgb,var(--text-primary)_40%,transparent)]',
             // Explicit `image:` hint so Tailwind cannot mistake the gradient for a colour.
             'bg-[image:linear-gradient(90deg,var(--emerald),var(--blue))]',
@@ -185,7 +142,7 @@ export function AccountCluster({ tier }: AccountClusterProps) {
             FOCUS_RING,
           ].join(' ')}
         >
-          <PlusIcon />
+          <Icon name="plus" width={16} height={16} className="size-4" />
         </button>
       </div>
     </>

@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Badge from '../primitives/Badge'
 import Button from '../primitives/Button'
 import { PROMO_BANNERS } from '@/lib/assets'
-import type { PromoBannerData } from '@/lib/types'
+import type { PromoBannerData, PromoPill } from '@/lib/types'
 
 /**
  * The three 1280x260 promo rows — TournamentBanner (1:3436), LotteryCard (1:3532) and
@@ -12,12 +12,13 @@ import type { PromoBannerData } from '@/lib/types'
  * border and radius, identical left title block, identical right column ending in the same
  * 180x44 gold button. Only the middle of each column differs, so the variants branch there and
  * nowhere else. Three files would have meant fixing the same padding bug three times.
+ *
+ * Everything the design draws now lives in `PromoBannerData`, so a page can render a banner from
+ * the data file alone. The props below still win when passed — a screen that wants to override one
+ * label should not have to clone the whole record.
  */
 
-export interface PromoPill {
-  label: string
-  tone?: 'amber' | 'neutral'
-}
+export type { PromoPill }
 
 /** Label/value rows of the wheel's right column (nodes 1:3594–1:3602). */
 export interface PromoStat {
@@ -25,15 +26,34 @@ export interface PromoStat {
   value: string
 }
 
+/**
+ * "08h : 12m : 36s" — the clock of nodes 1:3453 and 1:3545.
+ *
+ * A snapshot, not a live timer: this is a server component, and a ticking clock would either force
+ * the whole banner to the client or hydrate against a value a second older than the server's.
+ * `suppressHydrationWarning` at the call site covers that one-second drift.
+ */
+export function formatCountdown(endsAt: string, from: number = Date.now()): string {
+  const remaining = Math.max(0, new Date(endsAt).getTime() - from)
+  const totalSeconds = Math.floor(remaining / 1000)
+
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+  const pad = (value: number) => String(value).padStart(2, '0')
+
+  return `${pad(hours)}h : ${pad(minutes)}m : ${pad(seconds)}s`
+}
+
 export interface PromoBannerProps {
   data: PromoBannerData
-  /** Tournament only: the amber dot plus caption above the title (node 1:3441). */
+  /** Overrides `data.eyebrow`: the amber dot plus caption above the title (node 1:3441). */
   eyebrow?: string
-  /** Tournament and lottery: the pills under the subtitle. */
+  /** Overrides `data.pills`: the pills under the subtitle. */
   pills?: PromoPill[]
-  /** "Time left to join" / "Draw ends in:". Omit to hide the timer entirely. */
+  /** Overrides `data.timerLabel`. Without a label and a clock the timer is not rendered. */
   timerLabel?: string
-  /** Pre-formatted countdown, e.g. "08h : 12m : 36s". */
+  /** Pre-formatted countdown. Omit and it is derived from `data.endsAt`. */
   timer?: string
   /** Wheel only: the stacked ticket/winner/spin rows. */
   stats?: PromoStat[]
@@ -51,10 +71,16 @@ export default function PromoBanner({
   priority = false,
   className,
 }: PromoBannerProps) {
-  // Keyed by variant rather than read from `data.image`: the JSON still points at
-  // /images/promos/, a directory that was never exported. See the report's change request.
+  // Keyed by variant rather than read from `data.image`. The two now agree file for file, but
+  // `src/lib/assets.ts` stays the one place that turns an asset name into a URL — a data file that
+  // can name a path is a data file that can name a 404.
   const background = PROMO_BANNERS[data.variant]
   const isWheel = data.variant === 'wheel'
+
+  const bannerEyebrow = eyebrow ?? data.eyebrow
+  const bannerPills = pills ?? data.pills
+  const clockLabel = timerLabel ?? data.timerLabel
+  const clock = timer ?? (data.endsAt ? formatCountdown(data.endsAt) : undefined)
 
   return (
     <section
@@ -78,10 +104,10 @@ export default function PromoBanner({
 
       {/* Left column: eyebrow, titles, pills. */}
       <div className="relative flex flex-col justify-center gap-4 p-8">
-        {eyebrow ? (
+        {bannerEyebrow ? (
           <p className="flex items-center gap-2 text-xs font-bold uppercase text-amber">
             <span aria-hidden className="size-2 rounded-full bg-amber" />
-            {eyebrow}
+            {bannerEyebrow}
           </p>
         ) : null}
 
@@ -97,9 +123,9 @@ export default function PromoBanner({
           </p>
         </div>
 
-        {pills && pills.length > 0 ? (
+        {bannerPills && bannerPills.length > 0 ? (
           <div className="flex flex-wrap gap-3">
-            {pills.map((pill) => (
+            {bannerPills.map((pill) => (
               <Badge
                 key={pill.label}
                 tone={pill.tone ?? 'neutral'}
@@ -121,9 +147,11 @@ export default function PromoBanner({
         {stats && stats.length > 0 ? (
           <ul className="flex w-full flex-col gap-2">
             {stats.map((stat) => (
+              // Nodes 1:3594–1:3600 sit on the same amber tenth as the warning pills, not on the
+              // white tint the rest of the elevated surfaces use.
               <li
                 key={stat.label}
-                className="flex gap-1.5 rounded-[9px] bg-elevated px-3 py-1.5 text-lg"
+                className="flex gap-1.5 rounded-[9px] bg-amber-tint px-3 py-1.5 text-lg"
               >
                 <span className="font-medium text-label">{stat.label}</span>
                 <span className="font-bold text-amber">{stat.value}</span>
@@ -132,7 +160,7 @@ export default function PromoBanner({
           </ul>
         ) : null}
 
-        {timerLabel && timer ? (
+        {clockLabel && clock ? (
           <div
             className={
               // Lottery puts label and clock on one line (node 1:3543); the tournament stacks them.
@@ -141,13 +169,15 @@ export default function PromoBanner({
                 : 'flex flex-col items-end gap-1'
             }
           >
-            <span className="text-xs text-muted">{timerLabel}</span>
+            <span className="text-xs text-muted">{clockLabel}</span>
             <time
+              {...(data.endsAt ? { dateTime: data.endsAt } : {})}
+              suppressHydrationWarning
               className={`font-extrabold text-primary ${
                 data.variant === 'lottery' ? 'text-base' : 'text-2xl'
               }`}
             >
-              {timer}
+              {clock}
             </time>
           </div>
         ) : null}

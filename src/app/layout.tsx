@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Bricolage_Grotesque, Inter, Roboto_Flex } from 'next/font/google'
 import './globals.css'
 
@@ -24,6 +24,17 @@ const bricolage = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: 'Jackpot',
   description: 'Casino platform demo built from the Jackpot Figma file.',
+}
+
+/*
+ * The mobile tab bar (node 1:8235) is fixed to the bottom edge and pads itself with
+ * `env(safe-area-inset-bottom)`; MobileShell reserves the same amount at the end of the document.
+ * Those insets resolve to zero unless the viewport opts into the full screen, which is the one
+ * piece of the mobile chrome that can only be declared here. Everything else — width, initial
+ * scale — is Next's default and is left alone.
+ */
+export const viewport: Viewport = {
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({

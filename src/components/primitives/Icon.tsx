@@ -9,11 +9,22 @@ import type { IconName } from '@/lib/types'
  * rejects SVG sources unless `images.dangerouslyAllowSVG` is enabled in next.config.ts. Enabling
  * that is a project-wide security decision, so the primitive opts out of the optimizer instead and
  * serves the file exactly as it was exported.
+ *
+ * Scope: the small glyphs only. `public/images/logo.svg` is the 113x56 Jackpot wordmark and is
+ * deliberately not reachable from here — `IconName` cannot name it, and `sectionIcon()` only ever
+ * builds paths under `images/icons/`. The layout renders the wordmark directly.
+ *
+ * Each file is a flat exported fill, not a `currentColor` outline, so `text-*` on the caller does
+ * nothing. A glyph that has to change colour on hover needs its chrome moved instead.
  */
 
 export interface IconProps {
   name: IconName
-  /** Figma draws most glyphs in a 20x20 box; the section-header flame is 14x20. */
+  /**
+   * Figma draws most glyphs in a 20x20 box; the section-header flame is 14x20, `close` (1:4319)
+   * and `plus` (1:5741) are 16x16, and `chevron-down` (1:4280) is a 32x32 disc with the chevron
+   * already inside it — pass its own size rather than scaling it to 20.
+   */
   width?: number
   height?: number
   className?: string

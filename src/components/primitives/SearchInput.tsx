@@ -47,7 +47,9 @@ export default function SearchInput({
     <div
       className={[
         'flex h-12 items-center gap-3 rounded-3xl border border-solid border-separator',
-        'bg-card pl-4 pr-3',
+        // Node 1:4314 fills the field with #1A1D2E, a shade off the card it sits on; `bg-field`
+        // did not exist when this was first built and `bg-card` was the stand-in.
+        'bg-field pl-4 pr-3',
         'focus-within:border-blue',
         className,
       ]
@@ -85,23 +87,13 @@ export default function SearchInput({
           aria-label="Clear search"
           className={[
             'flex size-7 shrink-0 items-center justify-center rounded-[14px]',
-            'border border-solid border-separator bg-card text-secondary',
-            'hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue',
+            'border border-solid border-separator bg-card',
+            // The glyph is a flat exported asset, so hover moves the chrome rather than the ink.
+            'transition-colors hover:bg-elevated',
+            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue',
           ].join(' ')}
         >
-          {/* Drawn rather than imported: node 1:4319's glyph was never exported to
-              public/images/icons, and this component may not add files there. See the report. */}
-          <svg
-            viewBox="0 0 16 16"
-            className="size-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            strokeLinecap="round"
-            aria-hidden
-          >
-            <path d="M4 4l8 8M12 4l-8 8" />
-          </svg>
+          <Icon name="close" width={16} height={16} className="size-4" />
         </button>
       ) : null}
     </div>

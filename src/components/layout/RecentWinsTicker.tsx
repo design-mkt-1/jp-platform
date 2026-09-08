@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import RecentWinItem from '../cards/RecentWinItem'
 import recentWinsData from '@/data/recentWins.json'
 import type { RecentWin } from '@/lib/types'
@@ -8,11 +9,15 @@ import type { RecentWin } from '@/lib/types'
  *
  * The design overflows past the right edge — the sixth entry is cut mid-word — which is the whole
  * point of a ticker: there is always more than fits. That is reproduced as a horizontal scroll rail
- * rather than a CSS marquee, because the keyframes would have to be declared in globals.css and
- * this component may not touch that file. See the report.
+ * rather than a marquee: unlike the providers row, this strip carries names and amounts, and moving
+ * text that cannot be paused is unreadable.
  *
  * The rail is focusable on purpose: a scroll container that only responds to a pointer strands
  * keyboard users in front of content they can see is there.
+ *
+ * The rules between entries are drawn here rather than by `RecentWinItem`, whose own `withDivider`
+ * hairline is `border-strong` (white 10%). Node 1:2433 is white 15% — `border-emphasis`. Rendering
+ * them as siblings inside the same `gap-3.5` flex puts them at the identical spacing.
  */
 
 const ALL_WINS = recentWinsData as RecentWin[]
@@ -52,13 +57,13 @@ export default function RecentWinsTicker({
           ].join(' ')}
         >
           {items.map((win, index) => (
-            <RecentWinItem
-              key={win.id}
-              win={win}
-              index={index}
-              // The last entry has no trailing rule; in Figma the final groups drop theirs too.
-              withDivider={index < items.length - 1}
-            />
+            <Fragment key={win.id}>
+              <RecentWinItem win={win} index={index} />
+              {/* The last entry has no trailing rule; in Figma the final groups drop theirs too. */}
+              {index < items.length - 1 ? (
+                <span aria-hidden className="h-10 w-px shrink-0 border-l border-emphasis" />
+              ) : null}
+            </Fragment>
           ))}
         </div>
       </div>

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import GameCard from '../cards/GameCard'
 import type { Game } from '@/lib/types'
 
@@ -5,9 +6,14 @@ import type { Game } from '@/lib/types'
  * The GridContainer of Figma node 1:2601: 1280 wide, six 203px cards on a 215px pitch — so a
  * 12px gutter.
  *
- * On mobile the same games become a horizontal rail. A six-column grid at 390px would give 50px
- * cards; a 3x2 grid would hide half the row behind a scroll the user cannot see. The rail keeps
- * the cards legible and makes it obvious there is more to the right.
+ * On mobile it stays a grid. Node 1:5882 draws the same section at 390px as two rows of three
+ * 114x148 cards — an 8px column gutter inside a 16px page inset, 12px between the rows — not the
+ * horizontal rail an earlier pass assumed. `src/lib/sections.ts` already limits every mobile games
+ * row to six for exactly this shape.
+ *
+ * The column count is a runtime value, so it travels as a custom property rather than as an inline
+ * `grid-template-columns`: an inline style beats every class, which would make the mobile override
+ * below impossible to express in Tailwind.
  */
 
 export interface GameGridProps {
@@ -23,6 +29,9 @@ export interface GameGridProps {
   className?: string
 }
 
+/** Mobile always shows three across, whatever the desktop count is (node 1:5887). */
+const MOBILE_COLUMNS = 3
+
 export default function GameGrid({
   games,
   columns = 6,
@@ -34,16 +43,13 @@ export default function GameGrid({
   return (
     <div
       className={[
-        'grid gap-3',
-        // Below 768px the grid template is ignored and the row scrolls instead.
-        'mobile:flex mobile:snap-x mobile:overflow-x-auto mobile:no-scrollbar',
+        'grid grid-cols-[repeat(var(--game-grid-columns),minmax(0,1fr))] gap-3',
+        'mobile:grid-cols-3 mobile:gap-x-2 mobile:gap-y-3',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
-      // Inline because the column count is a runtime value: Tailwind cannot generate a class it
-      // never sees in the source.
-      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+      style={{ '--game-grid-columns': columns } as CSSProperties}
     >
       {games.map((game, index) => (
         <GameCard
@@ -51,8 +57,9 @@ export default function GameGrid({
           game={game}
           providerName={providerNames?.[game.provider]}
           {...(hrefForGame ? { href: hrefForGame(game) } : {})}
-          priority={priority && index < columns}
-          className="mobile:w-[148px] mobile:shrink-0 mobile:snap-start"
+          // The first visible row differs per viewport; priming the wider of the two costs three
+          // extra eager images on mobile and avoids a lazy first row on desktop.
+          priority={priority && index < Math.max(columns, MOBILE_COLUMNS)}
         />
       ))}
     </div>

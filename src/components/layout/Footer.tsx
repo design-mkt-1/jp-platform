@@ -12,9 +12,11 @@ import type { FooterData, FooterLogo } from '@/lib/types'
  * and language block, then the legal strip. The Figma y-coordinates (198→238→372→412→452→657)
  * confirm the single gap, so the frame is a plain flex column rather than six positioned blocks.
  *
- * Every logo comes from `src/lib/assets.ts`, which resolves to `null` rather than to a missing
- * file. A slot with no exported asset falls back to its label, the same way `ProviderCard` handles
- * the seven providers Figma never drew — a hole in the row is more noticeable than a wordmark.
+ * Logo paths come from `footer.json`, which now carries every one of the fourteen files. The
+ * helpers in `src/lib/assets.ts` stay as a backstop for ids the data leaves at `null` — that map
+ * predates the Deutschland Casinos export and no longer covers the full set. A slot with neither
+ * falls back to its label, the same way `ProviderCard` falls back to initials: a hole in the row
+ * is more noticeable than a wordmark.
  */
 
 const footer: FooterData = footerJson
@@ -48,6 +50,9 @@ const PARTNER_ART: Record<string, { slotClass: string; width: number; height: nu
   'no-deposit': { slotClass: 'w-[150px]', width: 100, height: 24 },
   'casino-bonus-club': { slotClass: 'w-[150px]', width: 100, height: 28 },
   zamsino: { slotClass: 'w-[150px]', width: 150, height: 48 },
+  // Node 1:3993 was an empty frame in wave 1; the export is a 108x48 raster that fills the slot
+  // exactly, so it is measured rather than scaled.
+  'deutschland-casinos': { slotClass: 'w-[150px]', width: 108, height: 48 },
 }
 
 const DEFAULT_PARTNER_ART = { slotClass: 'w-[150px]', width: 100, height: 32 }
@@ -77,7 +82,7 @@ const FALLBACK_CLASSES =
   'px-2 text-center text-[11px] font-bold uppercase leading-tight tracking-[0.6px] text-label'
 
 function PaymentTile({ logo }: { logo: FooterLogo }) {
-  const src = paymentLogo(logo.id)
+  const src = logo.src ?? paymentLogo(logo.id)
   const art = PAYMENT_ART[logo.id] ?? DEFAULT_PAYMENT_ART
 
   return (
@@ -99,7 +104,7 @@ function PaymentTile({ logo }: { logo: FooterLogo }) {
 }
 
 function PartnerSlot({ logo }: { logo: FooterLogo }) {
-  const src = partnerLogo(logo.id)
+  const src = logo.src ?? partnerLogo(logo.id)
   const art = PARTNER_ART[logo.id] ?? DEFAULT_PARTNER_ART
 
   const content = src ? (
@@ -136,7 +141,8 @@ function PartnerSlot({ logo }: { logo: FooterLogo }) {
 
 export default function Footer() {
   return (
-    <footer className="flex w-full flex-col items-center gap-10 border-t border-solid border-separator bg-page px-page-x pb-10 pt-[60px] mobile:gap-8 mobile:px-4 mobile:pt-10">
+    // `bg-footer` (node 1:3666), not `bg-page`: the footer is painted a shade below the page.
+    <footer className="flex w-full flex-col items-center gap-10 border-t border-solid border-separator bg-footer px-page-x pb-10 pt-[60px] mobile:gap-8 mobile:px-4 mobile:pt-10">
       <div className="flex w-full max-w-content flex-col items-center gap-10 mobile:gap-8">
         <section
           aria-labelledby="footer-payments"
@@ -200,7 +206,9 @@ export default function Footer() {
                   index === 0 ? 'bg-gradient-gold' : ''
                 }`}
               >
-                <span className="flex size-[40.53px] items-center justify-center overflow-hidden rounded-full border-[1.388px] border-solid border-card">
+                {/* `border-flag` (node 1:4016) is the near-black ring Figma draws between the gold
+                    selection and the flag itself; `border-card` was a stand-in for it. */}
+                <span className="flex size-[40.53px] items-center justify-center overflow-hidden rounded-full border-[1.388px] border-solid border-flag">
                   <Image
                     src={languageFlag(code)}
                     alt={LANGUAGE_NAMES[code] ?? code}

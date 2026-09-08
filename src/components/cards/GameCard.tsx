@@ -60,7 +60,9 @@ export default function GameCard({
       alt={game.title}
       fill
       priority={priority}
-      sizes="(max-width: 767px) 148px, 203px"
+      // Node 1:5888 makes the mobile card 114px inside a 3-column grid, so a third of the
+      // viewport minus the page inset is closer than any fixed pixel width.
+      sizes="(max-width: 767px) 33vw, 203px"
       className="object-cover"
     />
   ) : (

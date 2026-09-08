@@ -1,15 +1,135 @@
+import { Fragment } from 'react'
+import CategoryNavBar from '@/components/layout/CategoryNavBar'
+import Footer from '@/components/layout/Footer'
+import Header from '@/components/layout/Header'
+import HeroBanner from '@/components/layout/HeroBanner'
+import MobileShell from '@/components/layout/MobileShell'
+import RecentWinsTicker from '@/components/layout/RecentWinsTicker'
+import BalancePanel from '@/components/panels/BalancePanel'
+import PersonalInfoPanel from '@/components/panels/PersonalInfoPanel'
+import SearchOverlay from '@/components/search/SearchOverlay'
+import SectionRenderer from '@/components/sections/SectionRenderer'
+import { desktopSections, mobileSections } from '@/lib/sections'
+import type { SectionSpec } from '@/lib/sections'
+
 /**
- * Placeholder. The real page is assembled in phase 5 from the section registry
- * in src/lib/sections.ts — see docs/tokens.md and the plan for the shape.
+ * The homepage — Figma frames `desktop-main` (1:2431) and `mob main` (1:5720).
+ *
+ * The body of the page is `desktopSections.map()` and nothing else. There is no branch for
+ * "Crash Games" or for any other row: what a row is called, which glyph it carries, what it
+ * queries and how many grids it stacks are all fields of `SectionSpec`, so a new row is a commit
+ * to `src/lib/sections.ts` alone.
+ *
+ * A Server Component. Every interactive part of the page — the header's account cluster, the
+ * search field, the marquee row, the overlays — is a client island that reaches `useAppStore`
+ * directly, precisely so this file never has to become one.
+ *
+ * ## Vertical rhythm
+ *
+ * Read off the two frames rather than guessed. Desktop (absolute y in 1:2431): header ends at 80,
+ * the hero block starts at 128, the ticker frame at 480, the category bar at 608, the first
+ * section at 758, and every following section starts exactly 48 after the previous one ends —
+ * 758, 1118, 1478, 1866 … 6364 — with the footer at 6724, again 48 after the last row. So the
+ * page is one uniform 48px gap, not per-row spacing. Mobile (1:5720) is the same shape at 20px:
+ * 401, 789, 1185 … 5549, footer at 5979.
+ *
+ * The component paddings already carry part of those gaps (the ticker's own 12, the category bar's
+ * 24), so the wrappers below add only the remainder.
  */
+
+/**
+ * Both registries describe the same fifteen rows; `mobileSections` differs only in that a games
+ * row asking for two grids of six on desktop asks for one grid of six on mobile. Rendering both
+ * unconditionally would duplicate thirteen identical rows into the DOM, so a row is only doubled
+ * when the two specs would actually draw something different.
+ *
+ * Compared field by field rather than by serialising the filter: key order is an implementation
+ * detail of how `mobileSections` is built, and a comparison that depends on it would start
+ * silently doubling rows the day that changes.
+ */
+function rendersTheSame(desktop: SectionSpec, mobile: SectionSpec): boolean {
+  if (desktop.kind !== 'games' || mobile.kind !== 'games') return desktop.kind === mobile.kind
+
+  return (
+    desktop.grids === mobile.grids &&
+    desktop.filter.tag === mobile.filter.tag &&
+    desktop.filter.category === mobile.filter.category &&
+    desktop.filter.provider === mobile.filter.provider &&
+    desktop.filter.limit === mobile.filter.limit
+  )
+}
+
+/** A hidden element is not a flex item, so the swapped-out twin contributes no gap either. */
+const DESKTOP_ONLY = 'mobile:hidden'
+const MOBILE_ONLY = 'hidden mobile:flex'
+
+function HomeSections() {
+  return (
+    <>
+      {desktopSections.map((desktop, index) => {
+        const mobile = mobileSections.find((section) => section.id === desktop.id)
+        // Only the topmost row is above the fold on either viewport.
+        const priority = index === 0
+
+        if (!mobile || rendersTheSame(desktop, mobile)) {
+          return <SectionRenderer key={desktop.id} section={desktop} priority={priority} />
+        }
+
+        return (
+          <Fragment key={desktop.id}>
+            <SectionRenderer section={desktop} priority={priority} className={DESKTOP_ONLY} />
+            <SectionRenderer section={mobile} priority={priority} className={MOBILE_ONLY} />
+          </Fragment>
+        )
+      })}
+    </>
+  )
+}
+
 export default function Home() {
   return (
-    <main className="mx-auto max-w-shell px-page-x py-16">
-      <p className="text-sm uppercase tracking-[2px] text-gold">Jackpot</p>
-      <h1 className="mt-3 text-4xl font-bold text-primary">Scaffold ready</h1>
-      <p className="mt-3 max-w-prose text-secondary">
-        Design tokens are wired. Sections, primitives and data land in the next phases.
-      </p>
-    </main>
+    <MobileShell>
+      <Header />
+
+      <main className="flex flex-col">
+        {/*
+          Desktop stacks hero → ticker → category bar (1:2436, 1:2438, 1:2500). The mobile frame
+          puts the category strip above the ticker instead (1:5799 at y=187 of the top block,
+          1:5859 below it), so the two are swapped by `order` rather than rendered twice. DOM order
+          follows the desktop frame; the only consequence on mobile is that the ticker is reached
+          before the tabs by keyboard, which is the cheaper of the two costs.
+        */}
+        <HeroBanner className="pt-12 mobile:pt-4" />
+
+        {/* 24px between the hero and the ticker card (468 → 492 in the frame): half of it is the
+            gap between the two frames, half the ticker's own inset. The wrapper carries the first
+            half rather than overriding `py-3`, so the two paddings cannot fight. */}
+        <div className="pt-3 mobile:order-3 mobile:pt-0">
+          <RecentWinsTicker />
+        </div>
+
+        {/* 24px below the ticker frame on desktop; 16px below the hero on mobile. */}
+        <CategoryNavBar className="pt-6 mobile:order-2 mobile:pt-4" />
+
+        <div className="w-full px-page-x pb-12 pt-12 mobile:px-4 mobile:pb-5 mobile:pt-2 mobile:order-4">
+          <div className="mx-auto flex max-w-content flex-col gap-12 mobile:gap-5">
+            <HomeSections />
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+
+      {/*
+        The global overlays. Each one reads its own slice of `useAppStore` and renders `null` while
+        that slice says it is closed, so mounting them here costs an empty component and removes
+        the alternative: every trigger in the header, the category bar and the providers row owning
+        a copy of the surface it opens. The fourth, `JackpotMenu`, is mounted by `MobileShell`
+        alongside the tab bar that is the only control able to open it.
+      */}
+      <SearchOverlay />
+      <BalancePanel />
+      <PersonalInfoPanel />
+    </MobileShell>
   )
 }

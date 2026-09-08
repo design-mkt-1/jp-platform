@@ -36,7 +36,14 @@
       "subtitle": "Spin on selected Pragmatic Play slots and climb the leaderboard",
       "image": "/images/hero/tournament-banner.png",
       "ctaLabel": "JOIN NOW",
-      "ctaHref": "/tournaments/spin-challenge-2000"
+      "ctaHref": "/tournaments/spin-challenge-2000",
+      "eyebrow": "Weekly tournament active",
+      "pills": [
+        { "label": "1,000,000.00 GBP PRIZE", "tone": "amber" },
+        { "label": "20 Winners Selected", "tone": "neutral" }
+      ],
+      "timerLabel": "Time left to join",
+      "endsAt": "2026-09-08T18:12:36Z"
     },
     {
       "id": "weekly-lottery",
@@ -45,7 +52,13 @@
       "subtitle": "Bi-Weekly Lottery draw is now open",
       "image": "/images/hero/lottery-banner.png",
       "ctaLabel": "JOIN NOW",
-      "ctaHref": "/promotions/weekly-lottery"
+      "ctaHref": "/promotions/weekly-lottery",
+      "pills": [
+        { "label": "1 Ticket = 30 GBP Deposit", "tone": "amber" },
+        { "label": "10 Winners Draw", "tone": "neutral" }
+      ],
+      "timerLabel": "Draw ends in:",
+      "endsAt": "2026-09-08T18:12:36Z"
     },
     {
       "id": "wheel",

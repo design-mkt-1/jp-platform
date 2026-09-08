@@ -6,8 +6,8 @@ import type { ReactNode } from 'react'
  *
  * Figma paints the warning pills on `rgba(242,193,70,0.1)` — amber at one tenth. The theme stores
  * amber as a finished colour rather than as RGB channels, so Tailwind's `/opacity` modifier cannot
- * dilute it; `bg-elevated` (white at 6%) is the nearest existing token and reads almost identically
- * over the dark banner art. The report asks for an `--amber-tint` token to remove the approximation.
+ * dilute it; `bg-amber-tint` carries that tenth as its own token. The white-tinted sibling pill
+ * (nodes 1:3448, 1:3540) stays on `bg-elevated`.
  */
 
 export type BadgeTone = 'amber' | 'neutral' | 'blue' | 'green'
@@ -16,7 +16,7 @@ export type BadgeTone = 'amber' | 'neutral' | 'blue' | 'green'
 export type BadgeSize = 'sm' | 'md'
 
 const TONE_CLASSES: Record<BadgeTone, string> = {
-  amber: 'bg-elevated text-amber',
+  amber: 'bg-amber-tint text-amber',
   neutral: 'bg-elevated text-primary',
   blue: 'bg-blue-tint text-blue',
   green: 'bg-elevated text-green',

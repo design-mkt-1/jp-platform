@@ -2,7 +2,8 @@ import Link from 'next/link'
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react'
 
 /**
- * The three button types of Figma node 1:4724 (Button / Desktop).
+ * The button types of the Figma design: the three of node 1:4724 (Button / Desktop, specced in UI
+ * Kit 1:5587) plus the header's outline button, node 1:4310.
  *
  * Hover and active are CSS states, never props. The Figma component exposes `state` as a variant
  * only because a static design file cannot render `:hover`; carrying that into React would force
@@ -16,29 +17,67 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'reac
  * Glows go through `color-mix` because the design tints them with the button's own colour, and the
  * theme stores each token as a finished colour rather than as RGB channels — which is exactly what
  * Tailwind's `/opacity` modifier would need to dilute it.
+ *
+ * Skin and metrics are two separate maps. Padding and type size are the only things the header
+ * needed to change about an existing look, and merging them into the variant string would have
+ * meant a second `outlineSmall` variant for every future size — plus two utilities of the same
+ * Tailwind family fighting in one class attribute, where the winner is decided by stylesheet
+ * order rather than by the order they were written in.
  */
 
-export type ButtonVariant = 'primaryGold' | 'primaryBlue' | 'seeAll'
+export type ButtonVariant = 'primaryGold' | 'primaryBlue' | 'seeAll' | 'outline'
+
+/** Named after the design's own scale, not after t-shirt sizes: each maps to one Figma spec. */
+export type ButtonSize = 'cta' | 'pill' | 'tinted' | 'header'
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primaryGold: [
-    'bg-gradient-gold rounded-[20px] px-6 py-2.5 text-base font-extrabold text-page',
+    'bg-gradient-gold rounded-[20px] text-page',
     'shadow-[0_4px_6px_color-mix(in_srgb,var(--gold-dark)_25%,transparent)]',
     'hover:brightness-110 hover:shadow-[0_6px_10px_color-mix(in_srgb,var(--gold-dark)_35%,transparent)]',
     'active:brightness-90 active:shadow-[0_2px_4px_color-mix(in_srgb,var(--gold-dark)_20%,transparent)]',
   ].join(' '),
 
   primaryBlue: [
-    'bg-blue rounded-full px-4 py-2 text-sm font-semibold text-primary',
+    'bg-blue rounded-full text-primary',
     'shadow-[0_0_10px_color-mix(in_srgb,var(--blue)_60%,transparent)]',
     'hover:brightness-110 hover:shadow-[0_2px_14px_color-mix(in_srgb,var(--blue)_70%,transparent)]',
     'active:brightness-90 active:shadow-[0_0_6px_color-mix(in_srgb,var(--blue)_50%,transparent)]',
   ].join(' '),
 
   seeAll: [
-    'bg-blue-tint rounded-[14px] px-4 py-1.5 text-[13px] font-bold text-blue',
+    'bg-blue-tint rounded-[14px] text-blue',
     'hover:brightness-125 active:brightness-90',
   ].join(' '),
+
+  // Node 1:4310: transparent fill, 1px white-at-30% hairline, 20px radius. White at 30% is the
+  // only border value in the design that no token covers — see docs/tokens.md §2b — so it is
+  // written with Tailwind's own `white`, which carries no hex into this file. Node 1:4310 is a
+  // static frame with no state variants, so hover and active lift the same hairline rather than
+  // invent a second colour.
+  outline: [
+    'rounded-[20px] border border-solid border-white/30 bg-transparent text-primary',
+    'transition-colors hover:border-white/50 hover:bg-elevated active:bg-subtle',
+  ].join(' '),
+}
+
+const SIZE_CLASSES: Record<ButtonSize, string> = {
+  /** Primary Gold, node 1:4725: padding 10/24, Inter Extra Bold 16. */
+  cta: 'px-6 py-2.5 text-base font-extrabold',
+  /** Primary Blue, node 1:4731: padding 8/16, Inter Semi Bold 14. */
+  pill: 'px-4 py-2 text-sm font-semibold',
+  /** See All Tinted, node 1:4737: padding 6/16, Inter Bold 13. */
+  tinted: 'px-4 py-1.5 text-[13px] font-bold',
+  /** Header login/register, node 1:4310: fixed 36 tall, padding 8/24, Inter Extra Bold 13, caps. */
+  header: 'h-9 px-6 py-2 text-[13px] font-extrabold uppercase',
+}
+
+/** Each variant's native size, so existing call sites keep rendering exactly what they did. */
+const DEFAULT_SIZE: Record<ButtonVariant, ButtonSize> = {
+  primaryGold: 'cta',
+  primaryBlue: 'pill',
+  seeAll: 'tinted',
+  outline: 'header',
 }
 
 const BASE_CLASSES = [
@@ -52,6 +91,8 @@ const BASE_CLASSES = [
 
 interface CommonProps {
   variant?: ButtonVariant
+  /** Overrides the variant's native metrics — the header uses `header` on more than `outline`. */
+  size?: ButtonSize
   children: ReactNode
   className?: string
 }
@@ -68,11 +109,19 @@ export type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps
 
 export default function Button({
   variant = 'primaryGold',
+  size,
   children,
   className,
   ...rest
 }: ButtonProps) {
-  const classes = [BASE_CLASSES, VARIANT_CLASSES[variant], className].filter(Boolean).join(' ')
+  const classes = [
+    BASE_CLASSES,
+    VARIANT_CLASSES[variant],
+    SIZE_CLASSES[size ?? DEFAULT_SIZE[variant]],
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   if (typeof rest.href === 'string') {
     const { href, ...anchor } = rest

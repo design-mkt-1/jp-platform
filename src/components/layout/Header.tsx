@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ComponentType } from 'react'
@@ -56,9 +57,19 @@ const FOCUS_RING =
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue'
 
 /**
- * The design's wordmark is a vector that was never exported to `public/images/`, and this component
- * may not add files there. It is drawn as type in the display face over the brand gradient instead
- * of shipping a screenshot — see the report's change request for the missing asset.
+ * The exported wordmark. `src/lib/assets.ts` is frozen and has no slot for it, and the Icon
+ * primitive is scoped to `images/icons/` on purpose, so the path is named once here rather than
+ * inlined at the use site. See the report's change request for moving it into assets.ts.
+ */
+const LOGO_SRC = '/images/logo.svg'
+
+/**
+ * Node 1:4250. Figma draws the 113.38x56.001 wordmark inside a 120.003x56.001 box, so the box and
+ * the drawing stay two elements: collapsing them would pull the nav 6.6px left of the design.
+ *
+ * `unoptimized` because Next's optimizer refuses SVG sources unless the project opts into
+ * `images.dangerouslyAllowSVG` — the same call the Icon primitive makes and for the same reason.
+ * `priority` because the mark is the first thing painted above the fold.
  */
 function Brand() {
   return (
@@ -67,16 +78,15 @@ function Brand() {
       aria-label="Jackpot — home"
       className={`flex h-14 w-[120px] shrink-0 items-center mobile:h-9 mobile:w-[77px] ${FOCUS_RING}`}
     >
-      <span
-        aria-hidden
-        className={[
-          'bg-gradient-gold bg-clip-text text-transparent',
-          'font-display text-[26px] font-extrabold uppercase leading-none tracking-[0.5px]',
-          'mobile:text-[17px]',
-        ].join(' ')}
-      >
-        Jackpot
-      </span>
+      <Image
+        src={LOGO_SRC}
+        alt=""
+        width={113}
+        height={56}
+        unoptimized
+        priority
+        className="h-14 w-[113.38px] object-contain mobile:h-9 mobile:w-[72.87px]"
+      />
     </Link>
   )
 }
@@ -106,9 +116,9 @@ export default function Header() {
   const Variant = VARIANTS[authMode]
 
   return (
-    // `bg-quaternary` rather than `bg-page`: the design paints the bar a shade darker than the page
-    // behind it, and quaternary is the only token in that range. See the report's deviations.
-    <header className="w-full border-b border-solid border-card bg-quaternary">
+    // Node 1:4245: the bar is painted darker than the page behind it and closed with its own rule,
+    // both of which now have tokens of their own.
+    <header className="w-full border-b border-solid border-header bg-header">
       <div className="mx-auto flex h-20 max-w-shell items-center justify-between px-page-x mobile:h-[60px] mobile:px-4">
         <div className="flex items-center gap-10">
           <Brand />
