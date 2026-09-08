@@ -72,7 +72,10 @@ export default function ProviderSearch({ variant, children, className }: Provide
       ].join(' ')}
       onKeyDown={variant === 'inline' ? onKeyDown : undefined}
     >
-      <Icon name="search" width={20} height={20} className="shrink-0" />
+      {/* Blue here and grey everywhere else: nodes 1:2239 and 1:4323 both stroke this magnifier,
+          and only this one, in blue. It is a second file rather than a class because the glyph is
+          a flat exported stroke behind next/image — see the note in `Icon`. */}
+      <Icon name="search-blue" width={20} height={20} className="shrink-0" />
 
       <input
         type="search"

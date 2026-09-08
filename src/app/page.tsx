@@ -94,6 +94,16 @@ export default function Home() {
 
       <main className="flex flex-col">
         {/*
+          The page's only `<h1>`. Every section title is an `<h2>`, so without it a screen reader
+          opens the homepage with no page-level heading at all — axe's `page-has-heading-one`, the
+          one moderate violation in the first accessibility pass. Visually hidden because the design
+          has no text title: the wordmark in the header is an image, and node 1:2431 draws nothing
+          else that could carry the name. Inside `main` rather than above it, because a heading in
+          no landmark at all trades that violation for axe's `region` on every state.
+        */}
+        <h1 className="sr-only">Jackpot — Online Casino</h1>
+
+        {/*
           Desktop stacks hero → ticker → category bar (1:2436, 1:2438, 1:2500). The mobile frame
           puts the category strip above the ticker instead (1:5799 at y=187 of the top block,
           1:5859 below it), so the two are swapped by `order` rather than rendered twice. DOM order

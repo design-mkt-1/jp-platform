@@ -48,6 +48,12 @@ export type IconName =
   | 'egypt'
   | 'live-casino'
   | 'search'
+  /**
+   * The same magnifier drawn blue, for the two provider fields only (nodes 1:2239 and 1:4323).
+   * A separate file rather than a `text-*` class because `Icon` serves a flat exported stroke
+   * through next/image, which no colour utility can reach.
+   */
+  | 'search-blue'
   // UI glyphs rather than section marks: the clear control of the search field (node 1:4319),
   // the 32x32 disc that opens the balance panel (node 1:4280) and the deposit plus (node 1:5741).
   | 'close'

@@ -211,7 +211,7 @@ export default function JackpotMenu() {
   return (
     <Sheet open={open} onClose={closePanel} title="Jackpot menu" hideTitle anchor="top">
       {/* Node 1:8753 — the panel keeps its own header rather than borrowing the page's. */}
-      <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="mb-2 flex items-center justify-between gap-3">
         <Image
           src={LOGO}
           alt="Jackpot"
@@ -239,7 +239,7 @@ export default function JackpotMenu() {
 
       {signedIn ? <ProfileCard vip={authMode === 'vip'} /> : <AuthActions onNavigate={closePanel} />}
 
-      <nav aria-label="Account menu" className="mt-2.5">
+      <nav aria-label="Account menu" className="mt-1.5">
         <ul className="flex flex-col gap-2">
           {CATEGORY_ROWS.map((row) => (
             <MenuLink key={row.href} row={row} onNavigate={closePanel} />
@@ -254,7 +254,7 @@ export default function JackpotMenu() {
       </nav>
 
       {/* Node 1:8885 */}
-      <div className="mt-1 flex h-[46px] items-center border-b border-solid border-strong px-3">
+      <div className="flex h-[46px] items-center border-b border-solid border-strong px-3">
         <Link
           href="/terms"
           onClick={closePanel}
@@ -285,8 +285,14 @@ export default function JackpotMenu() {
 
       {/* Nodes 1:8908 / 1:8910. The design paints these #10B981; `emerald` is the only token in
           that family. Its label is `text-page` rather than white because the token is a far
-          brighter mint than the design's green and white on it is unreadable. */}
-      <div className="flex items-center justify-center gap-2 px-3 py-4">
+          brighter mint than the design's green and white on it is unreadable.
+
+          `py-2` rather than the 16 this row used to carry on each edge. At 390x844 the sheet caps
+          at 90vh = 759.6 and this menu came to 804, so Sign out fell outside it and was reachable
+          only by scrolling. 28px came out of four paddings — this one, the header's `mb`, the
+          nav's `mt` and the divider row's `mt` — and 20 more out of the sheet's own insets. The
+          row heights and the 6px account-row gaps node 1:8503 sets are untouched. */}
+      <div className="flex items-center justify-center gap-2 px-3 py-2">
         <Link
           href="/support"
           onClick={closePanel}

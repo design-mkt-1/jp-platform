@@ -63,7 +63,14 @@ export default function Sheet({
           'w-full overflow-y-auto outline-none bg-card px-5',
           anchor === 'top'
             ? // 782 of 874 in node 1:8503, leaving the tab bar visible beneath it.
-              'max-h-[90vh] rounded-b-3xl border-b border-solid border-card pb-6 pt-3'
+              //
+              // The insets are 8 rather than the 12/24 they were, because at 390x844 the 90vh cap
+              // is 759.6px and the jackpot menu's own content came to 804: the last row, Sign out,
+              // fell outside the sheet and could only be reached by scrolling. The bar is not what
+              // covered it — the cap already ends at 759.6 against the bar's 760 — the sheet was
+              // simply 45px shorter than what it held, so the space had to come out of the
+              // paddings rather than out of the rows node 1:8503 sizes.
+              'max-h-[90vh] rounded-b-3xl border-b border-solid border-card pb-2 pt-2'
             : 'max-h-[85vh] rounded-t-3xl border-t border-solid border-card pb-8 pt-3',
           className,
         ]
