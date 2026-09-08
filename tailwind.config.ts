@@ -38,6 +38,8 @@ export default {
         // Accent & brand
         blue: 'var(--blue)',
         'blue-tint': 'var(--blue-tint)',
+        // Text on a blue tint, where the solid blue does not reach AA — see globals.css.
+        'blue-text': 'var(--blue-text)',
         'see-all': 'var(--see-all-bg)',
         'see-all-hover': 'var(--see-all-bg-hover)',
         'see-all-active': 'var(--see-all-bg-active)',

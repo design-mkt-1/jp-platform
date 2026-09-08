@@ -105,13 +105,19 @@ Trei abateri față de kit-ul Desktop, acceptate conștient. Fiecare se întoarc
 
 | Nume Figma      | Valoare adoptată | Token Tailwind | Variabilă CSS | Kit |
 | --------------- | ---------------- | -------------- | ------------- | --- |
-| Blue Primary    | `#007AFF`        | `blue`         | `--blue`      | D M |
+| Blue Primary    | `#006EE6` ¹      | `blue`         | `--blue`      | D M |
 | Blue Tinted BG  | `#007AFF @ 15%`  | `blue-tint`    | `--blue-tint` | D M |
+| — (derivat) ¹   | `#479FFF`        | `blue-text`    | `--blue-text` | —   |
 | Amber / Warning | `#F59E0B`        | `amber`        | `--amber`     | D M |
 | Gold Nav Active | `#D4A352`        | `gold`         | `--gold`      | D   |
 | Success Green   | `#34C759`        | `green`        | `--green`     | D M |
 | Emerald Green   | `#00F299`        | `emerald`      | `--emerald`   | M   |
 | Cyan Accent     | `#00F0FF`        | `cyan`         | `--cyan`      | M   |
+
+¹ Figma scrie `#007AFF` în ambele kit-uri. Nu trece AA nici ca fundal sub text alb, nici ca text pe
+tentele albastre, așa că albastrul e acum două valori — vezi „Abateri de contrast" din §2b. Tentele
+(`--blue-tint`, `--see-all-bg`) păstrează canalele `0 122 255` ale designului: sunt fundaluri, iar
+închiderea lor ar fi înrăutățit exact textul pe care îl susțin.
 
 ### Gradiente
 
@@ -166,11 +172,13 @@ lista devine un depozit de culori ad-hoc și ne întoarcem exact la problema pe 
 | `#1A1D2E`       | `bg-field`        | `--bg-field`        | `1:4314`                              | umplerea câmpului de căutare                                                 |
 | `#F2C146 @ 10%` | `bg-amber-tint`   | `--amber-tint`      | `1:3446`, `1:3538`, `1:3594`–`1:3600` | pastilele de avertizare de pe bannerele promo                                |
 | `#19191D`       | `border-flag`     | `--border-flag`     | `1:4016`                              | inelul din jurul steagurilor de limbă                                        |
-| `#65616A`       | `text-legal`      | `--text-legal`      | `1:4115`                              | banda legală din footer                                                      |
+| `#7F7A85` ¹     | `text-legal`      | `--text-legal`      | `1:4115`                              | banda legală din footer                                                      |
 | `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2433`                              | separatorul din tickerul de câștiguri                                        |
 | `#A5A6B5`       | `text-subtitle`   | `--text-subtitle`   | `1:6254`                              | subtitlul cardului promo de mobil                                            |
 | `#F2C146`       | `amber-soft`      | `--amber-soft`      | `1:6255`                              | pastila „join + timer" de pe cardul promo de mobil, plină                    |
 | `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | textul scris **pe** pastila aceea: eticheta butonului, „Time left" și ceasul |
+
+¹ Figma scrie `#65616A`. Ridicat la `#7F7A85` pentru AA — vezi „Abateri de contrast" mai jos.
 
 Niciuna dintre cele trei nu apare în cele două UI Kit-uri: tabelele de la §2 sunt transcrierea lor
 completă (26 de swatch-uri Desktop, 22 Mobile) și nu conțin nici `#A5A6B5`, nici `#09090D`, iar
@@ -198,6 +206,45 @@ adăuga zgomot fără câștig vizibil. Sunt notate ca să nu fie redescoperite 
 | `#11111A` (fundalul cardului de joc, nod `1:2602`)                | `bg-card` `#151624`  | `#11111A` e fundalul de pagină **desktop**, pe care decizia „câștigă mobile" l-a înlocuit cu `#0F121D`                                     |
 | `#000000` (eticheta butonului din pastilă, nod `I1:6256;112:330`) | `ink` `#09090D`      | Figma scrie negru pur pe buton și `#09090D` pe ceasul de lângă el, la 3px distanță. Diferența e imperceptibilă, deci ambele folosesc `ink` |
 
+### Abateri de contrast — decizie de proprietar, 2026-09-08
+
+`node scripts/a11y.mjs` (axe-core 4.10.2, nouă stări, mobile first) raporta 12–15 încălcări
+`color-contrast` de gravitate „serious" pe fiecare stare. Toate veneau din patru perechi de culori
+luate ca atare din Figma, nu inventate aici. Decizia proprietarului: se schimbă culorile până când
+regula trece AA (4,5:1 pentru text normal), iar abaterea față de Figma se scrie aici.
+
+Fiecare valoare nouă păstrează exact nuanța și saturația originalului; s-a mutat numai
+luminozitatea. `#006EE6` sunt canalele `0 122 255` înmulțite cu 0,9 — nuanță 211,3° și saturație
+100%, la fel ca `#007AFF`. `#479FFF` e aceeași nuanță și saturație urcată la luminozitate 64%.
+`#7F7A85` e nuanța 266,7° și saturația 4,4% ale lui `#65616A`, la luminozitate 50% în loc de 39,8%.
+
+| Token                | Nod Figma          | Valoare Figma | Valoare nouă | Unde se vede                                                                 | Raport înainte → după |
+| -------------------- | ------------------ | ------------- | ------------ | ---------------------------------------------------------------------------- | --------------------- |
+| `--blue`             | `1:5199` / `1:4745` | `#007AFF`     | `#006EE6`    | alb pe albastru plin: pastila „Get" din hero-ul mobil, `Button` `primaryBlue` | 4,02:1 → 4,80:1      |
+| `--blue-text` (nou)  | `1:5199` / `1:4745` | `#007AFF`     | `#479FFF`    | text albastru pe tentă: pastila `See All (206)` (`1:5655`), badge-urile albastre din sugestii (`1:4479`), pastila-eyebrow din hero-ul mobil (`1:5756`) | 3,51–4,06:1 → 5,15–5,97:1 |
+| `--text-legal`       | `1:4115`           | `#65616A`     | `#7F7A85`    | banda legală din footer                                                      | 3,17:1 → 4,58:1      |
+
+Rapoartele sunt calculate cu formula WCAG 2.1 pe **fundalul compus efectiv** — tenta așezată peste
+suprafața de sub ea, nu peste alb — și sunt confirmate de axe-core, care raportează aceleași
+numere în `passes`:
+
+| Perechea măsurată                                                | Fundal compus | Raport |
+| ------------------------------------------------------------------ | ------------- | ------ |
+| `#FFFFFF` pe `--blue`                                               | `#006EE6`     | 4,80:1 |
+| `--blue-text` pe `--see-all-bg` (13% peste `--bg-page`)             | `#0D203A`     | 5,97:1 |
+| `--blue-text` pe `--see-all-bg-hover` (22%)                         | `#0C294F`     | 5,31:1 |
+| `--blue-text` pe `--see-all-bg-active` (30%)                        | `#0B3161`     | 4,72:1 |
+| `--blue-text` pe `--blue-tint` peste `--bg-field`                   | `#162B4D`     | 5,15:1 |
+| `--blue-text` pe `--blue-tint` peste `--bg-section`                 | `#0F254B`     | 5,53:1 |
+| `--text-legal` pe `--bg-footer`                                     | `#070F1D`     | 4,58:1 |
+
+Cele două stări ale pastilei `See All` sunt în tabel pentru că axe măsoară numai starea de repaus:
+hover și apăsat au fost calculate separat, ca schimbarea să nu treacă AA doar cât timp nu atinge
+nimeni butonul.
+
+A patra pereche, banda legală din footer, nu era în lista celor trei din raport, dar produce câte o
+încălcare „serious" în fiecare din cele nouă stări, deci `a11y.mjs` nu putea ieși cu 0 fără ea.
+
 ### Animații
 
 | Utilitar                   | Definiție                                       | Nod Figma |
@@ -214,7 +261,7 @@ Ambele respectă `prefers-reduced-motion`.
 ## 3. Total
 
 - 26 de culori în UI Kit Desktop, 22 în UI Kit Mobile
-- **33 de tokeni distincți** după unificarea numelor duplicate și rezolvarea conflictelor (30 din primul val, plus `text-subtitle`, `amber-soft` și `ink`, cerute de cardurile promo de mobil)
+- **34 de tokeni distincți** după unificarea numelor duplicate și rezolvarea conflictelor (30 din primul val, plus `text-subtitle`, `amber-soft` și `ink`, cerute de cardurile promo de mobil, plus `blue-text`, cerut de pragul AA)
 - 2 gradiente compuse
 - 1 excepție documentată
 

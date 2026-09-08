@@ -62,7 +62,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
    * "mobile kit wins" token decision had replaced with 15% everywhere. See globals.css.
    */
   seeAll: [
-    'bg-see-all rounded-[14px] text-blue',
+    'bg-see-all rounded-[14px] text-blue-text',
     'hover:bg-see-all-hover active:bg-see-all-active',
   ].join(' '),
 

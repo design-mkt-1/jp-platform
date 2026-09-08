@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import Badge from '@/components/primitives/Badge'
 import Button from '@/components/primitives/Button'
 import { HERO_BONUS, HERO_BONUS_MOBILE } from '@/lib/assets'
 
@@ -49,15 +50,6 @@ export interface HeroBannerProps {
   mobileSpinsPrefix?: string
   mobileSpins?: string
 }
-
-/**
- * Nodes 1:5756 / 1:5758: 6px radius, 8/3 padding, Inter Bold 10 with 0.5px tracking.
- * `Badge` is not reused here — its smallest size is 12px type on 12/4 padding, which renders the
- * pill half again as tall as the 18px the design draws, and overriding padding and type size from a
- * `className` would put two utilities of the same Tailwind family in one attribute, where the
- * winner is decided by stylesheet order rather than by what is written last.
- */
-const MOBILE_PILL = 'rounded-md px-2 py-[3px] text-[10px] font-bold uppercase tracking-[0.5px]'
 
 export default function HeroBanner({
   eyebrow = 'Welcome casino bonus',
@@ -157,10 +149,15 @@ export default function HeroBanner({
           {/* Node 1:5752 padding 16, node 1:5753 adding 8 on the left. */}
           <div className="relative flex h-full flex-col justify-between p-4 pl-6">
             <div className="flex flex-col gap-4">
-              {/* Node 1:5755 — two pills, where the desktop bitmap paints a single one. */}
+              {/* Node 1:5755 — two pills, where the desktop bitmap paints a single one. Their
+                  metrics are `Badge`'s `xs` size, nodes 1:5756 / 1:5758. */}
               <div className="flex gap-1.5">
-                <span className={`${MOBILE_PILL} bg-blue-tint text-blue`}>{mobileEyebrow}</span>
-                <span className={`${MOBILE_PILL} bg-amber-tint text-amber`}>{mobileWager}</span>
+                <Badge size="xs" tone="blue">
+                  {mobileEyebrow}
+                </Badge>
+                <Badge size="xs" tone="amber">
+                  {mobileWager}
+                </Badge>
               </div>
 
               <div className="flex flex-col gap-1.5">

@@ -35,8 +35,22 @@
   --text-subtitle: #a5a6b5; /* mobile promo card subtitle, node 1:6254 */
 
   /* Accent & brand */
-  --blue: #007aff;
+  /*
+   * Figma paints this blue #007AFF (node 1:5199 / 1:4745). White on it measures 4.02:1, under
+   * AA's 4.5, so the solid form is the same hue and saturation nine tenths as bright — the RGB
+   * channels scaled 0.9, which keeps hue 211.3 and saturation 100 exactly. White on it is now
+   * 4.80:1. The tints below keep Figma's own 0 122 255 channels: they are backgrounds, and
+   * darkening them would only make the text on them harder to read. See docs/tokens.md §2b.
+   */
+  --blue: #006ee6;
   --blue-tint: rgb(0 122 255 / 0.15);
+  /*
+   * The blue that text is written in when it sits on one of those tints — the See All pill and the
+   * blue badges. #007AFF on the tinted surfaces measures 3.5–4.1:1; this is the same hue and
+   * saturation raised to lightness 64%, which measures 4.7–6.0:1 across every surface it lands on,
+   * the pressed See All fill included.
+   */
+  --blue-text: #479fff;
   --amber: #f59e0b;
   --gold: #d4a352;
   --green: #34c759;
@@ -76,7 +90,9 @@
      --amber at 10%, which is the #F59E0B the text on those pills uses. */
   --amber-tint: rgb(242 193 70 / 0.1);
   --border-flag: #19191d; /* language flag ring, node 1:4016 */
-  --text-legal: #65616a; /* footer legal strip, node 1:4115 */
+  /* Footer legal strip, node 1:4115. Figma writes #65616A, which is 3.17:1 on the footer — the
+     same hue and saturation at lightness 50% instead of 39.8% measures 4.59:1. */
+  --text-legal: #7f7a85;
   --border-emphasis: rgb(255 255 255 / 0.15); /* wins-ticker divider, node 1:2433 */
   /* The solid form of the same #F2C146 that --amber-tint carries at 10%: the join/countdown pill
      of the mobile promo cards, node 1:6255, is filled with it outright. */
