@@ -75,6 +75,18 @@
   --border-flag: #19191d; /* language flag ring, node 1:4016 */
   --text-legal: #65616a; /* footer legal strip, node 1:4115 */
   --border-emphasis: rgb(255 255 255 / 0.15); /* wins-ticker divider, node 1:2433 */
+
+  /*
+   * Component-level fills for the "See All" pill, node 1:5655.
+   *
+   * The designer documented this button's three states after the first build, and its resting fill
+   * is blue at 13% — the Desktop kit's Blue Tinted BG, which the "mobile kit wins" decision replaced
+   * with 15% everywhere. Rather than reopen that decision for one pill, the button carries its own
+   * three values. Hover and active (22% and 30%) exist nowhere else in the design.
+   */
+  --see-all-bg: rgb(0 122 255 / 0.13);
+  --see-all-bg-hover: rgb(0 122 255 / 0.22);
+  --see-all-bg-active: rgb(0 122 255 / 0.3);
 }
 
 /*

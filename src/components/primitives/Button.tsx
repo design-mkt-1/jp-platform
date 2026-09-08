@@ -31,23 +31,39 @@ export type ButtonVariant = 'primaryGold' | 'primaryBlue' | 'seeAll' | 'outline'
 export type ButtonSize = 'cta' | 'pill' | 'tinted' | 'header'
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
+  /*
+   * Node 1:5591. Blur radii and opacities are the designer's, not inferred: the Buttons section of
+   * the Desktop UI Kit was filled in after the first build and states every value —
+   * 0 4px 12px gold/25%, 0 6px 20px gold/35% on hover, 0 2px 8px gold/20% on active.
+   * An earlier pass had guessed roughly half of each radius.
+   */
   primaryGold: [
     'bg-gradient-gold rounded-[20px] text-page',
-    'shadow-[0_4px_6px_color-mix(in_srgb,var(--gold-dark)_25%,transparent)]',
-    'hover:brightness-110 hover:shadow-[0_6px_10px_color-mix(in_srgb,var(--gold-dark)_35%,transparent)]',
-    'active:brightness-90 active:shadow-[0_2px_4px_color-mix(in_srgb,var(--gold-dark)_20%,transparent)]',
+    'shadow-[0_4px_12px_color-mix(in_srgb,var(--gold-dark)_25%,transparent)]',
+    'hover:brightness-110 hover:shadow-[0_6px_20px_color-mix(in_srgb,var(--gold-dark)_35%,transparent)]',
+    'active:brightness-90 active:shadow-[0_2px_8px_color-mix(in_srgb,var(--gold-dark)_20%,transparent)]',
   ].join(' '),
 
+  /*
+   * Node 1:5623: 0 0 20px glow, 0 2px 28px expanded on hover, 0 0 12px at 80% on active.
+   * The spec names an opacity only for the active state, so the resting and hover glows keep the
+   * values already in place rather than inventing a number the design does not give.
+   */
   primaryBlue: [
     'bg-blue rounded-full text-primary',
-    'shadow-[0_0_10px_color-mix(in_srgb,var(--blue)_60%,transparent)]',
-    'hover:brightness-110 hover:shadow-[0_2px_14px_color-mix(in_srgb,var(--blue)_70%,transparent)]',
-    'active:brightness-90 active:shadow-[0_0_6px_color-mix(in_srgb,var(--blue)_50%,transparent)]',
+    'shadow-[0_0_20px_color-mix(in_srgb,var(--blue)_60%,transparent)]',
+    'hover:brightness-110 hover:shadow-[0_2px_28px_color-mix(in_srgb,var(--blue)_70%,transparent)]',
+    'active:brightness-90 active:shadow-[0_0_12px_color-mix(in_srgb,var(--blue)_80%,transparent)]',
   ].join(' '),
 
+  /*
+   * Node 1:5655. Its own three fills rather than a brightness filter over `blue-tint`: the design
+   * gives 13 / 22 / 30 percent, and the resting 13% is the Desktop kit's value, which the
+   * "mobile kit wins" token decision had replaced with 15% everywhere. See globals.css.
+   */
   seeAll: [
-    'bg-blue-tint rounded-[14px] text-blue',
-    'hover:brightness-125 active:brightness-90',
+    'bg-see-all rounded-[14px] text-blue',
+    'hover:bg-see-all-hover active:bg-see-all-active',
   ].join(' '),
 
   // Node 1:4310: transparent fill, 1px white-at-30% hairline, 20px radius. White at 30% is the
@@ -82,7 +98,9 @@ const DEFAULT_SIZE: Record<ButtonVariant, ButtonSize> = {
 
 const BASE_CLASSES = [
   'inline-flex items-center justify-center gap-2 whitespace-nowrap',
-  'transition-[filter,box-shadow] duration-150',
+  // background-color joined the list when See All moved from a brightness filter to three real
+  // fills; without it that one variant would snap while every other button eases.
+  'transition-[filter,box-shadow,background-color] duration-150',
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue',
   'disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none',
   // The link form has no native disabled state, so it is muted through aria-disabled instead.

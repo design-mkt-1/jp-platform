@@ -37,6 +37,9 @@ export default {
         // Accent & brand
         blue: 'var(--blue)',
         'blue-tint': 'var(--blue-tint)',
+        'see-all': 'var(--see-all-bg)',
+        'see-all-hover': 'var(--see-all-bg-hover)',
+        'see-all-active': 'var(--see-all-bg-active)',
         amber: 'var(--amber)',
         'amber-tint': 'var(--amber-tint)',
         gold: 'var(--gold)',
