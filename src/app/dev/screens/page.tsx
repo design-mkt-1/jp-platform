@@ -344,6 +344,18 @@ function ScreensHarness() {
             Open the homepage
           </Link>
           {' · '}
+          {/*
+            A plain anchor, not `Link`: the report is a static file under public/, not a route, so
+            the router has nothing to prefetch or match. withBase, because on the deployed build it
+            lives under the /jp-platform sub-path.
+          */}
+          <a
+            href={withBase('/review/')}
+            className={`text-blue underline underline-offset-2 ${FOCUS_RING}`}
+          >
+            Design vs implementation
+          </a>
+          {' · '}
           <Link href="/dev/screens" className={`text-blue underline underline-offset-2 ${FOCUS_RING}`}>
             Reset this page
           </Link>

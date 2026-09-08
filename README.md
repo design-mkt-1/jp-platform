@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jackpot — casino platform demo
 
-## Getting Started
+A working demo of the Jackpot casino platform, built from the Figma file
+`2MyylxdZblfGnf05nQacUz` (one page, `Platform`). Next.js 15, TypeScript, Tailwind v3, no backend —
+all data is mock JSON under `src/data/`.
 
-First, run the development server:
+| | |
+|---|---|
+| **Demo** | https://design-mkt-1.github.io/jp-platform/ |
+| **All screens, with their Figma nodes** | https://design-mkt-1.github.io/jp-platform/dev/screens/ |
+| **Design vs implementation** | https://design-mkt-1.github.io/jp-platform/review/ |
+
+The site is public but carries `noindex` and a `robots.txt` disallow: it is an unreleased design
+carrying third-party brand marks, so the link is shareable but should not surface in search.
+
+## Running it
+
+Needs Node 24 and Google Chrome (see *Screenshots* below).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm ci
+npm run dev          # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Opening one state directly
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The store mirrors three things into the query string, so any state can be linked to instead of
+clicked to.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Suffix | Shows |
+|---|---|
+| `?auth=prelogin` · `?auth=vip` | header and menu in that account state |
+| `?panel=balance` | balance popover — Figma node 1:4116 |
+| `?panel=personalInfo` | account dropdown — node 1:4153 |
+| `?panel=jackpotMenu` | mobile menu — nodes 1:8751 / 1:8260 / 1:8503 |
+| `?q=swe` | search suggestions — node 1:4479 |
 
-## Learn More
+### Checks
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx tsc --noEmit
+npx eslint src --max-warnings=0
+npm run build:check          # production build, safe while dev is running
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> **Never run `npm run build` while `next dev` is up.** Both own `.next`, and the collision corrupts
+> it: every route starts returning 500 with `ENOENT ... _buildManifest.js.tmp.<random>` while the
+> source is fine — a failure that looks like a code bug and is not one. `build:check` exists so this
+> cannot happen. Editing `next.config.ts` while dev runs has the same effect, because Next restarts
+> itself on config change; restart the server after touching it.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Screenshots
 
-## Deploy on Vercel
+```bash
+node scripts/shot.mjs <url> <out.png> <width> <height> viewport '<selector|scrollY>'
+node scripts/review.mjs <outDir>          # drives and captures all ten interactive states
+node scripts/clean-svg.mjs public/images --dry
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+These drive **the Chrome already installed on the machine** (`channel: 'chrome'`), not a Playwright
+download — that download failed in this environment, so `npx playwright install` is not needed.
+They also force reduced motion, because the providers marquee never stops and a capture that waits
+for a settled frame never gets one.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Every push to `main` runs `.github/workflows/pages.yml`: typecheck, lint, static export with
+`GITHUB_PAGES=true`, then deploy. A commit that fails a check never reaches the client's link.
+
+`basePath` is applied only when that variable is set. Turning it on locally would move the dev
+server to `/jp-platform` and break the screenshot scripts, which address the root.
+
+## Where things are
+
+| Path | What |
+|---|---|
+| `src/lib/sections.ts` | **The spine.** Fifteen rows described as data; three renderers, not fifteen components. A new row is four lines here. |
+| `src/lib/screens.ts` | Registry behind `/dev/screens`, each entry carrying its Figma node id |
+| `src/lib/assets.ts` | The only place that turns an asset name into a URL, and the only place that knows about the deployment's base path |
+| `src/store/useAppStore.ts` | Auth mode, search, open panel. No provider — the page stays a Server Component |
+| `docs/tokens.md` | **Read this before touching colour.** The Figma file has no variables, so this document is the only link between design and code |
+| `docs/next-session.md` | What is still to be done |
+| `docs/build-plan.md` | Why the architecture looks like this, and the traps already hit |
+
+## Known deliberate differences from the design
+
+- Providers without a logo show initials (`EV`, `RG`); the design repeats the same five logos.
+- Games without artwork get a brand gradient with the title drawn on it. Figma has three game
+  images in total and bakes the title into them, so the card node has no text to copy.
+- Currency is GBP throughout, where the design writes `$` in places and `RON` on one pill.
+- The mobile hero shows one offer; Figma's node 1:5749 is a three-card track whose second card
+  starts outside the 390px frame.

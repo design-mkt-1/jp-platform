@@ -6,6 +6,10 @@ The demo is built, pushed to `main`, and deployed.
 
 - **Review build:** https://design-mkt-1.github.io/jp-platform/
 - **Screen registry:** https://design-mkt-1.github.io/jp-platform/dev/screens/
+- **Design vs implementation:** https://design-mkt-1.github.io/jp-platform/review/ — ten pairs, Figma
+  beside the built page. Sections 01–12 of that report are the history: what was measured in the
+  Figma file before any code, and every decision taken since. Section 13 is the comparison.
+- **Why the architecture looks like this:** [`docs/build-plan.md`](build-plan.md)
 - **Repo:** https://github.com/design-mkt-1/jp-platform (public, `noindex` + `robots.txt` disallow)
 
 Every push to `main` redeploys through `.github/workflows/pages.yml`. The workflow typechecks and

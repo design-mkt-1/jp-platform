@@ -1,0 +1,1639 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jackpot — design vs implementare</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  /* ---- layout safety ---- */
+  *, *::before, *::after { box-sizing: border-box; }
+  :where(.grid, .flex) > * { min-width: 0; }
+  :where(p, h1, h2, h3, h4, li, dd, td, th, .badge) { overflow-wrap: anywhere; }
+  :where(img, svg) { max-width: 100%; height: auto; }
+
+  /* ---- tokens extrasi din UI Kit — Desktop (Figma 1:5199) ---- */
+  :root {
+    --bg-page:        #11111A;
+    --bg-card:        #151624;
+    --bg-subtle:      rgba(255,255,255,0.02);
+    --bg-elevated:    rgba(255,255,255,0.06);
+    --overlay:        rgba(0,0,0,0.2);
+
+    --text-primary:   #FFFFFF;
+    --text-secondary: rgba(255,255,255,0.70);
+    --text-tertiary:  rgba(255,255,255,0.60);
+    --text-muted:     #839CBF;
+    --text-nav:       #9E9FAB;
+    --text-label:     #B2B8C2;
+    --text-footer:    #DAD7E0;
+
+    --blue:           #007AFF;
+    --blue-tint:      rgba(0,122,255,0.13);
+    --amber:          #F59E0B;
+    --gold:           #D4A352;
+    --green:          #34C759;
+
+    --gold-light:     #F0C775;
+    --gold-dark:      #C6903D;
+    --orange-start:   #F8B900;
+    --orange-end:     #E67508;
+
+    --border-card:    rgba(255,255,255,0.04);
+    --divider:        rgba(255,255,255,0.07);
+    --border-med:     rgba(255,255,255,0.08);
+    --border-strong:  rgba(255,255,255,0.10);
+    --separator:      #282936;
+
+    --r: 12px;
+    --font: Inter, "Segoe UI", -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", monospace;
+  }
+
+  html { background: var(--bg-page); color-scheme: dark; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 420px at 50% -140px, rgba(0,122,255,0.16), transparent 70%),
+      var(--bg-page);
+    color: var(--text-secondary);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 40px 22px 96px; }
+
+  /* ---- typography ---- */
+  h1, h2, h3, h4 { color: var(--text-primary); line-height: 1.22; margin: 0; font-weight: 700; }
+  h1 { font-size: clamp(30px, 4.6vw, 46px); letter-spacing: -0.02em; }
+  h2 { font-size: clamp(21px, 2.7vw, 27px); letter-spacing: -0.01em; }
+  h3 { font-size: 17px; }
+  h4 { font-size: 14px; }
+  p { margin: 0 0 14px; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, .mono { font-family: var(--mono); font-size: 0.88em; }
+  code {
+    background: var(--bg-elevated); border: 1px solid var(--border-card);
+    padding: 1px 6px; border-radius: 6px; color: var(--text-footer);
+  }
+  strong { color: var(--text-primary); font-weight: 600; }
+  .lead { font-size: 17px; color: var(--text-secondary); }
+  .muted { color: var(--text-muted); }
+  .small { font-size: 13px; }
+
+  /* ---- section rhythm ---- */
+  section { margin-top: 58px; scroll-margin-top: 24px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; }
+  .sec-num {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 1px;
+    color: var(--gold); border: 1px solid var(--gold-dark);
+    padding: 2px 9px; border-radius: 99px; flex: none;
+  }
+  .sec-sub { color: var(--text-muted); margin: 0 0 26px; max-width: 74ch; }
+  .rule { height: 1px; background: var(--divider); border: 0; margin: 0 0 26px; }
+
+  /* ---- cards ---- */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border-med);
+    border-radius: var(--r); padding: 20px 22px;
+  }
+  .card.tight { padding: 16px 18px; }
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px;
+    padding: 3px 10px; border-radius: 99px; border: 1px solid var(--border-strong);
+    color: var(--text-label); background: var(--bg-elevated); text-transform: uppercase;
+  }
+  .badge.ok    { color: var(--green); border-color: rgba(52,199,89,.4);  background: rgba(52,199,89,.10); }
+  .badge.warn  { color: var(--amber); border-color: rgba(245,158,11,.4); background: rgba(245,158,11,.10); }
+  .badge.info  { color: var(--blue);  border-color: rgba(0,122,255,.45); background: var(--blue-tint); }
+  .badge.gold  { color: var(--gold);  border-color: rgba(212,163,82,.45);background: rgba(212,163,82,.10); }
+
+  /* ---- hero ---- */
+  .hero {
+    border: 1px solid var(--border-strong); border-radius: 20px; padding: 34px 30px;
+    background:
+      linear-gradient(180deg, rgba(0,122,255,0.10), transparent 62%),
+      var(--bg-card);
+    position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ""; position: absolute; left: 6%; right: 6%; bottom: -1px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blue), transparent); opacity: .75;
+  }
+  .kicker {
+    font-size: 11.5px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold); font-weight: 700; margin-bottom: 12px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+
+  /* ---- swatches ---- */
+  .sw-group + .sw-group { margin-top: 22px; }
+  .sw-title {
+    font-size: 11.5px; letter-spacing: 1.2px; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; margin-bottom: 10px;
+  }
+  .sw-row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+  .sw { }
+  .sw i {
+    display: block; height: 62px; border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,.05) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.05) 75%),
+      linear-gradient(45deg, rgba(255,255,255,.05) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.05) 75%);
+    background-size: 12px 12px; background-position: 0 0, 6px 6px;
+  }
+  .sw b { display: block; font-size: 12.5px; color: var(--text-primary); font-weight: 500; margin-top: 8px; }
+  .sw span { display: block; font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+
+  /* ---- tables ---- */
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--border-med); border-radius: var(--r); background: var(--bg-card); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 620px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--divider); vertical-align: top; }
+  th {
+    color: var(--text-muted); font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; font-weight: 700; background: var(--bg-subtle);
+    position: sticky; top: 0;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--bg-subtle); }
+  td.mono, th.mono { font-family: var(--mono); font-size: 12px; }
+  .own { color: var(--text-footer); }
+
+  /* ---- evidence list ---- */
+  .ev { display: grid; gap: 12px; }
+  .ev-item {
+    display: grid; grid-template-columns: 26px 1fr; gap: 12px;
+    padding: 14px 16px; border: 1px solid var(--border-med);
+    border-radius: 10px; background: var(--bg-card);
+  }
+  .ev-item .dot {
+    width: 10px; height: 10px; border-radius: 99px; margin-top: 7px;
+    background: var(--green); box-shadow: 0 0 0 4px rgba(52,199,89,.14);
+  }
+  .ev-item.q .dot { background: var(--amber); box-shadow: 0 0 0 4px rgba(245,158,11,.14); }
+  .ev-item h4 { margin-bottom: 3px; }
+  .ev-item p { margin: 0; font-size: 13.5px; }
+
+  /* ---- shots ---- */
+  figure { margin: 0; }
+  figure img { display: block; width: 100%; border-radius: 10px; border: 1px solid var(--border-strong); }
+  figcaption { font-size: 12.5px; color: var(--text-muted); margin-top: 9px; }
+
+  /* ---- before / after ---- */
+  .ba { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .ba .card { border-top: 3px solid var(--separator); }
+  .ba .after { border-top-color: var(--green); }
+  .ba .before { border-top-color: var(--amber); }
+  pre {
+    margin: 12px 0 0; padding: 13px 15px; overflow-x: auto;
+    background: #0C0D16; border: 1px solid var(--border-med);
+    border-radius: 10px; font-family: var(--mono); font-size: 12.2px;
+    line-height: 1.6; color: var(--text-label);
+  }
+  pre .c { color: var(--text-muted); }
+  pre .k { color: var(--blue); }
+  pre .s { color: var(--gold-light); }
+
+  /* ---- steps ---- */
+  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  ol.steps li {
+    counter-increment: s; position: relative; padding: 13px 16px 13px 50px;
+    border: 1px solid var(--border-med); border-radius: 10px; background: var(--bg-card); font-size: 14px;
+  }
+  ol.steps li::before {
+    content: counter(s); position: absolute; left: 15px; top: 12px;
+    width: 22px; height: 22px; border-radius: 99px; display: grid; place-items: center;
+    background: var(--blue-tint); border: 1px solid rgba(0,122,255,.5);
+    color: var(--blue); font-size: 11.5px; font-weight: 700; font-family: var(--mono);
+  }
+
+  /* ---- forms ---- */
+  form.q { background: var(--bg-card); border: 1px solid var(--border-med); border-radius: var(--r); padding: 20px 22px; }
+  form.q + form.q { margin-top: 16px; }
+  form.q h3 { margin-bottom: 4px; }
+  .opts { display: grid; gap: 9px; margin: 15px 0 16px; }
+  .opt {
+    display: grid; grid-template-columns: 20px 1fr; gap: 11px; align-items: start;
+    padding: 12px 14px; border: 1px solid var(--border-med); border-radius: 10px;
+    background: var(--bg-subtle); cursor: pointer;
+  }
+  .opt:hover { border-color: var(--border-strong); background: var(--bg-elevated); }
+  .opt input { margin: 4px 0 0; accent-color: var(--blue); width: 15px; height: 15px; }
+  .opt b { display: block; color: var(--text-primary); font-size: 14px; font-weight: 600; }
+  .opt em { font-style: normal; font-size: 13px; color: var(--text-muted); }
+  .opt .rec { color: var(--green); font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+  button {
+    font: inherit; font-weight: 600; font-size: 14px; cursor: pointer;
+    background: var(--blue); color: #fff; border: 0;
+    padding: 10px 20px; border-radius: 99px;
+  }
+  button:hover { filter: brightness(1.12); }
+  button.ghost { background: transparent; border: 1px solid var(--border-strong); color: var(--text-label); }
+  .sent { font-size: 13px; color: var(--green); margin-left: 12px; }
+
+  .cta {
+    margin-top: 58px; padding: 26px 24px; border-radius: 16px; text-align: center;
+    border: 1px solid var(--border-strong);
+    background: linear-gradient(180deg, rgba(0,122,255,.10), transparent), var(--bg-card);
+  }
+
+  .fig { margin: 6px 0 0; }
+  .fig svg { display: block; width: 100%; height: auto; }
+  .fig-cap { font-size: 12.5px; color: var(--text-muted); margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ======================= HERO ======================= -->
+  <header class="hero">
+    <div class="kicker">Raport de comparație · design vs implementare</div>
+    <h1>Demo platformă casino <span style="color:var(--gold)">Jackpot</span></h1>
+    <p class="lead" style="max-width:72ch;margin-top:14px">
+      Aplicația e construită și publicată. Documentul ăsta arată din ce s-a plecat, ce s-a decis pe
+      parcurs și cum arată rezultatul pus lângă design, secțiune cu secțiune.
+    </p>
+    <p class="small muted" style="max-width:72ch;margin-top:12px">
+      Secțiunile <strong>01–12</strong> sunt istoricul: ce s-a măsurat în fișierul Figma înainte de a
+      scrie cod, ce decizii s-au luat și ce a ieșit la verificările dinaintea construcției. Toate
+      întrebările de acolo au primit deja răspuns; sunt păstrate ca urmă scrisă.
+      <strong>Secțiunea 13</strong> e comparația propriu-zisă: zece perechi Figma / implementare.
+    </p>
+    <div class="chips">
+      <a class="badge ok" href="../" style="text-decoration:none">Deschide demo-ul →</a>
+      <a class="badge info" href="../dev/screens/" style="text-decoration:none">Lista de ecrane →</a>
+      <span class="badge">Next.js 15 · Tailwind v3.4</span>
+      <span class="badge gold">15 secțiuni desktop</span>
+      <span class="badge gold">mobile + 3 meniuri</span>
+    </div>
+  </header>
+
+  <!-- ======================= 1. OBIECTIV ======================= -->
+  <section id="obiectiv">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Obiectivul și starea de acum</h2></div>
+    <p class="sec-sub">
+      Ce vrem, ce există, ce livrăm. Fără presupuneri — starea repo-ului a fost citită direct de pe disc.
+    </p>
+    <div class="grid g3">
+      <div class="card">
+        <span class="badge warn">Starea actuală</span>
+        <h3 style="margin:12px 0 8px">Director gol</h3>
+        <p class="small muted" style="margin:0">
+          <code>D:\jp-platform</code> conține doar <code>.git</code> (zero commit-uri) și
+          <code>.claude\settings.json</code>. Nu există cod de reutilizat și nici de migrat.
+          Tot ce urmează se scrie de la zero.
+        </p>
+      </div>
+      <div class="card">
+        <span class="badge info">Sursa de adevăr</span>
+        <h3 style="margin:12px 0 8px">Fișierul Figma</h3>
+        <p class="small muted" style="margin:0">
+          O singură pagină, <em>Platform</em>. Secțiunea 1 ține desktop-ul și stările,
+          secțiunea 2 ține mobile-ul. Plus două UI Kit-uri, Desktop și Mobile,
+          care documentează culori, tipografie și stările butoanelor.
+        </p>
+      </div>
+      <div class="card">
+        <span class="badge ok">Livrabilul</span>
+        <h3 style="margin:12px 0 8px">Aplicație rulabilă</h3>
+        <p class="small muted" style="margin:0">
+          <code>npm run dev</code> pornește platforma completă: desktop, mobile,
+          search funcțional, comutare prelogin / postlogin / VIP, panourile Balance
+          și Personal information. Date mock locale, fără backend.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= 2. CE AM VERIFICAT ======================= -->
+  <section id="verificat">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Ce am verificat efectiv</h2></div>
+    <p class="sec-sub">
+      Punct verde înseamnă măsurat: am rulat interogarea și am citit rezultatul.
+      Punct chihlimbariu înseamnă că încă nu știu și nu ghicesc.
+    </p>
+    <div class="ev">
+
+      <div class="ev-item">
+        <span class="dot"></span>
+        <div>
+          <h4>Figma nu are design tokens</h4>
+          <p class="muted">
+            Interogarea variabilelor pe <code>desktop-main</code> întoarce o singură valoare,
+            <code>BG/Quaternary: #0D1420</code>. Pe <code>UI Kit — Desktop</code> întoarce gol.
+            Toate culorile sunt fill-uri hardcodate în layere. Pe românește: dacă designerul schimbă
+            mâine fundalul cardurilor, schimbarea nu se propagă nicăieri singură — trebuie citită din nou.
+          </p>
+        </div>
+      </div>
+
+      <div class="ev-item">
+        <span class="dot"></span>
+        <div>
+          <h4>În schimb, UI Kit-ul e scris ca o documentație</h4>
+          <p class="muted">
+            Frame-ul <em>Colors</em> are cinci grupe, iar fiecare swatch e deja numit semantic:
+            <em>Page Background</em>, <em>Card Background</em>, <em>Blue Primary</em>, <em>Gold Nav Active</em>.
+            Numele acestea devin direct numele token-ilor din Tailwind, deci maparea nu e o invenție a noastră,
+            e transcriere. Paleta completă e mai jos, la secțiunea 03.
+          </p>
+        </div>
+      </div>
+
+      <div class="ev-item">
+        <span class="dot"></span>
+        <div>
+          <h4>Fonturile sunt toate open-source</h4>
+          <p class="muted">
+            Inter, Roboto Flex, Bricolage Grotesque. Toate trei sunt Google Fonts,
+            deci se încarcă prin <code>next/font/google</code> fără licență de cumpărat și fără fișiere de găzduit.
+          </p>
+        </div>
+      </div>
+
+      <div class="ev-item">
+        <span class="dot"></span>
+        <div>
+          <h4>Cele două ecrane „mob main" nu sunt un duplicat</h4>
+          <p class="muted">
+            Am comparat linie cu linie cele două subarbori. Din 894 de linii de structură, diferă exact
+            headerul: <code>1:6978</code> are <em>Header (Pre-login)</em> cu două butoane <em>Sign In</em>,
+            iar <code>1:5720</code> are <em>Header (POST-login)</em> cu butonul verde de sold și un plus.
+            Restul e identic. Deci mobile-ul nu are două pagini, are o pagină cu două headere — exact ca desktop-ul,
+            și munca pentru mobil nu se dublează.
+          </p>
+        </div>
+      </div>
+
+      <div class="ev-item">
+        <span class="dot"></span>
+        <div>
+          <h4>Design-ul nu are imagini distincte pe joc</h4>
+          <p class="muted">
+            <em>PopularGames</em> și <em>CrashGames</em> conțin ambele aceleași șase carduri
+            „Gates of Olympus 1000 / Pragmatic Play". Rândul de provideri are cinci logo-uri unice
+            repetate ca să umple șaisprezece poziții. Concret: dacă descarc pur și simplu ce e în Figma,
+            obțin o singură imagine de joc, nu șaizeci — și un demo în care toate jocurile arată la fel
+            se citește ca defect, nu ca design.
+          </p>
+        </div>
+      </div>
+
+      <div class="ev-item q">
+        <span class="dot"></span>
+        <div>
+          <h4>Nu știu încă ce formă are exportul de assets</h4>
+          <p class="muted">
+            Nu am rulat încă descărcarea. Nu știu dacă logo-urile providerilor ies SVG sau PNG,
+            la ce rezoluție, și dacă numele de fișiere se ciocnesc între ele. De asta faza de assets
+            e secvențială și separată: dacă iese prost, se reia ieftin, fără să blocheze pe nimeni.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================= 3. PALETA ======================= -->
+  <section id="tokens">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Sistemul de design, extras din UI Kit</h2></div>
+    <p class="sec-sub">
+      Culorile de mai jos sunt citite din frame-ul <em>Colors</em> al UI Kit-ului Desktop, nu alese de mine.
+      Pagina pe care o citești acum e pictată cu exact aceste valori — e prima verificare că paleta ține.
+      Ele devin <code>tailwind.config.ts</code>, singura sursă de adevăr pentru culori din proiect.
+    </p>
+
+    <!-- explicatie tokens -->
+    <div class="card" style="border-color:rgba(212,163,82,.4);background:linear-gradient(180deg,rgba(212,163,82,.06),transparent),var(--bg-card);margin-bottom:20px">
+      <span class="badge gold">Ce e un token</span>
+      <h3 style="margin:12px 0 10px">Un nume dat unei culori, folosit în locul valorii</h3>
+
+      <p>
+        Un token de design e pur și simplu <strong>un nume</strong>. În loc să scrii în cod culoarea
+        <code>#151624</code>, scrii <code>bg-card</code>. Numele înseamnă „fundalul cardurilor", iar undeva,
+        într-un singur fișier, e notat o dată că <code>bg-card</code> înseamnă <code>#151624</code>.
+      </p>
+
+      <p><strong>Exemplul concret din proiectul ăsta.</strong>
+        Cardul jocului <em>Gates of Olympus 1000</em> din rândul <em>Popular</em> stă pe fundalul
+        <span class="mono">#151624</span>. Exact aceeași culoare o are cardul din <em>Crash Games</em>,
+        cardul din <em>Must Play Slots</em>, panoul <em>Balance</em> care se deschide din header,
+        meniul jackpot de pe mobil și fiecare bloc din footer. Sunt câteva zeci de locuri.
+      </p>
+
+      <div class="ba" style="margin-top:16px">
+        <div class="card tight before" style="background:var(--bg-subtle)">
+          <h4>Fără token</h4>
+          <p class="small muted" style="margin:6px 0 0">
+            Culoarea e scrisă de mână în fiecare componentă. Designerul zice mâine
+            „cardurile sunt prea închise, fă-le <span class="mono">#1A1B2B</span>".
+            Trebuie găsite toate aparițiile și schimbate una câte una. Câteva vor fi ratate —
+            și vor fi ratate exact în locurile pe care nimeni nu le deschide des,
+            adică starea <em>search fără rezultate</em> sau meniul VIP.
+          </p>
+        </div>
+        <div class="card tight after" style="background:var(--bg-subtle)">
+          <h4>Cu token</h4>
+          <p class="small muted" style="margin:6px 0 0">
+            Toate acele locuri scriu <code>bg-card</code>. Schimbarea e o linie, în
+            <code>tailwind.config.ts</code>. Nu există „am uitat unul", pentru că nu există copii —
+            există o definiție și zeci de referințe la ea.
+          </p>
+        </div>
+      </div>
+
+      <p style="margin:16px 0 0">
+        <strong>Unde intervine riscul R-2.</strong> În mod normal numele astea stau chiar în Figma,
+        ca variabile, iar codul le poate citi automat. Aici <strong>nu stau</strong> — am verificat,
+        fișierul are o singură variabilă. Ce avem în schimb e UI Kit-ul, unde designerul a scris numele
+        ca text sub fiecare pătrat de culoare: <em>Page Background</em>, <em>Card Background</em>,
+        <em>Gold Nav Active</em>. Deci numele există și sunt bune, dar legătura dintre Figma și cod
+        e un document pe care îl scriem noi (<code>docs/tokens.md</code>), nu ceva care se sincronizează singur.
+        Dacă documentul ăla iese neglijent, agenții care construiesc componentele încep să scrie iar
+        culori de mână — și ne întoarcem exact la coloana din stânga.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="sw-group">
+        <div class="sw-title">Fundaluri</div>
+        <div class="sw-row">
+          <div class="sw"><i style="background:#11111A"></i><b>Page Background</b><span>#11111A</span></div>
+          <div class="sw"><i style="background:#151624"></i><b>Card Background</b><span>#151624</span></div>
+          <div class="sw"><i style="background:rgba(0,0,0,.2)"></i><b>Overlay</b><span>#000000 @ 20%</span></div>
+          <div class="sw"><i style="background:rgba(255,255,255,.02)"></i><b>Subtle Surface</b><span>#FFFFFF @ 2%</span></div>
+          <div class="sw"><i style="background:rgba(255,255,255,.06)"></i><b>Elevated Surface</b><span>#FFFFFF @ 6%</span></div>
+        </div>
+      </div>
+
+      <div class="sw-group">
+        <div class="sw-title">Text</div>
+        <div class="sw-row">
+          <div class="sw"><i style="background:#FFFFFF"></i><b>Primary Text</b><span>#FFFFFF</span></div>
+          <div class="sw"><i style="background:rgba(255,255,255,.7)"></i><b>Secondary Text</b><span>#FFFFFF @ 70%</span></div>
+          <div class="sw"><i style="background:rgba(255,255,255,.6)"></i><b>Tertiary Text</b><span>#FFFFFF @ 60%</span></div>
+          <div class="sw"><i style="background:#839CBF"></i><b>Muted Text</b><span>#839CBF</span></div>
+          <div class="sw"><i style="background:#9E9FAB"></i><b>Nav Inactive</b><span>#9E9FAB</span></div>
+          <div class="sw"><i style="background:#B2B8C2"></i><b>Label Text</b><span>#B2B8C2</span></div>
+          <div class="sw"><i style="background:#DAD7E0"></i><b>Footer Heading</b><span>#DAD7E0</span></div>
+        </div>
+      </div>
+
+      <div class="sw-group">
+        <div class="sw-title">Accent și brand</div>
+        <div class="sw-row">
+          <div class="sw"><i style="background:#007AFF"></i><b>Blue Primary</b><span>#007AFF</span></div>
+          <div class="sw"><i style="background:rgba(0,122,255,.13)"></i><b>Blue Tinted BG</b><span>#007AFF @ 13%</span></div>
+          <div class="sw"><i style="background:#F59E0B"></i><b>Amber / Warning</b><span>#F59E0B</span></div>
+          <div class="sw"><i style="background:#D4A352"></i><b>Gold Nav Active</b><span>#D4A352</span></div>
+          <div class="sw"><i style="background:#34C759"></i><b>Success Green</b><span>#34C759</span></div>
+        </div>
+      </div>
+
+      <div class="sw-group">
+        <div class="sw-title">Gradiente</div>
+        <div class="sw-row">
+          <div class="sw"><i style="background:#F0C775"></i><b>Gold Light</b><span>#F0C775</span></div>
+          <div class="sw"><i style="background:#C6903D"></i><b>Gold Dark</b><span>#C6903D</span></div>
+          <div class="sw"><i style="background:#F8B900"></i><b>Orange Start</b><span>#F8B900</span></div>
+          <div class="sw"><i style="background:#E67508"></i><b>Orange End</b><span>#E67508</span></div>
+          <div class="sw"><i style="background:linear-gradient(90deg,#F8B900,#E67508)"></i><b>Gradient compus</b><span>orange-start → end</span></div>
+        </div>
+      </div>
+
+      <div class="sw-group">
+        <div class="sw-title">Contururi și separatoare</div>
+        <div class="sw-row">
+          <div class="sw"><i style="background:rgba(255,255,255,.04)"></i><b>Card Border</b><span>#FFFFFF @ 4%</span></div>
+          <div class="sw"><i style="background:rgba(255,255,255,.07)"></i><b>Divider Light</b><span>#FFFFFF @ 7%</span></div>
+          <div class="sw"><i style="background:rgba(255,255,255,.08)"></i><b>Border Medium</b><span>#FFFFFF @ 8%</span></div>
+          <div class="sw"><i style="background:rgba(255,255,255,.10)"></i><b>Border Strong</b><span>#FFFFFF @ 10%</span></div>
+          <div class="sw"><i style="background:#282936"></i><b>Separator</b><span>#282936</span></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="small muted" style="margin-top:14px">
+      Fonturi: <strong>Inter</strong>, <strong>Roboto Flex</strong>, <strong>Bricolage Grotesque</strong>.
+      Singura valoare care apare ca variabilă Figma, <code>BG/Quaternary #0D1420</code>, nu se regăsește
+      în niciuna dintre cele cinci grupe — o tratăm ca excepție punctuală, nu ca token.
+    </p>
+  </section>
+
+  <!-- ======================= 4. CE ARATĂ DESIGNUL ======================= -->
+  <section id="design">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Ce arată design-ul</h2></div>
+    <p class="sec-sub">
+      Trei capturi luate direct din Figma. Ele sunt și dovada pentru observația despre imagini de la secțiunea 02.
+    </p>
+    <div class="grid" style="gap:22px">
+      <figure>
+        <img src="hero.png" alt="Bannerul de bonus cu Zeus, ticker de câștiguri recente și bara de categorii">
+        <figcaption>
+          <strong>Hero + ticker + bara de categorii.</strong> Bonus £5500 până la 250 rotiri,
+          buton albastru <em>GET</em> (<span class="mono">#007AFF</span>), sub el câștigurile recente cu sume în verde
+          (<span class="mono">#34C759</span>) și nume mascate de tip <span class="mono">le****et</span>.
+          Pastila activă <em>POPULAR</em> are conturul albastru; celelalte sunt inactive.
+        </figcaption>
+      </figure>
+      <div class="grid g2" style="gap:22px">
+        <figure>
+          <img src="popular.png" alt="Rândul Popular cu șase carduri identice">
+          <figcaption>
+            <strong>Rândul „Popular".</strong> Șase carduri — toate aceeași imagine.
+            Același lucru în <em>CrashGames</em>. De aici concluzia că nu există thumbnail-uri pe joc.
+          </figcaption>
+        </figure>
+        <figure>
+          <img src="providers.png" alt="Rândul de provideri cu logo-uri repetate">
+          <figcaption>
+            <strong>Rândul de provideri.</strong> Cinci logo-uri reale — Pragmatic, 3 Oaks Gaming,
+            BGaming, Nolimit City și încă unul — repetate pe două rânduri.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= 5. ARHITECTURA ======================= -->
+  <section id="arhitectura">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Cum ajunge design-ul în cod</h2></div>
+    <p class="sec-sub">
+      O singură direcție de curgere. Fiecare cutie are un proprietar unic, și tot ce e în dreapta
+      unei cutii doar citește din ea, niciodată nu o rescrie.
+    </p>
+
+    <div class="card fig">
+      <svg viewBox="0 0 1000 300" role="img" aria-labelledby="pipe-t pipe-d" xmlns="http://www.w3.org/2000/svg">
+        <title id="pipe-t">Fluxul de la Figma la pagina randată</title>
+        <desc id="pipe-d">UI Kit-ul produce tokeni; tokenii produc primitive; primitivele plus registrul de secțiuni produc pagina; frame-urile Figma alimentează în paralel bucla de verificare vizuală.</desc>
+
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#839CBF"/>
+          </marker>
+          <marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#D4A352"/>
+          </marker>
+        </defs>
+
+        <g font-family="Inter, Segoe UI, sans-serif">
+
+          <!-- Figma column -->
+          <g id="n-figma">
+            <title>Fișierul Figma — sursa de adevăr</title>
+            <rect x="14" y="46" width="176" height="196" rx="14" fill="#151624" stroke="#D4A352" stroke-width="1.5"/>
+            <text x="102" y="76" text-anchor="middle" fill="#D4A352" font-size="12" font-weight="700" letter-spacing="1.4">FIGMA</text>
+            <rect x="34" y="92" width="136" height="42" rx="9" fill="rgba(212,163,82,.10)" stroke="rgba(212,163,82,.45)"/>
+            <text x="102" y="112" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="600">UI Kit</text>
+            <text x="102" y="127" text-anchor="middle" fill="#839CBF" font-size="10.5">culori · tipografie</text>
+            <rect x="34" y="146" width="136" height="42" rx="9" fill="rgba(212,163,82,.10)" stroke="rgba(212,163,82,.45)"/>
+            <text x="102" y="166" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="600">Frame-uri</text>
+            <text x="102" y="181" text-anchor="middle" fill="#839CBF" font-size="10.5">21 ecrane și stări</text>
+            <rect x="34" y="200" width="136" height="30" rx="9" fill="rgba(212,163,82,.10)" stroke="rgba(212,163,82,.45)"/>
+            <text x="102" y="220" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="600">Assets</text>
+          </g>
+
+          <!-- tokens -->
+          <g id="n-tokens">
+            <title>tailwind.config.ts — singura sursă de culori</title>
+            <rect x="242" y="76" width="164" height="72" rx="12" fill="#151624" stroke="rgba(0,122,255,.55)" stroke-width="1.5"/>
+            <text x="324" y="103" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">Tokeni</text>
+            <text x="324" y="121" text-anchor="middle" fill="#839CBF" font-size="10.5" font-family="monospace">tailwind.config.ts</text>
+            <text x="324" y="136" text-anchor="middle" fill="#839CBF" font-size="10.5" font-family="monospace">docs/tokens.md</text>
+          </g>
+
+          <!-- primitives -->
+          <g id="n-prim">
+            <title>Primitivele — componentele partajate</title>
+            <rect x="242" y="168" width="164" height="82" rx="12" fill="#151624" stroke="rgba(255,255,255,.18)" stroke-width="1.5"/>
+            <text x="324" y="195" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">Primitive</text>
+            <text x="324" y="213" text-anchor="middle" fill="#839CBF" font-size="10.5">GameCard · Button</text>
+            <text x="324" y="228" text-anchor="middle" fill="#839CBF" font-size="10.5">Panel · SearchInput</text>
+            <text x="324" y="243" text-anchor="middle" fill="#839CBF" font-size="10.5">GameGrid · Pill</text>
+          </g>
+
+          <!-- registry -->
+          <g id="n-reg">
+            <title>Registrul de secțiuni — 15 rânduri descrise ca date</title>
+            <rect x="458" y="110" width="182" height="106" rx="12" fill="#151624" stroke="#34C759" stroke-width="1.8"/>
+            <text x="549" y="140" text-anchor="middle" fill="#34C759" font-size="12" font-weight="700" letter-spacing="1.2">REGISTRU</text>
+            <text x="549" y="161" text-anchor="middle" fill="#FFFFFF" font-size="11" font-family="monospace">lib/sections.ts</text>
+            <text x="549" y="177" text-anchor="middle" fill="#FFFFFF" font-size="11" font-family="monospace">lib/screens.ts</text>
+            <text x="549" y="197" text-anchor="middle" fill="#839CBF" font-size="10.5">15 secțiuni ca date,</text>
+            <text x="549" y="209" text-anchor="middle" fill="#839CBF" font-size="10.5">nu ca 15 componente</text>
+          </g>
+
+          <!-- page -->
+          <g id="n-page">
+            <title>Pagina randată</title>
+            <rect x="692" y="76" width="150" height="72" rx="12" fill="#151624" stroke="rgba(0,122,255,.55)" stroke-width="1.5"/>
+            <text x="767" y="103" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">Pagina</text>
+            <text x="767" y="121" text-anchor="middle" fill="#839CBF" font-size="10.5" font-family="monospace">app/page.tsx</text>
+            <text x="767" y="136" text-anchor="middle" fill="#839CBF" font-size="10.5">desktop + mobile</text>
+          </g>
+
+          <!-- QA -->
+          <g id="n-qa">
+            <title>Bucla de verificare vizuală</title>
+            <rect x="692" y="178" width="150" height="72" rx="12" fill="#151624" stroke="rgba(245,158,11,.55)" stroke-width="1.5"/>
+            <text x="767" y="205" text-anchor="middle" fill="#F59E0B" font-size="13" font-weight="700">QA vizual</text>
+            <text x="767" y="223" text-anchor="middle" fill="#839CBF" font-size="10.5">captură Figma</text>
+            <text x="767" y="238" text-anchor="middle" fill="#839CBF" font-size="10.5">vs captură browser</text>
+          </g>
+
+          <!-- lavish -->
+          <g id="n-lavish">
+            <title>Raportul de review</title>
+            <rect x="884" y="118" width="102" height="88" rx="12" fill="rgba(0,122,255,.10)" stroke="rgba(0,122,255,.5)" stroke-dasharray="4 4"/>
+            <text x="935" y="150" text-anchor="middle" fill="#007AFF" font-size="12" font-weight="700">Review</text>
+            <text x="935" y="168" text-anchor="middle" fill="#839CBF" font-size="10.5">pagina asta,</text>
+            <text x="935" y="182" text-anchor="middle" fill="#839CBF" font-size="10.5">dar cu ecrane</text>
+            <text x="935" y="196" text-anchor="middle" fill="#839CBF" font-size="10.5">alăturate</text>
+          </g>
+
+          <!-- edges -->
+          <g stroke="#839CBF" stroke-width="1.6" fill="none" marker-end="url(#ar)">
+            <path id="e1" d="M190,113 L236,113"><title>UI Kit alimentează tokenii</title></path>
+            <path id="e2" d="M324,148 L324,162"><title>Tokenii alimentează primitivele</title></path>
+            <path id="e3" d="M406,120 C432,120 432,150 452,150"><title>Tokenii intră în registru</title></path>
+            <path id="e4" d="M406,200 C432,200 432,178 452,178"><title>Primitivele intră în registru</title></path>
+            <path id="e5" d="M640,145 C664,145 664,116 686,116"><title>Registrul randează pagina</title></path>
+            <path id="e6" d="M640,182 C664,182 664,210 686,210"><title>Registrul conduce și bucla de QA</title></path>
+            <path id="e7" d="M842,120 C860,120 862,146 878,146"><title>Pagina ajunge în raport</title></path>
+            <path id="e8" d="M842,208 C860,208 862,182 878,182"><title>Rezultatele QA ajung în raport</title></path>
+          </g>
+          <g stroke="#D4A352" stroke-width="1.5" fill="none" stroke-dasharray="5 4" marker-end="url(#arg)">
+            <path id="e9" d="M190,214 C220,214 220,236 500,236 C640,236 660,224 686,216"><title>Frame-urile Figma sunt referința pentru QA</title></path>
+          </g>
+          <text x="380" y="272" fill="#D4A352" font-size="10.5" font-style="italic">frame-urile rămân referința de comparație până la final</text>
+        </g>
+      </svg>
+      <p class="fig-cap">
+        Punctul important: <strong>registrul din mijloc</strong>. Tot ce e descriere de ecran trăiește acolo ca date.
+        De asta un ecran nou adăugat de designer nu atinge nici pagina, nici tokenii, nici componentele existente.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================= 6. IDEEA CENTRALĂ ======================= -->
+  <section id="idee">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Decizia principală: 12 rânduri devin date, nu cod</h2></div>
+    <p class="sec-sub">
+      Din cele 15 rânduri de conținut de pe desktop, 12 sunt exact același tipar: un antet cu iconiță, titlu
+      și link „See All", urmat de o grilă de carduri. Diferă doar titlul și ce jocuri intră în grilă.
+    </p>
+
+    <div class="ba">
+      <div class="card before">
+        <span class="badge warn">Varianta naivă</span>
+        <h3 style="margin:12px 0 6px">12 componente scrise de mână</h3>
+        <p class="small muted">
+          Fiecare rând, propriul fișier. Când designerul cere ca titlul secțiunilor să fie cu 2px mai mare,
+          se schimbă în douăsprezece locuri. Când adaugă un rând nou, se scrie o a treisprezecea componentă
+          aproape identică.
+        </p>
+<pre><span class="c">// 12 fișiere aproape identice</span>
+PopularGames.tsx
+NewGames.tsx
+CrashGames.tsx
+MustPlaySlots.tsx
+<span class="c">… încă opt …</span></pre>
+      </div>
+
+      <div class="card after">
+        <span class="badge ok">Varianta aleasă</span>
+        <h3 style="margin:12px 0 6px">O componentă + un registru</h3>
+        <p class="small muted">
+          O singură <code>ContentRow</code>, alimentată de o listă de descrieri. Rândul nou înseamnă
+          patru linii de date. Schimbarea de stil se face o dată, într-un singur loc.
+        </p>
+<pre><span class="c">// src/lib/sections.ts</span>
+{ <span class="k">kind</span>: <span class="s">'games'</span>, <span class="k">id</span>: <span class="s">'crash'</span>,
+  <span class="k">title</span>: <span class="s">'Crash Games'</span>, <span class="k">grids</span>: 1,
+  <span class="k">filter</span>: { tag: <span class="s">'crash'</span> },
+  <span class="k">figmaNodeId</span>: <span class="s">'1:3230'</span> }</pre>
+      </div>
+    </div>
+
+    <p class="small muted" style="margin-top:16px">
+      Câmpul <code>figmaNodeId</code> nu e decor. El e ce transformă verificarea vizuală dintr-o corvoadă
+      de douăzeci de comparații manuale într-o buclă automată: pentru fiecare intrare din registru,
+      ia captura din Figma, ia captura din browser, pune-le alături.
+    </p>
+
+    <div class="grid g3" style="margin-top:20px">
+      <div class="card tight">
+        <h4>Cele trei bannere mari</h4>
+        <p class="small muted" style="margin:6px 0 0">
+          Tournament, Lottery și Wheel au toate 1280×260 și aceeași anatomie.
+          O componentă, trei variante.
+        </p>
+      </div>
+      <div class="card tight">
+        <h4>Starea aplicației</h4>
+        <p class="small muted" style="margin:6px 0 0">
+          Un singur magazin Zustand ține modul de autentificare, starea căutării și ce panou e deschis.
+          Fără provider, deci restul paginii rămâne randat pe server.
+        </p>
+      </div>
+      <div class="card tight">
+        <h4>Datele</h4>
+        <p class="small muted" style="margin:6px 0 0">
+          60 de jocuri în JSON, re-feliate pe rânduri prin filtre. Eticheta „See All (206)"
+          rămâne ca în design, fără să inventăm 206 înregistrări cu imagini rupte.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= 7. ORCHESTRARE ======================= -->
+  <section id="orchestrare">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Orchestrarea: coloană secvențială, apoi evantai</h2></div>
+    <p class="sec-sub">
+      Opt agenți nu pot scrie în paralel aceleași componente partajate. Soluția nu e izolarea în copii separate
+      ale repo-ului, ci împărțirea proprietății pe fișiere: fiecare agent primește lista exactă a fișierelor
+      pe care are voie să le creeze și lista celor pe care are voie doar să le citească. Seturile nu se
+      intersectează, deci nu există nimic de reconciliat la final.
+    </p>
+    <p class="sec-sub" style="margin-top:-14px">
+      <strong>Decis în review:</strong> cei opt nu pornesc deodată, ci în două valuri de câte patru.
+      Valul întâi ia Header, Hero, Rânduri și Footer — zonele care ating cele mai multe primitive.
+      Dacă acolo iese ceva greșit în cardul de joc sau în buton, se corectează o dată, nu de opt ori.
+    </p>
+
+    <div class="card fig">
+      <svg viewBox="0 0 1000 430" role="img" aria-labelledby="orc-t orc-d" xmlns="http://www.w3.org/2000/svg">
+        <title id="orc-t">Cele șase faze ale construcției</title>
+        <desc id="orc-d">Cinci faze secvențiale construiesc fundația partajată, apoi opt agenți lucrează în paralel pe zone disjuncte, apoi o fază de asamblare și una de verificare vizuală.</desc>
+
+        <defs>
+          <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#839CBF"/>
+          </marker>
+        </defs>
+
+        <g font-family="Inter, Segoe UI, sans-serif">
+
+          <!-- sequential spine -->
+          <g id="spine">
+            <title>Faza secvențială: fundația partajată</title>
+            <rect x="12" y="30" width="212" height="368" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.10)" stroke-dasharray="6 4"/>
+            <text x="118" y="55" text-anchor="middle" fill="#839CBF" font-size="11" font-weight="700" letter-spacing="1.4">SECVENȚIAL · UN AGENT</text>
+          </g>
+
+          <g id="ph0"><title>Faza 0 — scaffold</title>
+            <rect x="32" y="70" width="172" height="48" rx="10" fill="#151624" stroke="rgba(255,255,255,.16)"/>
+            <text x="48" y="92" fill="#FFFFFF" font-size="12.5" font-weight="600">0 · Scaffold</text>
+            <text x="48" y="108" fill="#839CBF" font-size="10.5">Next.js + Tailwind v3</text>
+          </g>
+          <g id="ph1"><title>Faza 1 — tokeni din UI Kit</title>
+            <rect x="32" y="128" width="172" height="48" rx="10" fill="#151624" stroke="rgba(0,122,255,.5)"/>
+            <text x="48" y="150" fill="#FFFFFF" font-size="12.5" font-weight="600">1 · Tokeni</text>
+            <text x="48" y="166" fill="#839CBF" font-size="10.5">paleta din secțiunea 03</text>
+          </g>
+          <g id="ph2"><title>Faza 2 — contracte și date</title>
+            <rect x="32" y="186" width="172" height="48" rx="10" fill="#151624" stroke="rgba(52,199,89,.5)"/>
+            <text x="48" y="208" fill="#FFFFFF" font-size="12.5" font-weight="600">2 · Contracte</text>
+            <text x="48" y="224" fill="#839CBF" font-size="10.5">tipuri · registru · date</text>
+          </g>
+          <g id="ph2b"><title>Faza 2b — assets din Figma</title>
+            <rect x="32" y="244" width="172" height="48" rx="10" fill="#151624" stroke="rgba(245,158,11,.5)"/>
+            <text x="48" y="266" fill="#FFFFFF" font-size="12.5" font-weight="600">2b · Assets</text>
+            <text x="48" y="282" fill="#839CBF" font-size="10.5">descărcare din Figma</text>
+          </g>
+          <g id="ph3"><title>Faza 3 — primitivele partajate</title>
+            <rect x="32" y="302" width="172" height="48" rx="10" fill="#151624" stroke="rgba(255,255,255,.28)"/>
+            <text x="48" y="324" fill="#FFFFFF" font-size="12.5" font-weight="600">3 · Primitive</text>
+            <text x="48" y="340" fill="#839CBF" font-size="10.5">GameCard · Button · Panel</text>
+          </g>
+          <text x="118" y="378" text-anchor="middle" fill="#F59E0B" font-size="10.5" font-style="italic">după faza 2, contractele îngheață</text>
+
+          <!-- fan-out, doua valuri -->
+          <g id="fan">
+            <title>Faza 4 — opt agenți, în două valuri de câte patru</title>
+            <rect x="300" y="30" width="404" height="248" rx="14" fill="rgba(0,122,255,.05)" stroke="rgba(0,122,255,.35)" stroke-dasharray="6 4"/>
+            <text x="502" y="50" text-anchor="middle" fill="#007AFF" font-size="11" font-weight="700" letter-spacing="1.4">FAZA 4 · DOUĂ VALURI DE CÂTE PATRU</text>
+          </g>
+
+          <g font-size="12" fill="#FFFFFF">
+            <text x="318" y="70" fill="#34C759" font-size="10" font-weight="700" letter-spacing="1.2">VALUL 1 · ATING CELE MAI MULTE PRIMITIVE</text>
+            <g id="a-header"><title>Agent 6 — headerul desktop, trei variante de autentificare</title>
+              <rect x="318" y="76" width="182" height="36" rx="9" fill="#151624" stroke="rgba(52,199,89,.55)"/>
+              <text x="332" y="99">Header · 3 variante</text></g>
+            <g id="a-hero"><title>Agent 7 — hero, ticker de câștiguri, bara de categorii</title>
+              <rect x="510" y="76" width="182" height="36" rx="9" fill="#151624" stroke="rgba(52,199,89,.55)"/>
+              <text x="524" y="99">Hero · ticker · nav</text></g>
+            <g id="a-rows"><title>Agent 8 — ContentRow și rândul de provideri</title>
+              <rect x="318" y="118" width="182" height="36" rx="9" fill="#151624" stroke="rgba(52,199,89,.55)"/>
+              <text x="332" y="141">Rânduri · provideri</text></g>
+            <g id="a-footer"><title>Agent 10 — footerul</title>
+              <rect x="510" y="118" width="182" height="36" rx="9" fill="#151624" stroke="rgba(52,199,89,.55)"/>
+              <text x="524" y="141">Footer</text></g>
+
+            <line x1="318" y1="166" x2="692" y2="166" stroke="rgba(255,255,255,.14)" stroke-dasharray="4 4"/>
+            <text x="505" y="181" text-anchor="middle" fill="#F59E0B" font-size="10" font-style="italic">corecțiile la primitive intră aici, înainte de valul 2</text>
+
+            <text x="318" y="200" fill="#839CBF" font-size="10" font-weight="700" letter-spacing="1.2">VALUL 2 · PORNEȘTE PE PRIMITIVE DEJA VALIDATE</text>
+            <g id="a-promo"><title>Agent 9 — bannerele Tournament, Lottery, Wheel</title>
+              <rect x="318" y="206" width="182" height="36" rx="9" fill="#151624" stroke="rgba(255,255,255,.16)"/>
+              <text x="332" y="229">Bannere promo ×3</text></g>
+            <g id="a-search"><title>Agent 11 — toate cele patru stări de căutare</title>
+              <rect x="510" y="206" width="182" height="36" rx="9" fill="#151624" stroke="rgba(255,255,255,.16)"/>
+              <text x="524" y="229">Search · 4 stări</text></g>
+            <g id="a-panels"><title>Agent 12 — panourile Balance și Personal information</title>
+              <rect x="318" y="248" width="182" height="22" rx="7" fill="#151624" stroke="rgba(255,255,255,.16)"/>
+              <text x="332" y="263" font-size="11">Balance · Personal</text></g>
+            <g id="a-mobile"><title>Agent 13 — bara mobilă și cele trei meniuri jackpot</title>
+              <rect x="510" y="248" width="182" height="22" rx="7" fill="#151624" stroke="rgba(255,255,255,.16)"/>
+              <text x="524" y="263" font-size="11">Mobile · meniuri ×3</text></g>
+          </g>
+
+          <g id="assembly"><title>Faza 5 — asamblarea paginii</title>
+            <rect x="318" y="286" width="374" height="44" rx="10" fill="#151624" stroke="rgba(52,199,89,.55)"/>
+            <text x="505" y="307" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="600">5 · Asamblare — layout, pagina, /dev/screens</text>
+            <text x="505" y="322" text-anchor="middle" fill="#839CBF" font-size="10.5">singurul loc unde rulează build-ul complet</text>
+          </g>
+          <g id="qa"><title>Faza 6 — verificare vizuală în trei zone paralele</title>
+            <rect x="318" y="340" width="374" height="44" rx="10" fill="#151624" stroke="rgba(245,158,11,.55)"/>
+            <text x="505" y="361" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="600">6 · QA vizual — 3 agenți, câte o zonă</text>
+            <text x="505" y="376" text-anchor="middle" fill="#839CBF" font-size="10.5">Figma vs browser, secțiune cu secțiune</text>
+          </g>
+
+          <!-- edges spine -->
+          <g stroke="#839CBF" stroke-width="1.5" fill="none" marker-end="url(#a2)">
+            <path d="M118,118 L118,124"/><path d="M118,176 L118,182"/>
+            <path d="M118,234 L118,240"/><path d="M118,292 L118,298"/>
+            <path d="M204,326 C250,326 254,240 296,200"><title>Primitivele deblochează evantaiul</title></path>
+          </g>
+
+          <!-- right column: rules -->
+          <g id="rules">
+            <title>Regulile care fac paralelismul sigur</title>
+            <rect x="722" y="70" width="264" height="314" rx="14" fill="#151624" stroke="rgba(255,255,255,.12)"/>
+            <text x="744" y="97" fill="#D4A352" font-size="11" font-weight="700" letter-spacing="1.2">TREI REGULI</text>
+
+            <circle cx="752" cy="126" r="4" fill="#34C759"/>
+            <text x="768" y="123" fill="#FFFFFF" font-size="12" font-weight="600">Proprietate pe fișiere</text>
+            <text x="768" y="140" fill="#839CBF" font-size="10.5">Fiecare agent știe exact ce</text>
+            <text x="768" y="154" fill="#839CBF" font-size="10.5">creează și ce doar citește.</text>
+
+            <circle cx="752" cy="188" r="4" fill="#34C759"/>
+            <text x="768" y="185" fill="#FFFFFF" font-size="12" font-weight="600">Contracte înghețate</text>
+            <text x="768" y="202" fill="#839CBF" font-size="10.5">Nimeni nu modifică tipurile</text>
+            <text x="768" y="216" fill="#839CBF" font-size="10.5">sau magazinul după faza 2;</text>
+            <text x="768" y="230" fill="#839CBF" font-size="10.5">cere schimbarea în raport.</text>
+
+            <circle cx="752" cy="264" r="4" fill="#F59E0B"/>
+            <text x="768" y="261" fill="#FFFFFF" font-size="12" font-weight="600">Un singur build</text>
+            <text x="768" y="278" fill="#839CBF" font-size="10.5">Agenții paraleli verifică doar</text>
+            <text x="768" y="292" fill="#839CBF" font-size="10.5">cu typecheck, care nu scrie</text>
+            <text x="768" y="306" fill="#839CBF" font-size="10.5">nimic pe disc. Build-ul rulează</text>
+            <text x="768" y="320" fill="#839CBF" font-size="10.5">doar în fazele secvențiale.</text>
+
+            <text x="744" y="356" fill="#F59E0B" font-size="10.5" font-style="italic">Fără asta, două build-uri simultane</text>
+            <text x="744" y="370" fill="#F59E0B" font-size="10.5" font-style="italic">corup cache-ul și dau erori fantomă.</text>
+          </g>
+        </g>
+      </svg>
+      <p class="fig-cap">
+        De ce fazele 1–3 nu pot rula în paralel: tokenii și primitivele sunt vocabularul comun.
+        Doi agenți care citesc independent UI Kit-ul vor boteza același gri o dată <code>bg-surface</code>
+        și o dată <code>bg-card</code>; doi agenți care scriu cardul de joc produc două carduri de joc diferite.
+        Serializarea fundației e exact ce face ca evantaiul de opt să nu aibă conflicte.
+      </p>
+    </div>
+
+    <h3 style="margin:30px 0 10px">Cine deține ce, în faza 4</h3>
+    <p class="small muted" style="margin-bottom:14px">
+      Toți importă din tokeni, tipuri, magazin și primitive. Niciunul nu le modifică.
+    </p>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th style="width:52px">Val</th><th style="width:56px">Agent</th><th>Zonă</th><th>Fișiere pe care le creează</th><th class="mono" style="width:180px">Noduri Figma</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="badge ok" style="text-transform:none">1</span></td><td class="mono">6</td><td class="own">Header</td><td class="mono">layout/Header.tsx + 3 variante</td><td class="mono">1:2432, 1:4244</td></tr>
+          <tr><td><span class="badge ok" style="text-transform:none">1</span></td><td class="mono">7</td><td class="own">Hero, ticker, bara de categorii</td><td class="mono">layout/HeroBanner · RecentWinsTicker · CategoryNavBar</td><td class="mono">1:2433, 1:2435, 1:2500</td></tr>
+          <tr><td><span class="badge ok" style="text-transform:none">1</span></td><td class="mono">8</td><td class="own">Rândurile de jocuri și provideri</td><td class="mono">sections/ContentRow · ProviderRow</td><td class="mono">1:2592, 1:2620, 1:2649</td></tr>
+          <tr><td><span class="badge ok" style="text-transform:none">1</span></td><td class="mono">10</td><td class="own">Footer</td><td class="mono">layout/Footer.tsx</td><td class="mono">1:3666</td></tr>
+          <tr><td><span class="badge" style="text-transform:none">2</span></td><td class="mono">9</td><td class="own">Bannerele promoționale</td><td class="mono">sections/PromoRow + variante PromoBanner</td><td class="mono">1:3427, 1:3524, 1:3580</td></tr>
+          <tr><td><span class="badge" style="text-transform:none">2</span></td><td class="mono">11</td><td class="own">Căutarea, toate stările</td><td class="mono">tot components/search/</td><td class="mono">1:4314, 1:4321, 1:4334, 1:4479, 1:4611</td></tr>
+          <tr><td><span class="badge" style="text-transform:none">2</span></td><td class="mono">12</td><td class="own">Panourile din header</td><td class="mono">panels/BalancePanel · PersonalInfoPanel</td><td class="mono">1:4116, 1:4153</td></tr>
+          <tr><td><span class="badge" style="text-transform:none">2</span></td><td class="mono">13</td><td class="own">Mobile</td><td class="mono">layout/MobileNavBar · MobileShell · panels/JackpotMenu</td><td class="mono">1:8235, 1:8751, 1:8260, 1:8503</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:18px;border-color:rgba(245,158,11,.35)">
+      <span class="badge warn">Decizie tehnică</span>
+      <h3 style="margin:12px 0 6px">Nu folosim copii izolate ale repo-ului</h3>
+      <p class="small muted" style="margin:0">
+        Ar părea alegerea sigură pentru opt agenți paraleli, dar aici e dăunătoare. Fiecare copie ar avea nevoie
+        de propria instalare de dependențe — opt instalări de câteva sute de megaocteți, înainte ca cineva
+        să scrie o linie. Iar fără dependențe instalate, un agent nu poate face nici măcar verificarea de tipuri,
+        adică pierde exact controlul care justifică paralelismul. Împărțirea proprietății pe fișiere rezolvă deja
+        coliziunile, deci izolarea ar plăti scump pentru o problemă care nu există.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================= 8. ECRANE NOI ======================= -->
+  <section id="ecrane-noi">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Când designerul adaugă ecrane</h2></div>
+    <p class="sec-sub">
+      Ai spus că vor mai veni ecrane. Arhitectura e făcută în jurul acestei ipoteze, nu adaptată la ea ulterior.
+    </p>
+    <ol class="steps">
+      <li><strong>Un rând nou de jocuri</strong> — se adaugă patru linii în registru. Zero componente noi, zero fișiere atinse. Cinci minute.</li>
+      <li><strong>Un ecran nou de sine stătător</strong> — o intrare în registrul de ecrane, cu nodul Figma și viewport-ul, plus o componentă compusă din primitivele care există deja.</li>
+      <li><strong>Verificarea se face singură</strong> — pagina internă <code>/dev/screens</code> randează automat orice intrare din registru, cu nodul Figma atașat, deci bucla de comparație o preia fără nicio modificare.</li>
+    </ol>
+    <p class="small muted" style="margin-top:14px">
+      Ce face diferența: un ecran nou nu atinge niciodată configurația de culori, magazinul de stare,
+      layout-ul aplicației sau componentele existente. Dacă vreodată trebuie atinse, înseamnă că
+      designerul a introdus ceva cu adevărat nou — și atunci merită o discuție, nu o improvizație.
+    </p>
+  </section>
+
+  <!-- ======================= 9. VERIFICARE ======================= -->
+  <section id="verificare">
+    <div class="sec-head"><span class="sec-num">09</span><h2>Cum dovedim că seamănă cu design-ul</h2></div>
+    <p class="sec-sub">Cinci porți, de la cea mai ieftină la cea mai lentă.</p>
+    <ol class="steps">
+      <li><strong>Verificare de tipuri și lint</strong>, după fiecare agent. Nu scrie nimic pe disc, deci se poate rula în paralel fără risc.</li>
+      <li><strong>Disciplina culorilor</strong> — o regulă de lint respinge orice cod hexazecimal scris direct într-o componentă. Dacă cineva scrie <code>#151624</code> în loc să folosească token-ul, pică la lint, nu la review-ul uman.</li>
+      <li><strong>Build complet și pornirea serverului</strong>, doar în fazele secvențiale. Zero erori în consolă, zero avertismente de hidratare.</li>
+      <li><strong>Comparație vizuală per secțiune</strong> — pentru fiecare intrare din registru: captura din Figma, apoi browserul la 1440 sau 390 pixeli, apoi captura reală, puse alături. Devierile devin corecții în fișierele deținute de agentul zonei respective.</li>
+      <li><strong>Test de interacțiune</strong> — comutare prelogin → postlogin → VIP; tastat <code>zeu</code> pentru sugestii, <code>xyzzy</code> pentru starea fără rezultate, golire pentru starea inițială; deschis și închis ambele panouri; toate cele trei meniuri jackpot la 390 pixeli.</li>
+    </ol>
+  </section>
+
+  <!-- ======================= 10. RISCURI ======================= -->
+  <section id="riscuri">
+    <div class="sec-head"><span class="sec-num">10</span><h2>Riscuri</h2></div>
+    <p class="sec-sub">
+      Cinci lucruri care pot strica execuția. Primul e cel mai probabil și blochează totul, deci se verifică
+      înainte de a porni orice agent.
+    </p>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th style="width:64px">ID</th><th style="width:130px">Impact</th><th>Ce se poate întâmpla</th><th>Ce facem</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">R-1</td>
+            <td><span class="badge warn">Blochează tot</span></td>
+            <td>Comanda de scaffold refuză directorul, pentru că <code>.claude</code> nu e pe lista ei de excepții. Un eșec în faza 0 lasă toți agenții pe loc.</td>
+            <td>Scaffold într-un director alăturat, apoi mutarea conținutului peste <code>.git</code> și <code>.claude</code> existente. Se testează întâi.</td>
+          </tr>
+          <tr>
+            <td class="mono">R-2</td>
+            <td><span class="badge warn">Se propagă</span></td>
+            <td>Fără variabile în Figma, numirea token-ilor e o judecată făcută o singură dată. Dacă tabelul de mapare iese subțire, cei opt agenți din aval încep să inventeze culori.</td>
+            <td>Tabelul <code>docs/tokens.md</code> e livrabil obligatoriu al fazei 1, cu cel puțin un rând pentru fiecare swatch din secțiunea 03.</td>
+          </tr>
+          <tr>
+            <td class="mono">R-3</td>
+            <td><span class="badge info">Necunoscut</span></td>
+            <td>Forma exportului de assets nu e verificată — nu știu dacă logo-urile ies vectoriale sau raster, la ce rezoluție, și dacă numele se ciocnesc.</td>
+            <td>Faza de assets e secvențială și izolată, cu un fișier de indirecție între nume și cod, ca redenumirile să nu se propage.</td>
+          </tr>
+          <tr>
+            <td class="mono">R-4</td>
+            <td><span class="badge warn">Vizual</span></td>
+            <td>Sursa are o singură imagine de joc. Placeholder-ele generate pot arăta ca imagini lipsă, nu ca decizie.</td>
+            <td>Decis în review: gradiente din paleta UI Kit — auriu <span class="mono">#F0C775 → #C6903D</span> și portocaliu <span class="mono">#F8B900 → #E67508</span> — cu titlul jocului peste. Arată ca decizie de brand, nu ca imagine lipsă.</td>
+          </tr>
+          <tr>
+            <td class="mono">R-5</td>
+            <td><span class="badge warn">Erori fantomă</span></td>
+            <td>Doi agenți care rulează build simultan corup cache-ul de compilare și produc erori care nu au legătură cu codul scris.</td>
+            <td>Interdicția se scrie în promptul fiecărui agent paralel, nu doar în plan. Verificarea lor e doar typecheck.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="q" style="margin-top:18px;border-color:rgba(52,199,89,.35)">
+      <span class="badge ok">Confirmat în review · toate cele cinci</span>
+      <h3 style="margin:12px 0 6px">Ce se întâmplă înainte să înceapă construcția</h3>
+      <p class="small muted" style="margin:0 0 4px">
+        Ai bifat toate cele cinci riscuri. Fiecare primește o verificare separată și un raport,
+        <strong>înainte de faza 0</strong>. Nu pornește niciun agent până nu ai văzut rezultatele.
+        Fiecare identificator de mai jos primește exact un verdict — tratat, amânat cu motiv, sau respins cu motiv.
+      </p>
+      <div class="tbl-wrap" style="margin-top:14px">
+        <table>
+          <thead><tr><th style="width:64px">ID</th><th>Ce verific concret</th><th style="width:180px">Ce vezi tu</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">R-1</td><td>Rulez comanda de scaffold într-un director de probă și verific dacă refuză din cauza <code>.claude</code>. Dacă refuză, testez și mutarea conținutului peste <code>.git</code> existent.</td><td>Ieșirea comenzii, exact cum a apărut.</td></tr>
+            <tr><td class="mono">R-2</td><td>Scriu <code>docs/tokens.md</code> cu toate cele 26 de culori din secțiunea 03, fiecare cu numele din Figma și numele din Tailwind.</td><td>Tabelul complet, înainte de prima componentă.</td></tr>
+            <tr><td class="mono">R-3</td><td>Descarc assets-urile unui singur nod — rândul de provideri — și mă uit ce a ieșit: format, rezoluție, nume de fișiere.</td><td>Lista fișierelor rezultate.</td></tr>
+            <tr><td class="mono">R-4</td><td>Construiesc trei carduri de probă cu gradientele alese și le pun lângă cardul real din Figma.</td><td>Comparație vizuală, înainte de a le aplica pe toate.</td></tr>
+            <tr><td class="mono">R-5</td><td>Scriu promptul complet al unui agent din faza 4, cu lista de fișiere permise și interdicția de build.</td><td>Promptul brut, ca să judeci tu dacă regula e clară.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= 11. ÎNTREBĂRI DESCHISE ======================= -->
+  <section id="intrebari">
+    <div class="sec-head"><span class="sec-num">11</span><h2>Deciziile luate în review</h2></div>
+    <p class="sec-sub">
+      Cele trei întrebări deschise au primit răspuns. Le las aici ca urmă scrisă, cu ce înseamnă fiecare
+      în execuție. Nu mai există întrebări deschise în acest plan.
+    </p>
+
+    <div class="q">
+      <span class="badge ok">Î-1 · Decis</span>
+      <h3 style="margin:12px 0 6px">Faza 4 merge în două valuri de câte patru</h3>
+      <p class="small muted" style="margin:0">
+        Valul întâi: Header, Hero, Rânduri, Footer — zonele care ating cele mai multe primitive.
+        Corecțiile la cardul de joc sau la buton se fac o dată, apoi pornește valul doi:
+        Bannere, Search, Panouri, Mobile. Concret: dacă <code>GameCard</code> are marginea greșită,
+        o repari într-un singur loc, nu în opt ramuri paralele care au apucat deja să construiască peste ea.
+      </p>
+    </div>
+
+    <div class="q" style="margin-top:16px">
+      <span class="badge ok">Î-2 · Decis</span>
+      <h3 style="margin:12px 0 6px">Cardurile fără imagine reală primesc gradiente din paleta UI Kit</h3>
+      <p class="small muted" style="margin:0 0 14px">
+        Auriu <span class="mono">#F0C775 → #C6903D</span> și portocaliu <span class="mono">#F8B900 → #E67508</span>,
+        cu titlul jocului peste. Culorile sunt cele din secțiunea <em>Gradient Colors</em> a UI Kit-ului,
+        deci grila rămâne în brand și nu arată ca imagini care nu s-au încărcat.
+      </p>
+      <div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(132px,1fr))">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid var(--border-strong)">
+          <div style="height:118px;background:linear-gradient(160deg,#F0C775,#C6903D);display:grid;place-items:end center;padding:10px">
+            <span style="font-weight:800;font-size:13px;color:#231703;text-align:center;line-height:1.2;text-shadow:0 1px 0 rgba(255,255,255,.35)">GATES OF OLYMPUS</span>
+          </div>
+          <div style="padding:8px 10px;background:var(--bg-card)"><span class="small" style="color:var(--text-muted)">Pragmatic Play</span></div>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid var(--border-strong)">
+          <div style="height:118px;background:linear-gradient(160deg,#F8B900,#E67508);display:grid;place-items:end center;padding:10px">
+            <span style="font-weight:800;font-size:13px;color:#2A1300;text-align:center;line-height:1.2;text-shadow:0 1px 0 rgba(255,255,255,.3)">BIG BASS AMAZON</span>
+          </div>
+          <div style="padding:8px 10px;background:var(--bg-card)"><span class="small" style="color:var(--text-muted)">Pragmatic Play</span></div>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid var(--border-strong)">
+          <div style="height:118px;background:linear-gradient(160deg,#C6903D,#8A5E1F);display:grid;place-items:end center;padding:10px">
+            <span style="font-weight:800;font-size:13px;color:#FFF6E4;text-align:center;line-height:1.2">YETI QUEST</span>
+          </div>
+          <div style="padding:8px 10px;background:var(--bg-card)"><span class="small" style="color:var(--text-muted)">BGaming</span></div>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid var(--border-strong)">
+          <div style="height:118px;background:linear-gradient(160deg,#E67508,#B04A03);display:grid;place-items:end center;padding:10px">
+            <span style="font-weight:800;font-size:13px;color:#FFF1DF;text-align:center;line-height:1.2">SWEET BONANZA</span>
+          </div>
+          <div style="padding:8px 10px;background:var(--bg-card)"><span class="small" style="color:var(--text-muted)">Nolimit City</span></div>
+        </div>
+      </div>
+      <p class="small muted" style="margin:14px 0 0">
+        Astea sunt schițate direct aici, în HTML, ca să vezi acum direcția. Variantele finale, construite
+        în proiect și puse lângă cardul real din Figma, vin la verificarea riscului R-4, înainte de faza 0.
+      </p>
+    </div>
+
+    <div class="q" style="margin-top:16px">
+      <span class="badge ok">Î-3 · Decis</span>
+      <h3 style="margin:12px 0 6px">Pagina <code>/dev/screens</code> rămâne vizibilă în demo</h3>
+      <p class="small muted" style="margin:0">
+        Devine suprafața de lucru a designerului, nu doar o unealtă internă de test. Deschide o adresă
+        și vede toate ecranele din registru, fiecare cu identificatorul nodului din Figma alături —
+        inclusiv ecranele pe care le adaugă el pe parcurs, fără ca noi să facem ceva.
+        Consecință practică: când adaugă un ecran nou, verificarea vizuală îl preia automat.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================= 12. VERIFICARILE PRE-START ======================= -->
+  <section id="prestart">
+    <div class="sec-head"><span class="sec-num">12</span><h2>Verificările dinaintea fazei 0 — rezultate</h2></div>
+    <p class="sec-sub">
+      Cele cinci riscuri, verificate efectiv. Fiecare are un verdict și dovada lui.
+      Două dintre ele au ieșit altfel decât scria în plan — le-am marcat explicit.
+    </p>
+
+    <!-- R-1 -->
+    <div class="card" style="border-left:3px solid var(--green)">
+      <div class="sec-head" style="margin-bottom:6px">
+        <span class="badge ok">R-1 · Tratat</span>
+        <h3>Scaffold-ul chiar refuză directorul — și mutarea avea un defect</h3>
+      </div>
+      <p class="small">
+        Am creat un director de probă cu <code>.claude</code> și <code>.git</code> înăuntru și am rulat comanda.
+        Refuză, exact cum bănuiam. <code>.git</code> trece, <code>.claude</code> nu:
+      </p>
+<pre>The directory r1-probe contains files that could conflict:
+
+  .claude/
+
+Either try using a new directory name, or remove the files listed above.</pre>
+      <p class="small" style="margin-top:14px">
+        <strong>Ce nu anticipasem:</strong> mutarea din directorul frate eșuează și ea, pentru că
+        <code>create-next-app</code> își creează <em>propriul</em> <code>.git</code> în scaffold,
+        iar peste <code>.git</code>-ul existent nu se poate scrie:
+      </p>
+<pre>Move-Item : Cannot create a file when that file already exists.
+  (C:\...\r1-scaffold\.git:DirectoryInfo) [Move-Item], IOException</pre>
+      <p class="small" style="margin-top:14px">
+        Procedura corectată — ștergi întâi <code>.git</code>-ul scaffold-ului, apoi muți — a fost testată
+        și trece: directorul final conține <code>.claude</code> intact, <code>.git</code> original intact,
+        plus tot ce a generat Next.
+      </p>
+    </div>
+
+    <!-- R-2 -->
+    <div class="card" style="border-left:3px solid var(--amber);margin-top:16px">
+      <div class="sec-head" style="margin-bottom:6px">
+        <span class="badge warn">R-2 · Tratat, dar cere o decizie</span>
+        <h3>Cele două UI Kit-uri se contrazic pe aceleași nume</h3>
+      </div>
+      <p class="small">
+        Am citit și UI Kit-ul Mobile, nu doar pe cel Desktop. Cinci nume apar în ambele, cu valori diferite.
+        Nu sunt greșeli — sunt decizii diferite pentru ecrane diferite. Dar înseamnă că un singur tabel
+        de tokeni nu poate avea o singură valoare pentru fiecare nume.
+      </p>
+      <div class="tbl-wrap" style="margin-top:12px">
+        <table>
+          <thead><tr><th>Nume în Figma</th><th class="mono">Desktop 1440px</th><th class="mono">Mobile 390px</th></tr></thead>
+          <tbody>
+            <tr><td>Page Background</td><td class="mono">#11111A</td><td class="mono" style="color:var(--amber)">#0F121D</td></tr>
+            <tr><td>Overlay</td><td class="mono">#000000 @ 20%</td><td class="mono" style="color:var(--amber)">#161625 @ 80%</td></tr>
+            <tr><td>Secondary Text</td><td class="mono">#FFFFFF @ 70%</td><td class="mono" style="color:var(--amber)">#FFFFFF @ 60%</td></tr>
+            <tr><td>Blue Tinted BG</td><td class="mono">#007AFF @ 13%</td><td class="mono" style="color:var(--amber)">#007AFF @ 15%</td></tr>
+            <tr><td>Card Border</td><td class="mono">#FFFFFF @ 4%</td><td class="mono" style="color:var(--amber)">#262632</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small" style="margin-top:14px">
+        În plus, mobile-ul aduce patru culori care nu există pe desktop — <span class="mono">Section Background #12162B</span>,
+        <span class="mono">Caption Text #8E9BB0</span>, <span class="mono">Emerald Green #00F299</span>,
+        <span class="mono">Cyan Accent #00F0FF</span> — și botează diferit aceeași valoare:
+        desktop scrie <em>Separator</em>, mobile scrie <em>Divider</em>, ambele <span class="mono">#282936</span>.
+      </p>
+      <p class="small">
+        Tabelul complet e scris: 26 de culori desktop, 22 mobile, <strong>30 de tokeni distincți</strong>
+        după unificare, dintre care 5 cu două valori.
+      </p>
+
+      <div class="q" style="margin-top:16px;background:var(--bg-subtle);border-color:rgba(52,199,89,.35)">
+        <span class="badge ok">Decis</span>
+        <h3 style="font-size:15px;margin:10px 0 6px">Câștigă valorile din kit-ul Mobile</h3>
+        <p class="small muted" style="margin:0">
+          O singură valoare per token, cea de pe mobil, aplicată la ambele viewporturi. Decizia se aplică
+          doar celor cinci nume aflate în conflict; tokenii care există numai în kit-ul Desktop —
+          <em>Gold Nav Active</em>, <em>Nav Inactive</em>, <em>Footer Heading</em> și ceilalți — își
+          păstrează valorile, altfel pastila activă din bara de categorii și-ar pierde auriul.
+        </p>
+        <p class="small muted" style="margin:12px 0 0">
+          <strong>O singură excepție, adăugată după verificarea vizuală:</strong> <code>bg-overlay</code>
+          păstrează ambele valori, comutate la 768px. Aici kit-urile diferă dintr-un motiv, nu din
+          neatenție — pe desktop stratul stă în spatele unui panou mic din colț și lasă pagina lizibilă
+          la 20%, pe mobil în spatele unei foi care acoperă tot ecranul, la 80%. Cu o singură valoare,
+          panoul Balance de pe desktop ieșea mult mai închis decât în nodul 1:4116.
+        </p>
+      </div>
+    </div>
+
+    <!-- R-3 -->
+    <div class="card" style="border-left:3px solid var(--amber);margin-top:16px">
+      <div class="sec-head" style="margin-bottom:6px">
+        <span class="badge warn">R-3 · Tratat, planul se schimbă</span>
+        <h3>Exportul de assets nu poate fi făcut pe rânduri întregi</h3>
+      </div>
+      <p class="small">
+        Am rulat descărcarea pe patru noduri diferite. Rezultatele:
+      </p>
+      <ul class="small" style="color:var(--text-muted);padding-left:20px;margin:10px 0 0">
+        <li style="margin-bottom:8px"><strong style="color:var(--text-primary)">Pe rândul întreg de provideri</strong> —
+          ies peste 20 de fișiere SVG, tăiate la 20, cu mesaj de trunchiere și fără nume.
+          Sunt fragmente de layere, nu logo-uri: unul dintre ele e literalmente un dreptunghi negru,
+          <span class="mono">&lt;path d="M59 0H0V10.2924H59V0Z" fill="black"/&gt;</span>, adică masca logo-ului.</li>
+        <li style="margin-bottom:8px"><strong style="color:var(--text-primary)">Pe un singur logo</strong> —
+          curat: două SVG-uri, masca de 286 octeți și logo-ul real de 6233. Plus un export PNG al insignei întregi,
+          4,4 KB, care arată exact ca în design.</li>
+        <li style="margin-bottom:8px"><strong style="color:var(--text-primary)">Pe banner-ul hero</strong> —
+          patru imagini raster, corect PNG. Dar cea mare e <span class="mono">4096×1360 px, 5,7 MB</span>.
+          Pentru un demo trebuie redimensionată, altfel prima încărcare a paginii trage singură șase megaocteți.</li>
+        <li><strong style="color:var(--text-primary)">Pe cardul de joc</strong> — surpriza:
+          arta jocului există ca <strong>GIF animat</strong> <span class="mono">480×640, 2,7 MB</span>,
+          plus o variantă statică PNG <span class="mono">240×320, 125 KB</span>. Design-ul are carduri animate.</li>
+      </ul>
+      <p class="small" style="margin-top:14px">
+        <strong>Ce se schimbă în plan:</strong> faza de assets nu descarcă pe rânduri, ci nod cu nod,
+        și își ia numele fișierelor din numele layerelor din Figma. Providerii sunt deja numiți acolo —
+        <span class="mono">Badge-Pragmatic</span>, <span class="mono">Badge-3 Oaks</span>,
+        <span class="mono">Badge-BGaming</span>, <span class="mono">Badge-Nolimit</span>,
+        <span class="mono">Badge-Spribe</span> — deci sunt cinci provideri, nu șaisprezece.
+      </p>
+
+      <div class="q" style="margin-top:16px;background:var(--bg-subtle);border-color:rgba(52,199,89,.35)">
+        <span class="badge ok">Decis</span>
+        <h3 style="font-size:15px;margin:10px 0 6px">Doar PNG static, fără animație</h3>
+        <p class="small muted" style="margin:0">
+          Arta jocurilor există în Figma ca GIF animat de 480×640 și 2,7 MB, plus o variantă statică
+          PNG de 240×320 și 125 KB. Se folosește doar cea statică. Cu șaizeci de carduri pe pagină,
+          varianta animată ar fi însemnat sute de megaocteți la o singură încărcare.
+        </p>
+      </div>
+    </div>
+
+    <!-- R-4 -->
+    <div class="card" style="border-left:3px solid var(--green);margin-top:16px">
+      <div class="sec-head" style="margin-bottom:6px">
+        <span class="badge ok">R-4 · Tratat</span>
+        <h3>Placeholder-ele, lângă cardul real</h3>
+      </div>
+      <p class="small">
+        Primul e cardul exportat din Figma, la dimensiunea lui reală, 203×264. Următoarele trei sunt
+        placeholder-ele propuse, la aceeași dimensiune. Notabil: în Figma cardul nu are nod de text —
+        titlul și numele providerului sunt coapte în imagine. Deci placeholder-ul trebuie să le deseneze el.
+      </p>
+      <div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));margin-top:16px">
+        <figure>
+          <img src="card-real.png" alt="Cardul real exportat din Figma" style="border-radius:12px">
+          <figcaption><strong style="color:var(--green)">Real, din Figma</strong><br>nod 1:2602</figcaption>
+        </figure>
+        <figure>
+          <div style="aspect-ratio:203/264;border-radius:12px;border:1px solid var(--border-strong);background:linear-gradient(160deg,#F0C775,#C6903D);display:flex;flex-direction:column;justify-content:flex-end;padding:14px">
+            <span style="font-weight:800;font-size:15px;color:#231703;line-height:1.1;text-shadow:0 1px 0 rgba(255,255,255,.35)">GATES OF OLYMPUS 1000</span>
+            <span style="font-size:10px;letter-spacing:.8px;color:rgba(35,23,3,.72);margin-top:6px;text-transform:uppercase">Pragmatic Play</span>
+          </div>
+          <figcaption>Auriu<br><span class="mono">#F0C775 → #C6903D</span></figcaption>
+        </figure>
+        <figure>
+          <div style="aspect-ratio:203/264;border-radius:12px;border:1px solid var(--border-strong);background:linear-gradient(160deg,#F8B900,#E67508);display:flex;flex-direction:column;justify-content:flex-end;padding:14px">
+            <span style="font-weight:800;font-size:15px;color:#2A1300;line-height:1.1;text-shadow:0 1px 0 rgba(255,255,255,.3)">BIG BASS AMAZON XTREME</span>
+            <span style="font-size:10px;letter-spacing:.8px;color:rgba(42,19,0,.72);margin-top:6px;text-transform:uppercase">Pragmatic Play</span>
+          </div>
+          <figcaption>Portocaliu<br><span class="mono">#F8B900 → #E67508</span></figcaption>
+        </figure>
+        <figure>
+          <div style="aspect-ratio:203/264;border-radius:12px;border:1px solid var(--border-strong);background:linear-gradient(160deg,#C6903D,#5E3C10);display:flex;flex-direction:column;justify-content:flex-end;padding:14px">
+            <span style="font-weight:800;font-size:15px;color:#FFF6E4;line-height:1.1">YETI QUEST</span>
+            <span style="font-size:10px;letter-spacing:.8px;color:rgba(255,246,228,.7);margin-top:6px;text-transform:uppercase">BGaming</span>
+          </div>
+          <figcaption>Auriu închis<br><span class="mono">#C6903D → #5E3C10</span></figcaption>
+        </figure>
+      </div>
+      <p class="small muted" style="margin-top:14px">
+        Toate trei folosesc exclusiv culori din secțiunea <em>Gradient Colors</em> a UI Kit-ului.
+        Care gradient primește un joc se calculează din identificatorul lui, deci același joc arată
+        la fel de fiecare dată, iar grila are variație fără să iasă din paletă.
+      </p>
+    </div>
+
+    <!-- R-5 -->
+    <div class="card" style="border-left:3px solid var(--green);margin-top:16px">
+      <div class="sec-head" style="margin-bottom:6px">
+        <span class="badge ok">R-5 · Tratat</span>
+        <h3>Promptul unui agent din faza 4, în întregime</h3>
+      </div>
+      <p class="small">
+        Ăsta e textul exact pe care îl primește agentul 10, cel cu footerul. Uită-te la cele două liste
+        și la interdicția de build — asta e tot ce împiedică opt agenți să se calce reciproc.
+      </p>
+<pre>Construiește footerul desktop din Figma, nodul 1:3666, în proiectul
+D:\jp-platform (Next.js 15 App Router, TypeScript, Tailwind v3).
+
+ÎNAINTE DE ORICE: încarcă resursa skill://figma/figma-design-to-code/SKILL.md
+și urmeaz-o. La apelul get_design_context trimite
+skillNames: "resource:figma-design-to-code".
+
+<span class="c">== POATE CREA — exclusiv aceste fișiere ==</span>
+  src/components/layout/Footer.tsx
+  src/components/layout/FooterLinkColumn.tsx
+  src/components/layout/FooterBottom.tsx
+
+<span class="c">== POATE DOAR IMPORTA — citește, NU modifica ==</span>
+  src/lib/types.ts          tipurile FooterData
+  src/data/footer.json      conținutul footerului
+  src/lib/assets.ts         căile către logo-uri de plată și parteneri
+  src/components/primitives/*   Button, Icon, Badge
+  tailwind.config.ts        tokenii de culoare
+
+<span class="c">== INTERZIS ==</span>
+  NU rula `npm run build`, `next build` sau `next dev`. Alți agenți
+  lucrează în paralel în același director, iar două compilări simultane
+  corup .next și produc erori care nu au legătură cu codul tău.
+  NU scrie niciun cod hexazecimal de culoare. Folosește tokenii:
+  bg-card, text-footer-heading, border-separator. Regula de lint
+  respinge orice #RRGGBB din src/components/.
+  NU modifica niciun fișier din lista "poate doar importa". Dacă ai
+  nevoie de o schimbare acolo, scrie cererea în raportul final și
+  oprește-te — o aplic eu între valuri.
+
+<span class="c">== VERIFICARE PROPRIE ==</span>
+  npx tsc --noEmit
+  npx eslint src/components/layout/Footer.tsx (și celelalte două)
+
+<span class="c">== RAPORT FINAL ==</span>
+  Fișierele create, cu o linie despre ce conține fiecare.
+  Orice abatere de la design pe care nu ai putut-o reproduce, cu motivul.
+  Orice cerere de schimbare în fișierele înghețate.</pre>
+    </div>
+  </section>
+
+  <!-- ======================= 13. COMPARATIA ======================= -->
+  <section id="comparatie">
+    <div class="sec-head"><span class="sec-num">13</span><h2>Figma lângă implementare</h2></div>
+    <p class="sec-sub">
+      Stânga e captura din Figma, dreapta e captura reală din browser, la aceeași lățime.
+      Adnotează direct pe oricare imagine — feedback-ul ajunge la mine cu secțiunea atașată.
+      Capturile din dreapta sunt luate cu mișcarea redusă, deci banda de provideri e înghețată;
+      în browser ea se rotește.
+    </p>
+
+    <div class="grid" style="gap:26px">
+
+      <!-- header -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Header desktop</h3>
+          <span class="small muted mono">nod 1:2432</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Singura diferență e simbolul monedei: design-ul scrie <span class="mono">$ 5,500.00</span>,
+          noi scriem <span class="mono">£5,500.00</span>. E decizia ta de la început — moneda rămâne GBP.
+          Sigla e vectorul exportat din nodul 1:4250, nu text scris cu font.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-header.png" alt="Header în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-header.png" alt="Header în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- hero -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Hero, ticker și bara de categorii — desktop</h3>
+          <span class="small muted mono">nod 1:2433</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Captura din dreapta include și header-ul, pentru că e luată din pagina reală.
+          În ticker, primele trei câștiguri au miniatura adevărată; restul au gradient, pentru că
+          design-ul conține doar trei imagini de joc distincte.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-hero.png" alt="Hero în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-hero.png" alt="Hero în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- popular -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Rândul Popular — desktop</h3>
+          <span class="small muted mono">nod 1:2592</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Antetul, linia punctată, pastila <em>See All (206)</em> și grila de șase carduri se potrivesc.
+          Diferența de conținut e cea așteptată: în Figma toate cele șase carduri sunt aceeași imagine,
+          la noi trei sunt reale și trei sunt gradientele din UI Kit, cu titlul și providerul scrise de noi —
+          pentru că în design textul e copt în imagine, cardul nu are nod de text.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-popular.png" alt="Rândul Popular în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-popular.png" alt="Rândul Popular în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- providers -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Reparat în timpul verificării</span>
+          <h3>Leading Providers</h3>
+          <span class="small muted mono">nod 1:2657</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Aici verificarea vizuală și-a plătit costul. Butonul de căutare din antet se randa ca o lupă
+          uriașă ieșită din pagină. Cauza: fișierul <code>search-btn.svg</code> nu era un buton, ci
+          un SVG de 20×20 care conținea tot canvas-ul Figma — un dreptunghi de fundal și trasee cu
+          coordonate de la −2254 la 8005. Înlocuit cu vectorul corect al nodului 1:2655.
+          Diferența rămasă e voită: providerii fără logo primesc inițiale, unde design-ul repetă
+          aceleași cinci logo-uri de paisprezece ori.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-providers.png" alt="Providerii în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-providers.png" alt="Providerii în implementare, după reparație"><figcaption>Implementare, după reparație</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- tournament -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Current Tournaments</h3>
+          <span class="small muted mono">nod 1:3427</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Eyebrow, titlu, subtitlu, ambele pastile, numărătoarea inversă și butonul auriu.
+          Numărătoarea e derivată din data de final din date, nu scrisă de mână, deci chiar curge.
+          Premiul scrie GBP unde Figma scrie RON — în același design, celelalte două bannere scriu deja GBP.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-tournament.png" alt="Bannerul de turneu în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-tournament.png" alt="Bannerul de turneu în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- footer -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Footer</h3>
+          <span class="small muted mono">nod 1:3666</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Toate cele șapte logo-uri de plată și cei șapte parteneri se randează, inclusiv
+          Deutschland Casinos, care rămăsese nedescărcat și figura ca <span class="mono">partner-7</span>.
+          Cele zece steaguri de limbă sunt elemente de listă, nu linkuri — nu există rutare pentru ele,
+          iar zece ancore care nu duc nicăieri sunt mai rele pentru tastatură decât o listă simplă.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-footer.png" alt="Footerul în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-footer.png" alt="Footerul în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- search -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Reparat</span>
+          <h3>Căutarea, starea cu sugestii</h3>
+          <span class="small muted mono">nod 1:4479</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Conținutul era corect de la început — aceleași patru jocuri, aceiași provideri, aceleași
+          etichete de categorie, citite din Figma, nu inventate. Ce era greșit era așezarea:
+          panoul plutea sub header, iar bara de categorii de dedesubt arăta în același timp un
+          al doilea câmp de căutare, închis. Acum câmpul din capsulă se lățește pe loc, primește
+          conturul cyan și butonul de golire, iar panoul cade sub el, aliniat la dreapta.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-search.png" alt="Starea de căutare în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-search.png" alt="Starea de căutare în implementare"><figcaption>Implementare, după reparație</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- balance -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Panoul Balance</h3>
+          <span class="small muted mono">nod 1:4116</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Aici a ieșit la iveală ceva ce cititul codului nu prindea: panoul nu se putea deschide
+          din adresă, pentru că oglinda de stare în URL, cerută în plan, nu fusese scrisă niciodată
+          și nici semnalată. Șase capturi pe care le marcasem „verificate" arătau de fapt pagina
+          implicită. Acum <code>?panel=balance</code> chiar îl deschide. Stratul din spate a revenit
+          la 20% — la 80% pagina din spate aproape dispărea.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-balance.png" alt="Panoul Balance în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-balance.png" alt="Panoul Balance în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- mobile hero -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Reparat</span>
+          <h3>Hero mobil — era compoziția desktop micșorată</h3>
+          <span class="small muted mono">noduri 1:5750, 1:5751</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Cea mai serioasă abatere găsită. Design-ul mobil nu e o versiune mai mică a celui desktop,
+          e altă compoziție: două pastile separate în loc de una, suma <span class="mono">£5,500</span>
+          pe rândul ei cu <em>UP TO 250 FREE SPINS</em> dedesubt, buton <em>Get</em> nu <em>GET</em>.
+          Are și artă proprie — nodul 1:5751, cu fundal bleumarin în degrade, Zeus altfel încadrat și
+          un ciob violet în colțul de jos. Prima încercare decupa imaginea de pe desktop, ceea ce
+          punea în spate stâncile și coroana de aur de acolo și nu putea produce ciobul.
+          Acum e imaginea reală, exportată la 3×.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-mob-top.png" alt="Hero mobil în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-mob-top.png" alt="Hero mobil în implementare"><figcaption>Implementare, după reparație</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- mobile popular -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Reparat</span>
+          <h3>Rândul Popular — mobil</h3>
+          <span class="small muted mono">nod 1:5882</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Grila 3×2 era deja corectă — contradicția fusese în briefingul meu, iar agentul a semnalat-o
+          în loc să aleagă singur. Ce se strica erau titlurile lungi: blocul de text e aliniat la baza
+          unui card cu înălțime fixă și tăiere la margine, deci un titlu care cerea al treilea rând
+          creștea în sus și își pierdea primul rând. Se vedea pe <em>Golden Koi Rising</em> și pe
+          <em>Frost Fangs</em>. Acum e limitat la două rânduri, cu providerul pe unul singur.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-mob-popular.png" alt="Rândul Popular mobil în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-mob-popular.png" alt="Rândul Popular mobil în implementare"><figcaption>Implementare, după reparație</figcaption></figure>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="q" style="margin-top:24px;border-color:rgba(52,199,89,.35)">
+      <span class="badge ok">Toate cele cinci · rezolvate</span>
+      <h3 style="margin:12px 0 6px">Ce s-a reparat după prima rundă de comparație</h3>
+      <div class="tbl-wrap" style="margin-top:14px">
+        <table>
+          <thead><tr><th style="width:56px">ID</th><th style="width:220px">Ce era</th><th>Ce e acum</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">V-1</td><td>Hero mobil = compoziția desktop micșorată</td><td>Compoziția nodului 1:5750 plus arta proprie 1:5751, exportată la 3×</td></tr>
+            <tr><td class="mono">V-2</td><td>Titlurile lungi se tăiau pe cardul de 114px</td><td>Două rânduri maximum, provider pe unul singur</td></tr>
+            <tr><td class="mono">V-3</td><td>29 de SVG-uri cărau canvas-ul Figma</td><td>Curățate; banda de provideri se randează identic după</td></tr>
+            <tr><td class="mono">V-4</td><td>Stările interactive necomparate</td><td>Toate zece capturate; a scos la iveală că deep-link-urile lipseau complet</td></tr>
+            <tr><td class="mono">V-5</td><td>Overlay la 80% peste tot</td><td>20% pe desktop, 80% sub 768px — singurul token cu două valori</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;border-left:3px solid var(--amber)">
+      <span class="badge warn">Incident, reparat structural</span>
+      <h3 style="margin:12px 0 6px">Pagina a dat 500 pe toate rutele, deși codul era corect</h3>
+      <p class="small muted" style="margin:0">
+        În timpul verificării, serverul a început să întoarcă <em>Internal Server Error</em> pe orice
+        adresă. Codul compila fără nicio eroare. Din logul serverului:
+        <span class="mono">ENOENT ... _buildManifest.js.tmp.z5fzbd71okj</span>.
+        Cauza: am rulat un build de producție cât serverul de dezvoltare era pornit, iar amândouă
+        scriu în același director <code>.next</code>. S-au călcat reciproc și au corupt manifestul.
+      </p>
+      <p class="small muted" style="margin:12px 0 0">
+        Interdicția asta era scrisă în promptul fiecărui agent. A încălcat-o părintele, adică eu.
+        De aceea reparația nu e o notă de reamintire: <code>next.config.ts</code> citește acum
+        <code>NEXT_DIST_DIR</code>, iar <code>npm run build:check</code> trimite build-ul într-un
+        director separat. Verificat: build complet rulat, serverul a rămas în picioare.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <span class="badge">Diferențe rămase, conștiente</span>
+      <h3 style="margin:12px 0 6px">Ce nu se potrivește și de ce e în regulă</h3>
+      <ul class="small" style="color:var(--text-muted);padding-left:20px;margin:8px 0 0">
+        <li style="margin-bottom:8px">Providerii fără logo au inițiale — <span class="mono">EV</span>,
+          <span class="mono">RG</span>, <span class="mono">PG</span> — unde design-ul repetă aceleași
+          cinci logo-uri de paisprezece ori.</li>
+        <li style="margin-bottom:8px">Cardurile fără artă au gradiente cu titlul scris deasupra,
+          pentru că în Figma titlul e copt în imagine și cardul nu are nod de text.</li>
+        <li style="margin-bottom:8px">Moneda e GBP peste tot, unde design-ul scrie pe alocuri
+          <span class="mono">$</span> sau <span class="mono">RON</span> — decizia ta de la început.</li>
+        <li>Hero-ul mobil arată o singură ofertă. În Figma nodul 1:5749 e o pistă de trei carduri,
+          dar al doilea începe la x=380 într-un cadru de 390, deci nu se vede nimic din el.
+          Un carusel ar cere o sursă de date pentru oferte, care nu există.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="cta">
+    <h2 style="margin-bottom:8px">Ce urmează</h2>
+    <p class="muted" style="max-width:66ch;margin:0 auto 4px">
+      Demo-ul rulează. <strong>http://localhost:3000</strong> pentru platformă,
+      <strong>http://localhost:3000/dev/screens</strong> pentru registrul de ecrane.
+      Se pot deschide stări direct: <code>?auth=vip</code>, <code>?panel=balance</code>.
+    </p>
+    <p class="muted" style="max-width:66ch;margin:10px auto 0">
+      Zece perechi comparate, toate se potrivesc acum. Verificarea vizuală a scos trei lucruri pe
+      care cititul codului nu le prindea: butonul de căutare al providerilor arăta un fragment din
+      canvas-ul Figma, hero-ul mobil era compoziția desktop micșorată, iar deep-link-urile de stare
+      nu existau deloc — deci jumătate din capturile mele „verificate" arătau pagina implicită.
+    </p>
+    <p class="muted small" style="max-width:66ch;margin:10px auto 0">
+      Dacă mai vrei ceva schimbat în plan, adnotează direct pe pagină și trimite — se actualizează aici,
+      nu într-un document paralel.
+    </p>
+    <p class="small muted" style="margin:14px 0 0">
+      Direcția de design a acestei pagini: sistemul de design al produsului însuși — paleta din secțiunea 03,
+      citită din UI Kit. Nu am folosit o bibliotecă externă, tocmai ca pagina să arate ca produsul pe care îl propune.
+    </p>
+  </div>
+
+</div>
+
+</body>
+</html>
