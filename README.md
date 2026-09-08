@@ -54,14 +54,17 @@ npm run build:check          # production build, safe while dev is running
 
 ```bash
 node scripts/shot.mjs <url> <out.png> <width> <height> viewport '<selector|scrollY>'
-node scripts/review.mjs <outDir>          # drives and captures all ten interactive states
+node scripts/review.mjs <outDir>          # captures all 15 review states, twice each
+node scripts/a11y.mjs <outDir>            # axe-core over 9 states; exits 1 on critical/serious
 node scripts/clean-svg.mjs public/images --dry
 ```
 
 These drive **the Chrome already installed on the machine** (`channel: 'chrome'`), not a Playwright
 download — that download failed in this environment, so `npx playwright install` is not needed.
-They also force reduced motion, because the providers marquee never stops and a capture that waits
-for a settled frame never gets one.
+`shot.mjs` forces reduced motion, because the providers marquee never stops and a capture that waits
+for a settled frame never gets one; `review.mjs` shoots every state in both motion modes, so a rule
+that only fires under Reduce Motion cannot hide. A full-page shot walks the page down and back
+first, otherwise Next's `loading="lazy"` never fires and the footer logos come out blank.
 
 ## Deployment
 

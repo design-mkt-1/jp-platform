@@ -6,10 +6,10 @@ The demo is built, pushed to `main`, and deployed.
 
 - **Review build:** https://design-mkt-1.github.io/jp-platform/
 - **Screen registry:** https://design-mkt-1.github.io/jp-platform/dev/screens/
-- **Design vs implementation:** https://design-mkt-1.github.io/jp-platform/review/ — fourteen
-  comparisons, Figma beside the built page. Sections 01–12 of that report are the history: what was
-  measured in the Figma file before any code, and every decision taken since. Section 13 is the
-  comparison.
+- **Design vs implementation:** https://design-mkt-1.github.io/jp-platform/review/ — twenty-six
+  comparisons and one accessibility card, Figma beside the built page. Sections 01–12 of that report
+  are the history: what was measured in the Figma file before any code, and every decision taken
+  since. Section 13 is the comparison.
 - **Why the architecture looks like this:** [`docs/build-plan.md`](build-plan.md)
 - **Repo:** https://github.com/design-mkt-1/jp-platform (public, `noindex` + `robots.txt` disallow)
 
@@ -20,13 +20,14 @@ Verified on the live site: zero failing requests, `noindex` header served, `/dev
 
 ### Deep links, for reviewing one state directly
 
-| URL suffix                     | Shows                                           |
-| ------------------------------ | ----------------------------------------------- |
-| `?auth=prelogin` / `?auth=vip` | header and menu in that account state           |
-| `?panel=balance`               | the balance popover, Figma node 1:4116          |
-| `?panel=personalInfo`          | the account dropdown, node 1:4153               |
-| `?panel=jackpotMenu`           | the mobile menu, nodes 1:8751 / 1:8260 / 1:8503 |
-| `?q=swe`                       | the search suggestions state, node 1:4479       |
+| URL suffix                     | Shows                                              |
+| ------------------------------ | -------------------------------------------------- |
+| `?auth=prelogin` / `?auth=vip` | header and menu in that account state              |
+| `?panel=balance`               | the balance popover, Figma node 1:4116             |
+| `?panel=personalInfo`          | the account dropdown, node 1:4153                  |
+| `?panel=jackpotMenu`           | the mobile menu, nodes 1:8751 / 1:8260 / 1:8503    |
+| `?q=swe`                       | the search suggestions state, node 1:4479          |
+| `?pq=xyzgame`                  | the provider filter with no match, 1:2218 / 1:4321 |
 
 ## Local commands
 
@@ -37,9 +38,16 @@ npx tsc --noEmit
 npx eslint src --max-warnings=0
 
 node scripts/shot.mjs <url> <out.png> <w> <h> viewport '<selector|scrollY>'
-node scripts/review.mjs <outDir>   # drives and captures all ten interactive states
+node scripts/review.mjs <outDir>   # all 15 review states, each shot twice: reduce and no-preference
+node scripts/a11y.mjs <outDir>     # axe-core over 9 states; exits 1 when critical/serious exist
 node scripts/clean-svg.mjs public/images --dry
 ```
+
+A full-page capture used to come out with the footer's payment, partner and flag logos blank:
+`page.screenshot({fullPage: true})` resizes the viewport once, so Next's default `loading="lazy"`
+never fires. Both `shot.mjs` and `review.mjs` now walk the page down in viewport steps and back to
+the top before shooting. If a future capture shows missing images, check that first — it was a
+capture artefact, not a page defect.
 
 **Never run `npm run build` while `next dev` is up.** Both own `.next` and the collision corrupts
 it: every route starts returning 500 with `ENOENT ... _buildManifest.js.tmp.<random>` while the
@@ -80,21 +88,42 @@ the review report.
 New Games, Recommended and Instant Games were not shot on their own: they are the same `GameRow`
 with a different filter, compared under Popular.
 
-### 2. The screen registry — 13 entries, none walked through
+### 2. The screen registry — 13 entries, all walked — done
 
-`/dev/screens` lists every screen with its Figma node beside it, but no entry has been compared.
-Two have never been seen at all, in code or on screen: `empty-search-state-desktop` (1:4321) and
-`mobile-providers-no-results` (1:2218).
+Walked on 2026-09-08, mobile first, every state captured in both motion modes. The registry now has
+13 entries: the 12 it started with, plus `mobile-providers-no-results` (1:2218), which had never
+been built. The old `empty-search` entry never named a real state — node 1:4321 is the desktop
+provider-search popover with nothing matching — so it is now `providers-no-results-desktop`. The
+`mobile-nav` description called itself a navigation drawer; it is the tab bar fixed to the bottom of
+every mobile page, and it says that now.
 
-### 2b. Mobile tab bar links 404 on the live site
+One real defect came out of the walk and is fixed (commit 811c12a). At 390px the category strip
+showed a single chip: `CategoryNavBar` drew its own 244px `Search games…` trigger in that row, which
+left the pill scroller 136px and put Slots, Live Casino and Jackpots behind an unsignalled swipe.
+Node 1:5799 has no search field in that row at all — on mobile the search control is the header
+magnifier, and both called the same `openSearch` — so the trigger is `mobile:hidden` and the chips
+take the row. Re-measured at 390 in both motion modes: chips at 17–129, 135–226.1, 232.1–362.6 and
+368.6–483.4, all 32px tall, 372px of strip showing 466px of content, `scrollWidth` still 390. At
+1440 the bar is unchanged.
 
-Measured on the deployed site at 390px on 2026-09-08: the bottom tab bar's `Live Casino`, `Sport`
-and `Promos` links point at `/live-casino`, `/sport`, `/promos`, which do not exist in the static
-export. Next prefetches them on mobile, so the console shows three 404s on every load, and a tap
-lands on GitHub's 404 page. Desktop has no such links. Options: `prefetch={false}` and `href="#"`
-until those pages exist, or stub pages. Not touched in this session — it is a routing decision, not
-a design one. Also found the same day and fixed: with Reduce Motion on, the providers marquee made
-the page 3307px wide (commit 4e4be67).
+Everything else matched. What is left from the walk is not layout: the three items under §4 and the
+five differences added to §5.
+
+### 2b. Mobile tab bar prefetched three routes that do not exist — fixed
+
+Measured on a static export served locally on 2026-09-08: the bottom tab bar's `Live Casino`,
+`Sport` and `Promos` links point at `/live-casino`, `/sport`, `/promos`. Next prefetched all three
+on mobile, which produced three `<route>/index.txt?_rsc=` requests, three 404s and three console
+errors on every page load. `prefetch={false}` takes that to zero (commit 5f5bda4).
+
+The earlier note here was wrong about where a tap lands. Measured on the export served locally, it
+does **not** hit GitHub's own 404 page — it lands on our `src/app/not-found.tsx`, which
+`build:check` confirms is prerendered (`○ /_not-found`, static). That is the intended behaviour for
+a demo whose sport and promos pages do not exist yet, so nothing more is needed unless those pages
+get built.
+
+Also found the same day and fixed: with Reduce Motion on, the providers marquee made the page
+3307px wide (commit 4e4be67).
 
 ### 3. Change requests still open
 
@@ -104,11 +133,48 @@ the page 3307px wide (commit 4e4be67).
 | No `src/lib/data.ts`                         | Every consumer writes its own cast from JSON at each import site.                                                                                                 |
 | Icon Button states (node 1:5687)             | Design wants white at 12% hover, 4% active. The circle is painted inside the exported SVG, so honouring it means rebuilding the control around a real background. |
 
-### 4. Accessibility — nothing has been run
+### 4. Accessibility — first pass run, three decisions open
 
-`Panel` has a focus trap and `aria-modal`, and `ProviderCard` names itself for assistive tech. That
-is all that was deliberate. Nothing automated has been run. First question worth answering: do the
-sixty game cards have accessible names, or does a screen reader announce "link" sixty times?
+`node scripts/a11y.mjs <outDir>` injects axe-core 4.10.2 from the CDN over nine states and writes
+`a11y.json`. No package was added. It exits 1 while critical or serious violations exist, so it can
+sit in CI once the decisions below are made. Node counts from the run on 2026-09-08, mobile first:
+
+| state                          | critical | serious | moderate | minor |
+| ------------------------------ | -------- | ------- | -------- | ----- |
+| `mob-home` (390x844)           | 0        | 13      | 1        | 0     |
+| `mob-menu` (390)               | 0        | 13      | 0        | 0     |
+| `mob-menu-prelogin` (390)      | 0        | 13      | 0        | 0     |
+| `mob-providers-no-results`     | 0        | 13      | 1        | 0     |
+| `desktop-home` (1440x1000)     | 0        | 12      | 1        | 0     |
+| `desktop-panel-balance`        | 0        | 12      | 0        | 0     |
+| `desktop-panel-personal`       | 0        | 12      | 0        | 0     |
+| `desktop-search-suggestions`   | 0        | 15      | 0        | 0     |
+| `desktop-providers-no-results` | 0        | 12      | 0        | 0     |
+
+Zero critical anywhere. Every serious violation is the same rule, `color-contrast`, from three
+colour pairs:
+
+| where                                     | pair                                            | rendered by                 |
+| ----------------------------------------- | ----------------------------------------------- | --------------------------- |
+| the mobile hero's `Get` pill              | `text-primary` on `bg-blue`                     | `HeroBanner.tsx:100`        |
+| the `See All (206)` pills, every row      | blue on `--see-all-bg`, `rgb(0 122 255 / 0.13)` | `SectionHeader.tsx:43-51`   |
+| the blue badges in the search suggestions | `bg-blue-tint text-blue`, `Badge.tsx:21`        | `SearchSuggestions.tsx:106` |
+
+All three are Figma's own colour pairs, not something invented here. Fixing them means changing the
+design — a lighter blue behind the `See All` pill, or darker text on the blue button. That is an
+owner decision, which is why nothing was changed.
+
+The one moderate is `page-has-heading-one`: the page has no `<h1>`. Section titles are `<h2>`, so a
+screen reader finds no page title. One visually hidden heading fixes it; someone has to decide what
+it says.
+
+The open product question, and the answer to the one that stood here before. The game and provider
+cards are not links. Measured on the homepage at 390 and at 1440: **90 `<article>` elements, zero
+card links.** `GameCard` and `ProviderCard` both accept an `href` and render an `<a>` when they get
+one, but no caller passes it — `hrefForGame` exists on `ContentRow` and `GameGrid` and nothing
+supplies it — because the demo has no game pages. So a screen reader gets ninety articles rather
+than ninety links, and Tab does not reach them. If game pages arrive, this resolves itself; if not,
+someone has to decide what a card does on click.
 
 ### 5. Deliberate differences, to re-confirm before sign-off
 
@@ -130,6 +196,20 @@ sixty game cards have accessible names, or does a screen reader announce "link" 
   renders `DROP&WINS`.
 - The mobile tournament subtitle is the real copy, clamped to two lines; Figma writes the short
   "Best Slots, Huge Wins!!" there.
+- The mobile provider filter hides the logo bands under "No providers found". Node 1:2218 still
+  draws them, but with nothing matching there are no logos left to draw — the bands would show a
+  result the message has just denied.
+- The desktop provider filter with no match lives only inside the popover. Node 1:4321 is the
+  popover on its own, with no page behind it, which is why the Figma capture in the report stops at
+  its edge.
+- That popover's field measures 654 wide against Figma's 656. The popover is 720 with 32px padding
+  on each side, and ours carries a 1px border the frame does not have. Two pixels, from the border.
+- The magnifier inside both provider fields is grey where Figma draws it blue. Not yet decided
+  either way.
+- The `Sweet Bonanza` row in the search suggestions carries the badge `Popular`; Figma writes
+  `Slots`. The chip is the game's first category (`SearchSuggestions.tsx:31`) and that game is
+  `["popular", "slots"]` in `src/data/games.json` — the order of two strings in mock data, not
+  layout.
 
 ## Things worth remembering about this codebase
 

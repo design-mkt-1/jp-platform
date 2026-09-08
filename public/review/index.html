@@ -265,7 +265,8 @@
       Secțiunile <strong>01–12</strong> sunt istoricul: ce s-a măsurat în fișierul Figma înainte de a
       scrie cod, ce decizii s-au luat și ce a ieșit la verificările dinaintea construcției. Toate
       întrebările de acolo au primit deja răspuns; sunt păstrate ca urmă scrisă.
-      <strong>Secțiunea 13</strong> e comparația propriu-zisă: paisprezece comparații Figma / implementare.
+      <strong>Secțiunea 13</strong> e comparația propriu-zisă: douăzeci și șase de comparații
+      Figma / implementare, plus o fișă de accesibilitate.
     </p>
     <div class="chips">
       <a class="badge ok" href="../" style="text-decoration:none">Deschide demo-ul →</a>
@@ -1360,6 +1361,356 @@ skillNames: "resource:figma-design-to-code".
 
     <div class="grid" style="gap:26px">
 
+      <!-- mob-main -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Pagina mobilă, întreagă</h3>
+          <span class="small muted mono">nod 1:5720</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Ordinea secțiunilor e identică cu a cadrului: header, hero, banda de categorii, tickerul de
+          câștiguri, Popular, New Games, Leading Providers, Recommended, Crash Games, Must-Play Slots,
+          Bonus Buy, Megaways, Jackpots, Weekly Lottery, Drops &amp; Wins, Egypt, roată și turneu, footer.
+          Singura abatere reală găsită la plimbarea prin registru era banda de categorii; are fișa ei
+          mai jos. Măsurat la 390px, în ambele moduri de mișcare:
+          <span class="mono">documentElement.scrollWidth</span> = 390, nicio secțiune nu iese din
+          pagină, zero erori în consolă.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Ambele capturi sunt reduse la 240px lățime, iar cadrele de mai jos se derulează pe
+          verticală — pagina întreagă nu încape aici. Pagina reală are 7657px înălțime, cadrul din
+          Figma 7119; diferența vine din rândurile noastre cu conținut real, nu din secțiuni în plus.
+        </p>
+        <div class="ba">
+          <figure><div style="max-height:560px;overflow:auto;border-radius:10px"><img src="cmp/figma-mob-main.png" alt="Pagina mobilă în Figma"></div><figcaption>Figma</figcaption></figure>
+          <figure><div style="max-height:560px;overflow:auto;border-radius:10px"><img src="cmp/app-mob-main.png" alt="Pagina mobilă în implementare"></div><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- mobile-nav -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Bara de file de jos — mobil</h3>
+          <span class="small muted mono">nod 1:8235</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Casino, Live Casino, discul ridicat <em>Menu</em>, Sport, Promos — pictograme, ordine și
+          starea activă (Casino auriu, cu punctul dedesubt) se potrivesc. Nu e un sertar care alunecă:
+          e o bară fixată jos, pe fiecare pagină mobilă. Descrierea din registru o numea
+          <em>navigation drawer</em>; e corectată în <code>src/lib/screens.ts</code>.
+          Bara nu mai preîncarcă rutele care nu există — cele trei cereri
+          <span class="mono">index.txt?_rsc=</span> care dădeau 404 la fiecare încărcare au dispărut.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-mobile-nav.png" alt="Bara de file în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-mobile-nav.png" alt="Bara de file în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- jackpot menu prelogin -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Meniul Jackpot — vizitator nelogat</h3>
+          <span class="small muted mono">nod 1:8751</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Rândurile Sport și Casino cu chevron, cele șase rânduri de cont, banda
+          <em>Terms of Use</em> plus limba, pastilele Support și Vip Manager — aceeași ordine,
+          aceleași pictograme. Se deschide din adresă:
+          <code>?auth=prelogin&amp;panel=jackpotMenu</code>.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Un singur lucru apare la noi și nu în design: inelul albastru de focus pe primul control al
+          panoului, aici butonul de închidere. E capcana de focus care mută tastatura în panou la
+          deschidere — comportament standard de accesibilitate, pe care un cadru static din Figma nu
+          are cum să-l deseneze.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-jackpot-menu-prelogin.png" alt="Meniul pre-login în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-jackpot-menu-prelogin.png" alt="Meniul pre-login în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- jackpot menu postlogin -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Se potrivește, cu două diferențe</span>
+          <h3>Meniul Jackpot — jucător logat</h3>
+          <span class="small muted mono">nod 1:8260</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Structura e identică. Diferă două lucruri, amândouă din date, nu din așezare. Lângă insignă
+          design-ul scrie <span class="mono">ID: 8847291</span>, iar în câmpul copiabil
+          <span class="mono">ID: 23885</span>; datele noastre de test nu au numărul de cont, deci
+          acolo apare identificatorul pe care îl au — motivul e notat în cod, la
+          <code>JackpotMenu.tsx:156-159</code>. Și moneda e GBP, decizia ta de la început.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Măsurat la 390×844: rândul <em>Sign out</em> stă între 741 și 781, iar bara de file începe la
+          760 — deci ultimii 21px din rând intră sub bară. Panoul se derulează (805px de conținut în
+          759 vizibili), deci rândul e accesibil, dar în cadrul de 844 nu se vede întreg cum se vede în
+          Figma. Merită decis dacă panoul primește o margine de jos cât bara.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-jackpot-menu-postlogin.png" alt="Meniul post-login în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-jackpot-menu-postlogin.png" alt="Meniul post-login în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- jackpot menu vip -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Se potrivește, cu două diferențe</span>
+          <h3>Meniul Jackpot — VIP</h3>
+          <span class="small muted mono">nod 1:8503</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Aceleași rânduri ca la jucătorul logat, plus insigna <em>VIP</em> și pastila verde
+          <em>Vip Manager</em>. Aceleași două diferențe ca mai sus: identificatorul de cont și moneda.
+          Rândul <em>Sign out</em> se măsoară la fel — 741 la 781, sub bara care începe la 760.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-jackpot-menu-vip.png" alt="Meniul VIP în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-jackpot-menu-vip.png" alt="Meniul VIP în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- providers no results mobile -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Nou · o diferență voită</span>
+          <h3>Căutarea de provideri, fără rezultate — mobil</h3>
+          <span class="small muted mono">nod 1:2218</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Lupa din antetul rândului <em>Leading Providers</em> deschidea până acum căutarea de jocuri,
+          cu care nu are nimic în comun în afară de glifă. Acum deschide filtrul rândului: pe mobil
+          câmpul se desenează sub antet și ia locul lupei, exact ca în nodul 1:2222. Se deschide din
+          adresă cu <code>?pq=xyzgame</code>. Măsurat la 390: câmpul 358×44 pe rază 24,
+          <span class="mono">#1A1D2E</span> pe <span class="mono">#282936</span>, butonul de golire
+          28×28 pe rază 14, glifa la 8px sub câmp, pagina tot 390 lățime.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Diferența voită: nodul 1:2218 păstrează benzile cu logo-uri sub mesaj. La noi, când nimic nu
+          se potrivește, nu mai există logo-uri de desenat — benzile ar arăta un rezultat pe care
+          mesajul tocmai l-a negat. A doua diferență, mai mică: lupa din câmp e gri la noi, unde Figma
+          o desenează albastră.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-mobile-providers-no-results.png" alt="Căutarea de provideri fără rezultate, mobil, în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-mobile-providers-no-results.png" alt="Căutarea de provideri fără rezultate, mobil, în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- desktop main -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Pagina desktop, întreagă</h3>
+          <span class="small muted mono">nod 1:2431</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Header, hero, ticker, banda de categorii, cele cincisprezece secțiuni de conținut și footerul
+          complet — metode de plată, parteneri, coloanele de linkuri și cele zece steaguri. Măsurat la
+          1440: <span class="mono">scrollWidth</span> = 1440 în ambele moduri de mișcare, zero erori în
+          consolă. Banda de categorii arată patru pastile unde Figma desenează șase, dar trei dintre
+          ele sunt același <em>Jackpots</em> repetat — e notat în cod.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Capturile sunt reduse la 480px lățime, iar cadrele se derulează pe verticală — amândouă
+          merg mult mai jos decât încape aici. La mărime reală se deschid cu clic dreapta,
+          <em>Deschide imaginea</em>.
+        </p>
+        <div class="ba">
+          <figure><div style="max-height:560px;overflow:auto;border-radius:10px"><img src="cmp/figma-desktop-main.png" alt="Pagina desktop în Figma"></div><figcaption>Figma</figcaption></figure>
+          <figure><div style="max-height:560px;overflow:auto;border-radius:10px"><img src="cmp/app-desktop-main.png" alt="Pagina desktop în implementare"></div><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- personal info -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Panoul Personal info</h3>
+          <span class="small muted mono">nod 1:4153</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Wallet, History, Invite Friends, Bonuses, Profile, Sign out — ordine, pictograme și etichete
+          identice. Se deschide din adresă: <code>?panel=personalInfo</code>. Ca la celelalte panouri,
+          primul control primește inelul albastru de focus la deschidere.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-personal-info-opened.png" alt="Panoul Personal info în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-personal-info-opened.png" alt="Panoul Personal info în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- search popular & recent -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Căutare — populare și recente</h3>
+          <span class="small muted mono">nod 1:4334</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Câmpul focalizat, cu interogarea goală: șapte etichete populare pe două rânduri și patru
+          căutări recente, fiecare cu butonul ei de ștergere. Aceleași cuvinte, în aceeași ordine ca în
+          design. Diferența vizibilă e tot banda de categorii — patru pastile la noi, șase în Figma,
+          dintre care trei sunt același <em>Jackpots</em>.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-search-popular-recent.png" alt="Căutarea cu sugestii populare în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-search-popular-recent.png" alt="Căutarea cu sugestii populare în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- search no results -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Se potrivește</span>
+          <h3>Căutare — fără rezultate</h3>
+          <span class="small muted mono">nod 1:4611</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          <em>No games found</em>, <em>Try a different search term or browse our categories below</em>
+          și butonul <em>Clear search</em> — textul, pictograma și butonul se potrivesc cuvânt cu
+          cuvânt. Se deschide din adresă: <code>?q=xyzgame</code>.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-search-no-results.png" alt="Căutare fără rezultate în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-search-no-results.png" alt="Căutare fără rezultate în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- providers no results desktop -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Nou · două diferențe mici</span>
+          <h3>Căutarea de provideri, fără rezultate — desktop</h3>
+          <span class="small muted mono">nod 1:4321</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Pe desktop același filtru cade ca un popover de 720px sub lupa rândului. Intrarea din registru
+          care se numea <em>empty-search</em> și nu descria niciun ecran real e acum
+          <em>providers-no-results-desktop</em>, adică exact ce desenează nodul 1:4321.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Măsurat în DOM la 1440: popoverul are 720 lățime, chenar de 1px și padding 32 — deci câmpul
+          iese 654 lat, unde Figma desenează 656, pentru că acolo cadrul nu are chenar. Doi pixeli, din
+          bordură. A doua diferență e aceeași ca pe mobil: lupa din câmp e gri la noi, albastră în
+          design. Cadrul din Figma e doar popoverul, fără pagina din spate — de asta captura din stânga
+          se oprește la marginea lui.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-providers-no-results-desktop.png" alt="Popoverul de provideri fără rezultate în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-providers-no-results-desktop.png" alt="Popoverul de provideri fără rezultate în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- category strip 390 -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Reparat</span>
+          <h3>Bara de categorii la 390</h3>
+          <span class="small muted mono">nod 1:5799</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Singurul defect real ieșit din plimbarea prin registru. La 390px se vedea o singură pastilă,
+          <em>Popular</em>. Cauza: bara își desena propriul buton <em>Search games…</em>, lat de 244px,
+          chiar acolo, deși pe mobil căutarea e lupa din header și cheamă aceeași acțiune. Rămâneau
+          136px pentru pastile, iar Slots, Live Casino și Jackpots stăteau în spatele unei glisări pe
+          orizontală pe care nimic nu o anunța. Nodul 1:5799 nu are câmp de căutare în acel rând.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Butonul e ascuns sub 768px, iar pastila a primit mărimea ei de mobil din nodul 1:5799:
+          32px înălțime, 14px inset, text 12, glifă 16, spațiu 6. Re-măsurat azi la 390, în ambele
+          moduri de mișcare, aceleași cifre: pastilele la 17–129, 135–226,1, 232,1–362,6 și
+          368,6–483,4, toate de 32px înălțime; banda arată 372px din 466 de conținut, deci ultima
+          pastilă e tăiată vizibil de marginea dreaptă — exact ce face și randarea Figma la 390 — iar
+          pagina rămâne 390 lățime. La 1440 bara e neatinsă: pastile de 54px, butonul tot 244 lat.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-category-strip.png" alt="Banda de categorii în Figma la 390"><figcaption>Figma — nod 1:5799</figcaption></figure>
+          <figure><img src="cmp/app-category-strip.png" alt="Banda de categorii în implementare, după reparație"><figcaption>Implementare, după</figcaption></figure>
+        </div>
+        <div class="ba" style="margin-top:14px">
+          <figure><img src="cmp/app-category-strip-before.png" alt="Banda de categorii înainte de reparație"><figcaption>Înainte — o pastilă și un câmp de căutare</figcaption></figure>
+          <figure><img src="cmp/app-category-strip.png" alt="Banda de categorii după reparație"><figcaption>După — rândul întreg pentru pastile</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- accessibility -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Prima trecere</span>
+          <h3>Accesibilitate — prima trecere</h3>
+          <span class="small muted mono">axe-core 4.10.2 · 9 stări</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Există acum un pas automat: <code>node scripts/a11y.mjs &lt;director&gt;</code> deschide nouă
+          stări, injectează axe-core din CDN și scrie rezultatele. Nicio dependență nouă în proiect.
+          Numerele de mai jos sunt noduri, nu reguli, și vin din rularea de azi. Mobil întâi.
+        </p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Stare</th><th>critice</th><th>serioase</th><th>moderate</th><th>minore</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">mob-home (390×844)</td><td>0</td><td>13</td><td>1</td><td>0</td></tr>
+              <tr><td class="mono">mob-menu (390)</td><td>0</td><td>13</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">mob-menu-prelogin (390)</td><td>0</td><td>13</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">mob-providers-no-results (390)</td><td>0</td><td>13</td><td>1</td><td>0</td></tr>
+              <tr><td class="mono">desktop-home (1440×1000)</td><td>0</td><td>12</td><td>1</td><td>0</td></tr>
+              <tr><td class="mono">desktop-panel-balance</td><td>0</td><td>12</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">desktop-panel-personal</td><td>0</td><td>12</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">desktop-search-suggestions</td><td>0</td><td>15</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">desktop-providers-no-results</td><td>0</td><td>12</td><td>0</td><td>0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small muted" style="margin:14px 0">
+          Zero probleme critice, oriunde. Toate cele serioase sunt aceeași regulă,
+          <span class="mono">color-contrast</span>, și vin din trei perechi de culori:
+        </p>
+        <ul class="small" style="color:var(--text-muted);padding-left:20px;margin:0 0 14px">
+          <li style="margin-bottom:8px">Pastila <em>Get</em> din hero-ul mobil — alb pe albastru,
+            <code>HeroBanner.tsx:100</code>.</li>
+          <li style="margin-bottom:8px">Pastilele <em>See All (206)</em> din antetul fiecărui rând —
+            albastru pe albastru la 13% (<span class="mono">--see-all-bg</span>,
+            <code>globals.css:97</code>), construite în <code>SectionHeader.tsx:43-51</code>. Ele dau
+            cele mai multe dintre nodurile numărate mai sus.</li>
+          <li>Insignele albastre din sugestiile de căutare — <code>Badge.tsx:21</code>,
+            <span class="mono">bg-blue-tint text-blue</span>, randate de
+            <code>SearchSuggestions.tsx:106</code>.</li>
+        </ul>
+        <p class="small muted" style="margin:0 0 14px">
+          Toate trei sunt perechi de culori luate din design, nu improvizații ale noastre. De aceea nu
+          le-am schimbat: a le repara înseamnă a schimba design-ul — un albastru mai deschis sub
+          pastila <em>See All</em>, sau text mai închis pe butonul albastru. E decizia ta, nu o
+          reparație de cod.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Singura problemă moderată e <span class="mono">page-has-heading-one</span>: pagina nu are
+          niciun <span class="mono">&lt;h1&gt;</span>. Titlurile de secțiune sunt
+          <span class="mono">&lt;h2&gt;</span>, deci un cititor de ecran nu găsește titlul paginii. Se
+          rezolvă cu un singur titlu ascuns vizual, dar cineva trebuie să decidă ce scrie în el.
+        </p>
+        <p class="small muted" style="margin:0">
+          <strong style="color:var(--text)">O întrebare de produs, pentru tine.</strong>
+          Cardurile de joc și de provider nu sunt linkuri. Măsurat pe pagina de start, la 390 și la
+          1440 deopotrivă: 90 de elemente <span class="mono">&lt;article&gt;</span> și zero linkuri de
+          card. <code>GameCard</code> și <code>ProviderCard</code> acceptă un
+          <span class="mono">href</span> și devin <span class="mono">&lt;a&gt;</span> când îl primesc,
+          dar nimeni nu îl trimite, pentru că demo-ul nu are pagini de joc. Consecința: cine navighează
+          cu tastatura sau cu cititor de ecran aude nouăzeci de articole, nu nouăzeci de linkuri, și nu
+          poate ajunge la ele cu Tab. Dacă apar pagini de joc, se rezolvă de la sine; dacă nu, trebuie
+          decis ce face un card la clic.
+        </p>
+      </div>
+
+
       <!-- header -->
       <div class="card">
         <div class="sec-head" style="margin-bottom:10px">
@@ -1619,6 +1970,11 @@ skillNames: "resource:figma-design-to-code".
           panoul plutea sub header, iar bara de categorii de dedesubt arăta în același timp un
           al doilea câmp de căutare, închis. Acum câmpul din capsulă se lățește pe loc, primește
           conturul cyan și butonul de golire, iar panoul cade sub el, aliniat la dreapta.
+          Re-verificat la 8 septembrie 2026 pe <code>?q=swe</code>: structura celor patru rânduri e
+          aceeași, iar singura nepotrivire rămasă e de conținut — insigna rândului
+          <em>Sweet Bonanza</em> scrie <em>Popular</em> unde Figma scrie <em>Slots</em>. Insigna ia
+          prima categorie a jocului, iar în datele de test jocul are <span class="mono">popular</span>
+          înaintea lui <span class="mono">slots</span> — e ordinea a două cuvinte în date, nu așezare.
         </p>
         <div class="ba">
           <figure><img src="cmp/figma-search.png" alt="Starea de căutare în Figma"><figcaption>Figma</figcaption></figure>
@@ -1639,6 +1995,10 @@ skillNames: "resource:figma-design-to-code".
           și nici semnalată. Șase capturi pe care le marcasem „verificate" arătau de fapt pagina
           implicită. Acum <code>?panel=balance</code> chiar îl deschide. Stratul din spate a revenit
           la 20% — la 80% pagina din spate aproape dispărea.
+          Re-verificat la 8 septembrie 2026, în ambele moduri de mișcare: totalul, soldul real și cel
+          bonus, coada de free spins și butonul Deposit se potrivesc în continuare cu nodul 1:4116, iar
+          singurul lucru care apare la noi și nu în design e inelul albastru de focus pe butonul
+          Deposit, pus acolo de capcana de focus a panoului.
         </p>
         <div class="ba">
           <figure><img src="cmp/figma-balance.png" alt="Panoul Balance în Figma"><figcaption>Figma</figcaption></figure>
