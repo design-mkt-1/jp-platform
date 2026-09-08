@@ -1,42 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens — see docs/tokens.md for the full Figma mapping.
+ *
+ * Source: UI Kit — Desktop / Colors (node 1:5199) and UI Kit — Mobile / Colors (node 1:4745)
+ * of Figma file 2MyylxdZblfGnf05nQacUz. The file has no Figma variables, so these values are
+ * transcribed from the swatch fills. Where the two kits disagreed, the Mobile value was adopted.
+ *
+ * Never write a raw hex value in a component. Use the Tailwind token instead — the lint rule
+ * in eslint.config.mjs rejects hex literals under src/components/.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+
+  /* Backgrounds */
+  --bg-page: #0f121d;
+  --bg-card: #151624;
+  --bg-section: #12162b;
+  --bg-overlay: rgb(22 22 37 / 0.8);
+  --bg-subtle: rgb(255 255 255 / 0.02);
+  --bg-elevated: rgb(255 255 255 / 0.06);
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: rgb(255 255 255 / 0.6);
+  --text-tertiary: rgb(255 255 255 / 0.6);
+  --text-muted: #839cbf;
+  --text-caption: #8e9bb0;
+  --text-nav: #9e9fab;
+  --text-label: #b2b8c2;
+  --text-footer-heading: #dad7e0;
+
+  /* Accent & brand */
+  --blue: #007aff;
+  --blue-tint: rgb(0 122 255 / 0.15);
+  --amber: #f59e0b;
+  --gold: #d4a352;
+  --green: #34c759;
+  --emerald: #00f299;
+  --cyan: #00f0ff;
+
+  /* Gradient stops */
+  --gold-light: #f0c775;
+  --gold-dark: #c6903d;
+  --orange-start: #f8b900;
+  --orange-end: #e67508;
+
+  /* Strokes & separators */
+  --border-card: #262632;
+  --border-divider: rgb(255 255 255 / 0.07);
+  --border-medium: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.1);
+  --border-separator: #282936;
+
+  /* Documented exception: the file's only Figma variable, BG/Quaternary.
+     Not part of either UI Kit palette — used only where a node asks for it. */
+  --bg-quaternary: #0d1420;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    background-color: var(--bg-page);
+  }
+
+  body {
+    @apply bg-page text-secondary antialiased;
+    font-family: var(--font-inter), system-ui, sans-serif;
+  }
+
+  /* The design uses a dark page throughout; keep form controls in step. */
+  ::selection {
+    background-color: var(--blue-tint);
+    color: var(--text-primary);
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+@layer utilities {
+  .bg-gradient-gold {
+    background-image: linear-gradient(160deg, var(--gold-light), var(--gold-dark));
+  }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  .bg-gradient-orange {
+    background-image: linear-gradient(160deg, var(--orange-start), var(--orange-end));
+  }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+  /* Horizontal card rails scroll but never show a scrollbar, as in the design. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }
