@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import Button from '../primitives/Button'
 import Icon from '../primitives/Icon'
+import IconButton from '../primitives/IconButton'
 import Sheet from '../primitives/Sheet'
 import { VipBadge } from '../layout/HeaderPostlogin'
 import { MenuGlyph } from '../layout/MobileNavBar'
@@ -226,14 +227,9 @@ export default function JackpotMenu() {
               {formatGbp(BALANCES[authMode].totalGbp)}
             </span>
           ) : null}
-          <button
-            type="button"
-            onClick={closePanel}
-            aria-label="Close menu"
-            className={`flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-elevated ${FOCUS_RING}`}
-          >
+          <IconButton onClick={closePanel} aria-label="Close menu">
             <Icon name="close" width={20} height={20} className="size-5" />
-          </button>
+          </IconButton>
         </div>
       </div>
 

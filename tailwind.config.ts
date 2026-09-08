@@ -18,6 +18,9 @@ export default {
         overlay: 'var(--bg-overlay)',
         subtle: 'var(--bg-subtle)',
         elevated: 'var(--bg-elevated)',
+        // Icon Button hover/active, node 1:5687 — the rest fill is `elevated` above.
+        'icon-btn-hover': 'var(--bg-icon-btn-hover)',
+        'icon-btn-active': 'var(--bg-icon-btn-active)',
         quaternary: 'var(--bg-quaternary)',
         header: 'var(--bg-header)',
         footer: 'var(--bg-footer)',

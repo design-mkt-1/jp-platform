@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import type { ComponentType } from 'react'
 import { LOGO } from '@/lib/assets'
 import Icon from '../primitives/Icon'
+import IconButton from '../primitives/IconButton'
 import HeaderPostlogin from './HeaderPostlogin'
 import HeaderPrelogin from './HeaderPrelogin'
 import HeaderVip from './HeaderVip'
@@ -99,15 +100,13 @@ function Brand() {
 function MobileSearchButton() {
   const openSearch = useAppStore((state) => state.openSearch)
 
+  // `hidden` beats the primitive's own `flex` (Tailwind emits `.hidden` after `.flex`), and the
+  // `mobile:` variant beats both, so the button is the 40x40 circle of node 1:5687 under 768px
+  // and absent above it.
   return (
-    <button
-      type="button"
-      onClick={openSearch}
-      aria-label="Search games"
-      className={`hidden size-10 shrink-0 items-center justify-center rounded-full hover:bg-elevated mobile:flex ${FOCUS_RING}`}
-    >
+    <IconButton onClick={openSearch} aria-label="Search games" className="hidden mobile:flex">
       <Icon name="search" width={20} height={20} className="size-5" />
-    </button>
+    </IconButton>
   )
 }
 

@@ -88,6 +88,26 @@ Trei abateri față de kit-ul Desktop, acceptate conștient. Fiecare se întoarc
 | Subtle Surface     | `#FFFFFF @ 2%`   | `bg-subtle`    | `--bg-subtle`   | D   |
 | Elevated Surface   | `#FFFFFF @ 6%`   | `bg-elevated`  | `--bg-elevated` | D   |
 
+#### Stările butonului-iconiță (nod `1:5687`)
+
+Frame-ul `Icon Button (Search)` fixează un cerc de 40x40 (`Border Radius: 20px (circle)`,
+`Padding: N/A — fixed 40x40`) și îi scrie cele trei stări sub fiecare exemplar din `States`
+(`1:5697`). Repausul este chiar `--bg-elevated`, deci nu primește token nou. Umbră: niciuna, în
+toate trei.
+
+| Stare în Figma | Valoare adoptată | Token Tailwind     | Variabilă CSS          |
+| -------------- | ---------------- | ------------------ | ---------------------- |
+| `DEFAULT`      | `#FFFFFF @ 6%`   | `bg-elevated`      | `--bg-elevated`        |
+| `HOVER`        | `#FFFFFF @ 12%`  | `bg-icon-btn-hover`  | `--bg-icon-btn-hover`  |
+| `ACTIVE`       | `#FFFFFF @ 4%`   | `bg-icon-btn-active` | `--bg-icon-btn-active` |
+
+Apăsatul este mai deschis decât repausul — așa scrie nodul, nu e o inversare din cod.
+
+Cercul stătea până acum desenat în asset: `public/images/icons/search-btn.svg` își aducea propriul
+`<rect width="40" height="40" rx="20" fill="white" fill-opacity="0.0588"/>`, așa că hover și
+apăsat nu aveau ce muta. Fișierul păstrează doar glifa (20x20), iar cercul îl pune
+`src/components/primitives/IconButton.tsx`.
+
 ### Text
 
 | Nume Figma     | Valoare adoptată | Token Tailwind        | Variabilă CSS           | Kit |

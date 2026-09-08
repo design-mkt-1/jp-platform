@@ -22,6 +22,13 @@
   --bg-overlay: rgb(0 0 0 / 0.2);
   --bg-subtle: rgb(255 255 255 / 0.02);
   --bg-elevated: rgb(255 255 255 / 0.06);
+  /*
+   * Icon Button states, node 1:5687. The rest fill is --bg-elevated (white 6%), which the node
+   * spells out as "Fill: #FFFFFF @ 6%"; these are the other two rows of its States frame. No
+   * shadow in any of the three. The pressed value really is lighter than the rest value.
+   */
+  --bg-icon-btn-hover: rgb(255 255 255 / 0.12);
+  --bg-icon-btn-active: rgb(255 255 255 / 0.04);
 
   /* Text */
   --text-primary: #ffffff;

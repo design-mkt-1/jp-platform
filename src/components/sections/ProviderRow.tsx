@@ -6,6 +6,7 @@ import { SEARCH_BUTTON_ICON } from '@/lib/assets'
 import type { ProvidersSectionSpec } from '@/lib/sections'
 import type { Provider } from '@/lib/types'
 import { useAppStore } from '@/store/useAppStore'
+import IconButton from '../primitives/IconButton'
 import ProviderCard from '../cards/ProviderCard'
 import ProviderSearch from '../search/ProviderSearch'
 import SearchNoResults from '../search/SearchNoResults'
@@ -70,16 +71,14 @@ export default function ProviderRow({
     // button is the only element on the page that knows where that edge is. At 390 the button goes
     // away while the field is up — node 1:2222 has nothing left in this slot.
     <div className={`relative shrink-0 ${query === null ? '' : 'mobile:hidden'}`}>
-      <button
-        type="button"
+      <IconButton
         onClick={openProviderSearch}
         aria-label="Search providers"
         aria-expanded={query !== null}
-        className="rounded-full transition-[filter] duration-150 hover:brightness-125 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
       >
-        {/* The exported asset is the whole 40x40 control, circle included — no background here. */}
-        <Image src={SEARCH_BUTTON_ICON} alt="" width={40} height={40} unoptimized className="size-10" />
-      </button>
+        {/* The asset is the bare 20x20 glyph now; the circle around it belongs to IconButton. */}
+        <Image src={SEARCH_BUTTON_ICON} alt="" width={20} height={20} unoptimized className="size-5" />
+      </IconButton>
 
       {/* Node 1:4321 is the field and the message in one card. `-my-8` hands back the 32px of
           padding `sm` carries of its own, which the card's 32px gap has already spent — the same
