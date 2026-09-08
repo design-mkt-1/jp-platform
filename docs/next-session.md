@@ -19,13 +19,13 @@ Verified on the live site: zero failing requests, `noindex` header served, `/dev
 
 ### Deep links, for reviewing one state directly
 
-| URL suffix | Shows |
-|---|---|
-| `?auth=prelogin` / `?auth=vip` | header and menu in that account state |
-| `?panel=balance` | the balance popover, Figma node 1:4116 |
-| `?panel=personalInfo` | the account dropdown, node 1:4153 |
-| `?panel=jackpotMenu` | the mobile menu, nodes 1:8751 / 1:8260 / 1:8503 |
-| `?q=swe` | the search suggestions state, node 1:4479 |
+| URL suffix                     | Shows                                           |
+| ------------------------------ | ----------------------------------------------- |
+| `?auth=prelogin` / `?auth=vip` | header and menu in that account state           |
+| `?panel=balance`               | the balance popover, Figma node 1:4116          |
+| `?panel=personalInfo`          | the account dropdown, node 1:4153               |
+| `?panel=jackpotMenu`           | the mobile menu, nodes 1:8751 / 1:8260 / 1:8503 |
+| `?q=swe`                       | the search suggestions state, node 1:4479       |
 
 ## Local commands
 
@@ -68,12 +68,12 @@ Two have never been seen at all, in code or on screen: `empty-search-state-deskt
 
 ### 3. Change requests still open
 
-| What | Why it matters |
-|---|---|
-| `Badge` has no `xs` size (only `sm`, `md`) | The mobile hero's two pills are local `<span>`s because `sm` renders them a third too tall. Two ways to draw the same pill. |
-| `formatCountdown` lives in `PromoBanner.tsx` | `format.ts` opens with "no component reaches for `toFixed` on its own"; a countdown is the same class of decision. |
-| No `src/lib/data.ts` | Every consumer writes its own cast from JSON at each import site. |
-| Icon Button states (node 1:5687) | Design wants white at 12% hover, 4% active. The circle is painted inside the exported SVG, so honouring it means rebuilding the control around a real background. |
+| What                                         | Why it matters                                                                                                                                                    |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Badge` has no `xs` size (only `sm`, `md`)   | The mobile hero's two pills are local `<span>`s because `sm` renders them a third too tall. Two ways to draw the same pill.                                       |
+| `formatCountdown` lives in `PromoBanner.tsx` | `format.ts` opens with "no component reaches for `toFixed` on its own"; a countdown is the same class of decision.                                                |
+| No `src/lib/data.ts`                         | Every consumer writes its own cast from JSON at each import site.                                                                                                 |
+| Icon Button states (node 1:5687)             | Design wants white at 12% hover, 4% active. The circle is painted inside the exported SVG, so honouring it means rebuilding the control around a real background. |
 
 ### 4. Accessibility — nothing has been run
 

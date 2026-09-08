@@ -4,18 +4,18 @@ A working demo of the Jackpot casino platform, built from the Figma file
 `2MyylxdZblfGnf05nQacUz` (one page, `Platform`). Next.js 15, TypeScript, Tailwind v3, no backend —
 all data is mock JSON under `src/data/`.
 
-| | |
-|---|---|
-| **Demo** | https://design-mkt-1.github.io/jp-platform/ |
+|                                         |                                                         |
+| --------------------------------------- | ------------------------------------------------------- |
+| **Demo**                                | https://design-mkt-1.github.io/jp-platform/             |
 | **All screens, with their Figma nodes** | https://design-mkt-1.github.io/jp-platform/dev/screens/ |
-| **Design vs implementation** | https://design-mkt-1.github.io/jp-platform/review/ |
+| **Design vs implementation**            | https://design-mkt-1.github.io/jp-platform/review/      |
 
 The site is public but carries `noindex` and a `robots.txt` disallow: it is an unreleased design
 carrying third-party brand marks, so the link is shareable but should not surface in search.
 
 ## Running it
 
-Needs Node 24 and Google Chrome (see *Screenshots* below).
+Needs Node 24 and Google Chrome (see _Screenshots_ below).
 
 ```bash
 npm ci
@@ -27,13 +27,13 @@ npm run dev          # http://localhost:3000
 The store mirrors three things into the query string, so any state can be linked to instead of
 clicked to.
 
-| Suffix | Shows |
-|---|---|
-| `?auth=prelogin` · `?auth=vip` | header and menu in that account state |
-| `?panel=balance` | balance popover — Figma node 1:4116 |
-| `?panel=personalInfo` | account dropdown — node 1:4153 |
-| `?panel=jackpotMenu` | mobile menu — nodes 1:8751 / 1:8260 / 1:8503 |
-| `?q=swe` | search suggestions — node 1:4479 |
+| Suffix                         | Shows                                        |
+| ------------------------------ | -------------------------------------------- |
+| `?auth=prelogin` · `?auth=vip` | header and menu in that account state        |
+| `?panel=balance`               | balance popover — Figma node 1:4116          |
+| `?panel=personalInfo`          | account dropdown — node 1:4153               |
+| `?panel=jackpotMenu`           | mobile menu — nodes 1:8751 / 1:8260 / 1:8503 |
+| `?q=swe`                       | search suggestions — node 1:4479             |
 
 ### Checks
 
@@ -72,15 +72,15 @@ server to `/jp-platform` and break the screenshot scripts, which address the roo
 
 ## Where things are
 
-| Path | What |
-|---|---|
-| `src/lib/sections.ts` | **The spine.** Fifteen rows described as data; three renderers, not fifteen components. A new row is four lines here. |
-| `src/lib/screens.ts` | Registry behind `/dev/screens`, each entry carrying its Figma node id |
-| `src/lib/assets.ts` | The only place that turns an asset name into a URL, and the only place that knows about the deployment's base path |
-| `src/store/useAppStore.ts` | Auth mode, search, open panel. No provider — the page stays a Server Component |
-| `docs/tokens.md` | **Read this before touching colour.** The Figma file has no variables, so this document is the only link between design and code |
-| `docs/next-session.md` | What is still to be done |
-| `docs/build-plan.md` | Why the architecture looks like this, and the traps already hit |
+| Path                       | What                                                                                                                             |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/sections.ts`      | **The spine.** Fifteen rows described as data; three renderers, not fifteen components. A new row is four lines here.            |
+| `src/lib/screens.ts`       | Registry behind `/dev/screens`, each entry carrying its Figma node id                                                            |
+| `src/lib/assets.ts`        | The only place that turns an asset name into a URL, and the only place that knows about the deployment's base path               |
+| `src/store/useAppStore.ts` | Auth mode, search, open panel. No provider — the page stays a Server Component                                                   |
+| `docs/tokens.md`           | **Read this before touching colour.** The Figma file has no variables, so this document is the only link between design and code |
+| `docs/next-session.md`     | What is still to be done                                                                                                         |
+| `docs/build-plan.md`       | Why the architecture looks like this, and the traps already hit                                                                  |
 
 ## Known deliberate differences from the design
 
