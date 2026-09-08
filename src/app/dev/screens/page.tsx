@@ -31,6 +31,9 @@ import type { PanelId } from '@/store/useAppStore'
  * - `?search=1&q=<term>` — opens the search overlay, optionally pre-filled. Not in the original
  *   brief, but four of the twelve registry entries are search states and without it they are the
  *   only frames on the list that cannot be opened.
+ * - `?pq=<term>` — the Leading Providers filter. Unlike the three above it belongs to the page
+ *   inside the frame rather than to this document, so it is handed to the preview `<iframe>`; the
+ *   row it opens is not rendered here.
  *
  * The URL is the single source of truth: the toolbar buttons are links that rewrite it, and one
  * effect pushes whatever it says into `useAppStore`. That keeps every state in this harness
@@ -59,6 +62,8 @@ interface ScreenState {
   panel?: PanelId
   search?: boolean
   q?: string
+  /** The providers filter, passed through to the previewed page — see the note above. */
+  pq?: string
 }
 
 /**
@@ -76,7 +81,9 @@ const SCREEN_STATE: Record<string, ScreenState> = {
   // Matches "Gates of Olympus 1000" by title, so the dropdown shows the suggestion rows of 1:4479.
   'search-typing': { search: true, q: 'gates' },
   'search-no-results': { search: true, q: 'zzzz' },
-  'empty-search': { search: true },
+  // Both provider-search frames are drawn on the same query, one per viewport.
+  'providers-no-results-desktop': { pq: 'xyzgame' },
+  'mobile-providers-no-results': { pq: 'xyzgame' },
   'jackpot-menu-prelogin': { auth: 'prelogin', panel: 'jackpotMenu' },
   'jackpot-menu-postlogin': { auth: 'postlogin', panel: 'jackpotMenu' },
   'jackpot-menu-vip': { auth: 'vip', panel: 'jackpotMenu' },
@@ -114,6 +121,7 @@ function describeState(state: ScreenState): string {
   if (state.auth) parts.push(`auth=${state.auth}`)
   if (state.panel) parts.push(`panel=${state.panel}`)
   if (state.search) parts.push(state.q ? `search=1&q=${state.q}` : 'search=1')
+  if (state.pq) parts.push(`pq=${state.pq}`)
   return parts.join(' · ')
 }
 
@@ -197,6 +205,7 @@ function ScreenCard({
     panel: state.panel ?? null,
     search: state.search ? '1' : null,
     q: state.q ?? null,
+    pq: state.pq ?? null,
   })
 
   return (
@@ -256,6 +265,8 @@ function ScreenCard({
 }
 
 function Preview({ screen }: { screen: ScreenSpec }) {
+  const providerQuery = SCREEN_STATE[screen.id]?.pq
+
   return (
     <section
       aria-label={`Live preview — ${screen.label}`}
@@ -273,8 +284,10 @@ function Preview({ screen }: { screen: ScreenSpec }) {
       <div className="overflow-x-auto">
         <iframe
           key={screen.id}
-          // withBase, or the preview frame loads the host's root instead of the deployed app.
-          src={withBase('/')}
+          // withBase, or the preview frame loads the host's root instead of the deployed app. The
+          // providers filter is the one state that lives inside the frame, so it travels as the
+          // frame's own query string rather than being pushed into this document's store.
+          src={withBase(providerQuery ? `/?pq=${encodeURIComponent(providerQuery)}` : '/')}
           title={`Jackpot homepage at ${screen.viewport}px`}
           width={screen.viewport}
           height={820}

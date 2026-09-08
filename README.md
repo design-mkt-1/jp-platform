@@ -24,7 +24,7 @@ npm run dev          # http://localhost:3000
 
 ### Opening one state directly
 
-The store mirrors three things into the query string, so any state can be linked to instead of
+The store mirrors four things into the query string, so any state can be linked to instead of
 clicked to.
 
 | Suffix                         | Shows                                        |
@@ -34,6 +34,7 @@ clicked to.
 | `?panel=personalInfo`          | account dropdown — node 1:4153               |
 | `?panel=jackpotMenu`           | mobile menu — nodes 1:8751 / 1:8260 / 1:8503 |
 | `?q=swe`                       | search suggestions — node 1:4479             |
+| `?pq=xyzgame`                  | provider search — nodes 1:2218 / 1:4321      |
 
 ### Checks
 
@@ -95,3 +96,5 @@ server to `/jp-platform` and break the screenshot scripts, which address the roo
 - The mobile artwork is the desktop image re-cropped; Figma feeds those frames a wider 4:1 export.
 - The Drops & Wins header reads `DROPS & WINS`; Figma node 1:3556 is literally `drop&wins`.
 - The mobile tournament subtitle is the real copy clamped to two lines; Figma writes "Best Slots, Huge Wins!!".
+- The provider search with no matches shows only the message; Figma node 1:2218 keeps the two
+  badge bands under it, and with nothing matching there are no badges to draw.

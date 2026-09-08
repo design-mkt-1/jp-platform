@@ -4,7 +4,7 @@ import type { AuthMode } from '@/lib/types'
 
 /**
  * The only mutable state in the demo: which account state we are pretending to be in, what is in
- * the search box, and which overlay is open.
+ * the search boxes, and which overlay is open.
  *
  * Deliberately provider-less. The pages are server components; wrapping them in a context provider
  * would push the whole tree client-side. Client islands import this hook directly instead.
@@ -32,6 +32,17 @@ interface AppState {
   panel: PanelId | null
   openPanel: (panel: PanelId) => void
   closePanel: () => void
+
+  /**
+   * The Leading Providers filter — `null` when the field is closed, a string (possibly empty)
+   * while it is open. A second `SearchState` would be three fields of which this one uses one:
+   * the providers field has no recent list and no suggestions, only a query, and "closed" and
+   * "open on an empty query" are exactly what `null` and `''` say.
+   */
+  providerQuery: string | null
+  openProviderSearch: () => void
+  closeProviderSearch: () => void
+  setProviderQuery: (query: string) => void
 }
 
 /** The recent list in the design holds four rows; older terms fall off the end. */
@@ -45,7 +56,8 @@ export const useAppStore = create<AppState>((set) => ({
     set({ authMode: mode, panel: null }),
 
   search: { query: '', open: false, recent: defaultRecentSearches },
-  openSearch: () => set((state) => ({ search: { ...state.search, open: true }, panel: null })),
+  openSearch: () =>
+    set((state) => ({ search: { ...state.search, open: true }, panel: null, providerQuery: null })),
   closeSearch: () => set((state) => ({ search: { ...state.search, open: false, query: '' } })),
   setQuery: (query) => set((state) => ({ search: { ...state.search, query, open: true } })),
 
@@ -73,6 +85,15 @@ export const useAppStore = create<AppState>((set) => ({
 
   panel: null,
   // Opening a panel closes the search dropdown; the two overlays occupy the same corner.
-  openPanel: (panel) => set((state) => ({ panel, search: { ...state.search, open: false } })),
+  openPanel: (panel) =>
+    set((state) => ({ panel, search: { ...state.search, open: false }, providerQuery: null })),
   closePanel: () => set({ panel: null }),
+
+  providerQuery: null,
+  // Same rule as openPanel, from the other side: the providers field is a third overlay, and the
+  // page never shows two of them at once.
+  openProviderSearch: () =>
+    set((state) => ({ providerQuery: '', search: { ...state.search, open: false }, panel: null })),
+  closeProviderSearch: () => set({ providerQuery: null }),
+  setProviderQuery: (query) => set({ providerQuery: query }),
 }))

@@ -203,6 +203,11 @@ function NavTab({ tab, active }: { tab: Tab; active: boolean }) {
   return (
     <Link
       href={tab.href}
+      // Three of the four tabs point at routes this demo does not have, so Next's default prefetch
+      // fires three 404s into the console on every load of the mobile layout — one
+      // `<route>/index.txt?_rsc=` per tab. Tapping one still lands on `not-found.tsx`, which is
+      // the intended behaviour; a background request for a page nobody asked for is not.
+      prefetch={false}
       // The amber tint is the only visual cue for the current tab, and colour alone never
       // reaches a screen reader.
       aria-current={active ? 'page' : undefined}

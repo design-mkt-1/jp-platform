@@ -58,11 +58,12 @@ export const screens: ScreenSpec[] = [
     description: 'Query that matches nothing.',
   },
   {
-    id: 'empty-search',
-    label: 'Search — empty state',
+    id: 'providers-no-results-desktop',
+    label: 'Provider search — no results',
     viewport: 1440,
     figmaNodeId: '1:4321',
-    description: 'Search surface before any interaction.',
+    description:
+      'The Leading Providers filter as a 720px popover under the magnifier of the providers row, on a query no studio matches: `?pq=xyzgame`.',
   },
   {
     id: 'mob-main',
@@ -70,6 +71,14 @@ export const screens: ScreenSpec[] = [
     viewport: 390,
     figmaNodeId: '1:5720',
     description: 'The mobile homepage: bonus carousel, category tabs, wins ticker, the same 15 sections, footer.',
+  },
+  {
+    id: 'mobile-providers-no-results',
+    label: 'Provider search — no results (mobile)',
+    viewport: 390,
+    figmaNodeId: '1:2218',
+    description:
+      'The Leading Providers filter inline under the section header, on a query no studio matches: `?pq=xyzgame`. The magnifier is gone while the field is up.',
   },
   {
     id: 'mobile-nav',

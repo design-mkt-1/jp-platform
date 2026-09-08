@@ -6,7 +6,7 @@ import type { PanelId } from '@/store/useAppStore'
 import type { AuthMode } from '@/lib/types'
 
 /**
- * Mirrors three pieces of store state into the query string, and reads them back once on mount.
+ * Mirrors four pieces of store state into the query string, and reads them back once on mount.
  *
  * The URL is the mirror, never the source. Nothing in the app reads state from here at runtime —
  * the store stays the single owner — but a state that cannot be linked to cannot be reviewed, and
@@ -39,13 +39,20 @@ export default function UrlStateBridge() {
     const auth = params.get('auth')
     const panel = params.get('panel')
     const query = params.get('q')
+    const providerQuery = params.get('pq')
 
     const store = useAppStore.getState()
 
-    // Order matters: setAuthMode clears any open panel, so it has to run before the panel is set.
+    // Order matters: setAuthMode clears any open panel, so it has to run before the panel is set,
+    // and each of the three overlays closes the other two — so the last one applied is the one
+    // the URL leaves open.
     if (isAuthMode(auth)) store.setAuthMode(auth)
     if (query) store.setQuery(query)
     if (isPanel(panel)) store.openPanel(panel)
+    if (providerQuery) {
+      store.openProviderSearch()
+      store.setProviderQuery(providerQuery)
+    }
   }, [])
 
   useEffect(
@@ -61,6 +68,7 @@ export default function UrlStateBridge() {
         write('auth', state.authMode === 'postlogin' ? null : state.authMode)
         write('panel', state.panel)
         write('q', state.search.open && state.search.query ? state.search.query : null)
+        write('pq', state.providerQuery)
 
         const search = params.toString()
         const next = `${window.location.pathname}${search ? `?${search}` : ''}`
