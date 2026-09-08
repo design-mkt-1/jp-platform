@@ -20,6 +20,15 @@ export interface SheetProps {
   children: ReactNode
   /** Hide the heading visually while keeping it as the dialog's accessible name. */
   hideTitle?: boolean
+  /**
+   * `bottom` is the usual card that rises from the bottom edge.
+   *
+   * `top` starts at the top of the viewport instead, for surfaces the design draws as a full panel
+   * rather than a card — the jackpot menu (node 1:8504) is 782 of the 874-tall frame, anchored at
+   * y=0, and carries its own header. Docking that one to the bottom left a strip of the page showing
+   * above it and pushed its last row, Sign out, below the fold.
+   */
+  anchor?: 'bottom' | 'top'
   className?: string
 }
 
@@ -29,6 +38,7 @@ export default function Sheet({
   title,
   children,
   hideTitle = false,
+  anchor = 'bottom',
   className,
 }: SheetProps) {
   const titleId = useId()
@@ -38,7 +48,9 @@ export default function Sheet({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay"
+      className={`fixed inset-0 z-50 flex justify-center bg-overlay ${
+        anchor === 'top' ? 'items-start' : 'items-end'
+      }`}
       onMouseDown={onBackdropMouseDown}
     >
       <div
@@ -48,16 +60,22 @@ export default function Sheet({
         aria-labelledby={titleId}
         tabIndex={-1}
         className={[
-          'max-h-[85vh] w-full overflow-y-auto rounded-t-3xl outline-none',
-          'border-t border-solid border-card bg-card px-5 pb-8 pt-3',
+          'w-full overflow-y-auto outline-none bg-card px-5',
+          anchor === 'top'
+            ? // 782 of 874 in node 1:8503, leaving the tab bar visible beneath it.
+              'max-h-[90vh] rounded-b-3xl border-b border-solid border-card pb-6 pt-3'
+            : 'max-h-[85vh] rounded-t-3xl border-t border-solid border-card pb-8 pt-3',
           className,
         ]
           .filter(Boolean)
           .join(' ')}
       >
         {/* Grab handle. Decorative — the sheet is dismissed with Escape, the backdrop or a
-            close control, never by dragging this. */}
-        <div aria-hidden className="mx-auto mb-4 h-1 w-10 rounded-full bg-elevated" />
+            close control, never by dragging this. Only the bottom form has one: a panel anchored
+            at the top has no edge to pull from. */}
+        {anchor === 'bottom' && (
+          <div aria-hidden className="mx-auto mb-4 h-1 w-10 rounded-full bg-elevated" />
+        )}
         <h2
           id={titleId}
           className={

@@ -214,7 +214,7 @@ export default function JackpotMenu() {
   const signedIn = authMode !== 'prelogin'
 
   return (
-    <Sheet open={open} onClose={closePanel} title="Jackpot menu" hideTitle>
+    <Sheet open={open} onClose={closePanel} title="Jackpot menu" hideTitle anchor="top">
       {/* Node 1:8753 — the panel keeps its own header rather than borrowing the page's. */}
       <div className="mb-3 flex items-center justify-between gap-3">
         <Image
