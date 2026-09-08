@@ -23,10 +23,23 @@ valorile din kit-ul Mobile**, aplicate la ambele viewporturi. Un singur token, o
 | Nume Figma | Desktop | Mobile | Valoare adoptată |
 |---|---|---|---|
 | Page Background | `#11111A` | `#0F121D` | `#0F121D` |
-| Overlay | `#000000 @ 20%` | `#161625 @ 80%` | `#161625 @ 80%` |
+| Overlay | `#000000 @ 20%` | `#161625 @ 80%` | **ambele, comutate la 768px** — vezi mai jos |
 | Secondary Text | `#FFFFFF @ 70%` | `#FFFFFF @ 60%` | `#FFFFFF @ 60%` |
 | Blue Tinted BG | `#007AFF @ 13%` | `#007AFF @ 15%` | `#007AFF @ 15%` |
 | Card Border | `#FFFFFF @ 4%` | `#262632` | `#262632` |
+
+### Singura excepție: `bg-overlay`
+
+Regula rămâne o valoare per token. `bg-overlay` e excepția, prin decizia owner-ului luată după
+verificarea vizuală, pentru că aici cele două kit-uri diferă dintr-un motiv, nu din neatenție:
+
+- pe **desktop** stratul stă în spatele unui panou mic din colț (nodul `1:4116`) — negru la 20%,
+  pagina rămâne lizibilă
+- pe **mobil** stă în spatele unei foi care acoperă aproape tot ecranul — `#161625` la 80%
+
+Forțarea unei singure valori făcea panourile de pe desktop mult mai închise decât în design.
+Comutarea se face în `globals.css` printr-un `@media (max-width: 767px)`.
+Orice alt token care ar vrea a doua valoare are nevoie de o justificare de aceeași natură.
 
 Decizia se aplică **numai** acestor cinci. Tokenii care există doar în kit-ul Desktop
 (`Tertiary Text`, `Nav Inactive`, `Footer Heading`, `Gold Nav Active`, `Subtle Surface`,

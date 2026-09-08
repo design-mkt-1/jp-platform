@@ -66,10 +66,19 @@ export default function GameCard({
       className="object-cover"
     />
   ) : (
-    <div className={`flex size-full flex-col justify-end p-3 ${gradientForId(game.id)}`}>
-      {/* Dark text on the gold/orange gradient, matching the JOIN NOW button's black label. */}
-      <p className="font-display text-base font-extrabold leading-tight text-page">{game.title}</p>
-      <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.6px] text-page opacity-70">
+    <div className={`flex size-full flex-col justify-end p-3 mobile:p-2 ${gradientForId(game.id)}`}>
+      {/*
+        Dark text on the gold/orange gradient, matching the JOIN NOW button's black label.
+
+        Clamped, because the card is a fixed 203/264 box with `overflow-hidden` and the block is
+        bottom-aligned: a title that needs a third line grows upward and is cut off at the top edge
+        rather than pushing the card taller. It showed on the 114px mobile card, where "Golden Koi
+        Rising" and "Frost Fangs" both lost their first line.
+      */}
+      <p className="line-clamp-2 font-display text-base font-extrabold leading-tight text-page mobile:text-[13px]">
+        {game.title}
+      </p>
+      <p className="mt-1 line-clamp-1 text-[11px] font-bold uppercase tracking-[0.6px] text-page opacity-70 mobile:text-[10px]">
         {provider}
       </p>
     </div>

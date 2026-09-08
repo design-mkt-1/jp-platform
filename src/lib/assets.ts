@@ -56,6 +56,13 @@ export const providerLogoOrNull = (id: string): string | null =>
 /** Hero art under the header (Figma node 1:2437), exported at scale 1 to stay under 600 KB. */
 export const HERO_BONUS = '/images/hero/welcome-bonus.png'
 
+/**
+ * The mobile hero has its own artwork in Figma (node 1:5751), not a crop of the desktop one: the
+ * navy gradient, the figure and the violet shard in the bottom corner are all painted into it.
+ * Exported at 3x for a 358x170 card.
+ */
+export const HERO_BONUS_MOBILE = '/images/hero/welcome-bonus-mobile.png'
+
 /** Backdrops for the three promo rows. Keyed by `PromoVariant` so the banner needs no switch. */
 export const PROMO_BANNERS: Readonly<Record<PromoVariant, string>> = {
   tournament: '/images/hero/tournament-banner.png',

@@ -9,6 +9,7 @@ import BalancePanel from '@/components/panels/BalancePanel'
 import PersonalInfoPanel from '@/components/panels/PersonalInfoPanel'
 import SearchOverlay from '@/components/search/SearchOverlay'
 import SectionRenderer from '@/components/sections/SectionRenderer'
+import UrlStateBridge from '@/components/UrlStateBridge'
 import { desktopSections, mobileSections } from '@/lib/sections'
 import type { SectionSpec } from '@/lib/sections'
 
@@ -130,6 +131,13 @@ export default function Home() {
       <SearchOverlay />
       <BalancePanel />
       <PersonalInfoPanel />
+
+      {/*
+        Reads `?auth=`, `?panel=` and `?q=` once on mount and mirrors them back as the store changes.
+        Without it a state like the VIP header with the balance panel open can only be reached by
+        clicking, which makes both the design comparison and any bug report harder than it needs to be.
+      */}
+      <UrlStateBridge />
     </MobileShell>
   )
 }

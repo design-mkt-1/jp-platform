@@ -13,9 +13,10 @@ import type { Category, Game } from '@/lib/types'
  * no filtering of its own. Duplicating the ranking here is exactly how the dropdown and a results
  * page start disagreeing about what "Bonanza" returns.
  *
- * Node 1:4583 paints the first row on a lighter fill and the other three transparent — that is the
- * hover swatch drawn on the only row a static file can show it on, not a permanent first-row
- * highlight. It is reproduced as `:hover`/`:focus-visible` so a keyboard user gets the same cue.
+ * Node 1:4583 paints the first row on a lighter fill and the other three transparent. The list is
+ * already ranked by `getSuggestions`, so that fill marks the best match — the row Enter would take
+ * you to — and it is reproduced here as a permanent state on the first row. The same swatch is
+ * also the `:hover`/`:focus-visible` cue on every row, so a keyboard user gets it too.
  */
 
 const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
@@ -63,14 +64,18 @@ export default function SearchSuggestions({
       </h3>
 
       <ul className="flex flex-col gap-1" aria-label="Matching suggestions">
-        {games.map((game) => {
+        {games.map((game, index) => {
           const thumb = gameThumbOrNull(game.slug)
           const provider = providerNames?.[game.provider] ?? game.provider
           const chip = chipLabel(game)
 
           return (
             <li key={game.id}>
-              <button type="button" onClick={() => onSelect(game)} className={ROW_CLASSES}>
+              <button
+                type="button"
+                onClick={() => onSelect(game)}
+                className={index === 0 ? `${ROW_CLASSES} bg-field` : ROW_CLASSES}
+              >
                 {thumb ? (
                   <Image
                     src={thumb}

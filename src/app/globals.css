@@ -19,7 +19,7 @@
   --bg-page: #0f121d;
   --bg-card: #151624;
   --bg-section: #12162b;
-  --bg-overlay: rgb(22 22 37 / 0.8);
+  --bg-overlay: rgb(0 0 0 / 0.2);
   --bg-subtle: rgb(255 255 255 / 0.02);
   --bg-elevated: rgb(255 255 255 / 0.06);
 
@@ -75,6 +75,24 @@
   --border-flag: #19191d; /* language flag ring, node 1:4016 */
   --text-legal: #65616a; /* footer legal strip, node 1:4115 */
   --border-emphasis: rgb(255 255 255 / 0.15); /* wins-ticker divider, node 1:2433 */
+}
+
+/*
+ * The one token that keeps two values.
+ *
+ * The rule everywhere else is a single value per token, taking the Mobile kit where the two kits
+ * disagreed. Overlay is the exception, by owner decision, because the two kits disagree here for a
+ * reason rather than by accident: on desktop the scrim sits behind a small popover in the corner
+ * (node 1:4116, black at 20%, the page stays readable), while on mobile it sits behind a sheet that
+ * covers most of the screen (node 1:4759, #161625 at 80%). Forcing one value made desktop panels
+ * far darker than designed.
+ *
+ * Adding a second viewport-scoped value to any other token needs the same kind of justification.
+ */
+@media (max-width: 767px) {
+  :root {
+    --bg-overlay: rgb(22 22 37 / 0.8);
+  }
 }
 
 @layer base {
