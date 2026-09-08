@@ -32,6 +32,7 @@
   --text-nav: #9e9fab;
   --text-label: #b2b8c2;
   --text-footer-heading: #dad7e0;
+  --text-subtitle: #a5a6b5; /* mobile promo card subtitle, node 1:6254 */
 
   /* Accent & brand */
   --blue: #007aff;
@@ -77,6 +78,13 @@
   --border-flag: #19191d; /* language flag ring, node 1:4016 */
   --text-legal: #65616a; /* footer legal strip, node 1:4115 */
   --border-emphasis: rgb(255 255 255 / 0.15); /* wins-ticker divider, node 1:2433 */
+  /* The solid form of the same #F2C146 that --amber-tint carries at 10%: the join/countdown pill
+     of the mobile promo cards, node 1:6255, is filled with it outright. */
+  --amber-soft: #f2c146;
+  /* The near-black the design writes *on* that pill — its label, its countdown and its 15% rule,
+     nodes 1:6256 to 1:6260. Not --bg-page: the pill is a light surface and the design gives it its
+     own ink, two points darker than the page it sits on. */
+  --ink: #09090d;
 
   /*
    * Component-level fills for the "See All" pill, node 1:5655.

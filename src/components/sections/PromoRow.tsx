@@ -2,6 +2,7 @@ import tournamentsData from '@/data/tournaments.json'
 import type { PromoSectionSpec } from '@/lib/sections'
 import type { PromoBannerData } from '@/lib/types'
 import PromoBanner from '../cards/PromoBanner'
+import PromoBannerMobile from '../cards/PromoBannerMobile'
 import SectionHeader from './SectionHeader'
 
 /**
@@ -51,7 +52,15 @@ export default function PromoRow({
     >
       <SectionHeader title={section.title} icon={section.icon} rule="fixed" />
 
-      <PromoBanner data={data} priority={priority} />
+      {/*
+        Both banners are rendered and one is hidden, the same swap `page.tsx` makes for the game
+        rows. Branching instead would need the viewport at render time, which a server component
+        does not have; measuring it on the client would put the banner behind hydration and flash
+        the wrong card. A hidden element is not a flex item, so the twin that loses contributes
+        neither height nor gap.
+      */}
+      <PromoBanner data={data} priority={priority} className="mobile:hidden" />
+      <PromoBannerMobile data={data} priority={priority} className="hidden mobile:flex" />
     </section>
   )
 }

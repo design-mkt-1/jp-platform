@@ -70,7 +70,13 @@ export default function SectionHeader({
         aria-hidden
         className={[
           'border-t border-solid border-divider',
-          rule === 'fixed' ? 'h-0 w-40 shrink-0' : 'min-w-0 flex-1',
+          // 160px is a desktop measurement (nodes 1:2654, 1:3435, 1:3531, 1:3586). At 390 there
+          // is no 160px to give: the glyph and a 14px "CURRENT TOURNAMENTS" already take 238 of
+          // the row's 358, so a rule that refuses to shrink pushes 25px past the right edge. The
+          // mobile header instance (1:6194) draws the elastic rule, as node 1:5884 already does.
+          rule === 'fixed'
+            ? 'h-0 w-40 shrink-0 mobile:w-auto mobile:min-w-0 mobile:flex-1'
+            : 'min-w-0 flex-1',
         ].join(' ')}
       />
 

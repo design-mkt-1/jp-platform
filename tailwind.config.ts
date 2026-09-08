@@ -31,6 +31,7 @@ export default {
         caption: 'var(--text-caption)',
         nav: 'var(--text-nav)',
         label: 'var(--text-label)',
+        subtitle: 'var(--text-subtitle)',
         'footer-heading': 'var(--text-footer-heading)',
         legal: 'var(--text-legal)',
 
@@ -42,6 +43,8 @@ export default {
         'see-all-active': 'var(--see-all-bg-active)',
         amber: 'var(--amber)',
         'amber-tint': 'var(--amber-tint)',
+        'amber-soft': 'var(--amber-soft)',
+        ink: 'var(--ink)',
         gold: 'var(--gold)',
         green: 'var(--green)',
         emerald: 'var(--emerald)',

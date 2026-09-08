@@ -168,6 +168,23 @@ lista devine un depozit de culori ad-hoc și ne întoarcem exact la problema pe 
 | `#19191D` | `border-flag` | `--border-flag` | `1:4016` | inelul din jurul steagurilor de limbă |
 | `#65616A` | `text-legal` | `--text-legal` | `1:4115` | banda legală din footer |
 | `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2433` | separatorul din tickerul de câștiguri |
+| `#A5A6B5` | `text-subtitle` | `--text-subtitle` | `1:6254` | subtitlul cardului promo de mobil |
+| `#F2C146` | `amber-soft` | `--amber-soft` | `1:6255` | pastila „join + timer" de pe cardul promo de mobil, plină |
+| `#09090D` | `ink` | `--ink` | `1:6256`–`1:6260` | textul scris **pe** pastila aceea: eticheta butonului, „Time left" și ceasul |
+
+Niciuna dintre cele trei nu apare în cele două UI Kit-uri: tabelele de la §2 sunt transcrierea lor
+completă (26 de swatch-uri Desktop, 22 Mobile) și nu conțin nici `#A5A6B5`, nici `#09090D`, iar
+`#F2C146` apare acolo doar la 10% opacitate, ca `--amber-tint`. `--amber-soft` e aceeași culoare
+în formă plină, nu un al doilea chihlimbar.
+
+Două valori derivate din `--ink` nu primesc token propriu, pentru că tema ține culori finite, nu
+canale RGB — vezi comentariul din `Button.tsx`. Fiecare e o clasă de opacitate pe elementul care o
+folosește, ceea ce e o schimbare mai mică decât un token folosit o singură dată:
+
+| Design | Cum se scrie | Nod |
+|---|---|---|
+| `#09090D @ 80%` — eticheta „Time left" | `text-ink opacity-80` | `1:6259` |
+| `#09090D @ 15%` — linia verticală de 16px din pastilă | `bg-ink opacity-15`, pe un span de 1px | `1:6257` |
 
 ### Abateri acceptate, fără token nou
 
@@ -179,6 +196,7 @@ adăuga zgomot fără câștig vizibil. Sunt notate ca să nu fie redescoperite 
 | `#00E5FF` (inelul pastilei active, nod `1:2503`) | `cyan` `#00F0FF` | imperceptibilă |
 | `#FFFFFF @ 9%` (fundalul pastilei active) | `bg-elevated` `@ 6%` | 3 puncte de opacitate |
 | `#11111A` (fundalul cardului de joc, nod `1:2602`) | `bg-card` `#151624` | `#11111A` e fundalul de pagină **desktop**, pe care decizia „câștigă mobile" l-a înlocuit cu `#0F121D` |
+| `#000000` (eticheta butonului din pastilă, nod `I1:6256;112:330`) | `ink` `#09090D` | Figma scrie negru pur pe buton și `#09090D` pe ceasul de lângă el, la 3px distanță. Diferența e imperceptibilă, deci ambele folosesc `ink` |
 
 ### Animații
 
@@ -196,7 +214,7 @@ Ambele respectă `prefers-reduced-motion`.
 ## 3. Total
 
 - 26 de culori în UI Kit Desktop, 22 în UI Kit Mobile
-- **30 de tokeni distincți** după unificarea numelor duplicate și rezolvarea conflictelor
+- **33 de tokeni distincți** după unificarea numelor duplicate și rezolvarea conflictelor (30 din primul val, plus `text-subtitle`, `amber-soft` și `ink`, cerute de cardurile promo de mobil)
 - 2 gradiente compuse
 - 1 excepție documentată
 
