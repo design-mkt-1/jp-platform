@@ -175,10 +175,16 @@
     animation: marquee-right 40s linear infinite;
   }
 
+  /*
+   * Paused, not removed. With `animation: none` the track loses its transform, and a 3376px
+   * `w-max` track with no transform widens the document to 3307px at a 390px viewport even though
+   * its parent is overflow-hidden — the page then pans sideways for every user with Reduce Motion
+   * on. Paused at its first keyframe the track keeps `translateX(0)` and the page stays 390 wide.
+   */
   @media (prefers-reduced-motion: reduce) {
     .animate-marquee,
     .animate-marquee-reverse {
-      animation: none;
+      animation-play-state: paused;
     }
   }
 
