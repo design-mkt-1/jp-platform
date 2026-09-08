@@ -42,6 +42,7 @@ next-env.d.ts
 node_modules/
 .next/
 .next-build/
+.next-export/
 out/
 
 # Temporary review captures and scripts made by workers

@@ -40,6 +40,37 @@ jobs:
         env:
           GITHUB_PAGES: 'true'
 
+      # axe-core over the nine states, run against the artifact that is about to be deployed rather
+      # than against a dev server, so the check sees the same base path and the same bundles the
+      # client will. basePath puts every asset under /jp-platform/, so the export has to be served
+      # from a directory of that name for the page to load its own CSS; a copy is cheaper than
+      # teaching http.server a prefix. python3 and Google Chrome are both preinstalled on
+      # ubuntu-latest, and scripts/a11y.mjs asks playwright for `channel: 'chrome'`, so this adds no
+      # dependency. The script exits 1 when a critical or serious violation exists, which fails the
+      # job before the deploy step runs.
+      - name: Accessibility check
+        run: |
+          mkdir -p a11y-site
+          cp -r out a11y-site/jp-platform
+          python3 -m http.server 4173 -d a11y-site &
+          for i in $(seq 30); do
+            if curl -sf http://localhost:4173/jp-platform/ > /dev/null; then break; fi
+            sleep 1
+          done
+          # Repeated deliberately: a11y.mjs records a page it could not reach as a state with zero
+          # violations, so a server that never came up would pass the job silently. This line fails
+          # it instead.
+          curl -sf http://localhost:4173/jp-platform/ > /dev/null
+          node scripts/a11y.mjs a11y-out http://localhost:4173/jp-platform
+
+      # Uploaded whether or not the check passed: when it fails, the report is the only way to see
+      # which state and which rule failed.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a11y
+          path: a11y-out/a11y.json
+
       # Pages serves the directory as-is; .nojekyll stops it from hiding files whose names start
       # with an underscore, which is most of Next's output.
       - run: touch out/.nojekyll

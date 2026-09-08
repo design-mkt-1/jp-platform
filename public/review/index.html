@@ -1449,10 +1449,16 @@ skillNames: "resource:figma-design-to-code".
           <code>JackpotMenu.tsx:156-159</code>. Și moneda e GBP, decizia ta de la început.
         </p>
         <p class="small muted" style="margin:0 0 14px">
-          Măsurat la 390×844: rândul <em>Sign out</em> stă între 741 și 781, iar bara de file începe la
-          760 — deci ultimii 21px din rând intră sub bară. Panoul se derulează (805px de conținut în
-          759 vizibili), deci rândul e accesibil, dar în cadrul de 844 nu se vede întreg cum se vede în
-          Figma. Merită decis dacă panoul primește o margine de jos cât bara.
+          <strong style="color:var(--text)">Rândul <em>Sign out</em> — reparat.</strong> Nota de mai
+          înainte spunea că îl acoperă bara de file. Măsurătoarea a arătat altceva: panoul e limitat la
+          <span class="mono">max-h-[90vh]</span> = 759,6px, iar bara începe la 760, deci panoul se
+          termina deja deasupra ei. Rândul era tăiat de propriul derulaj al panoului — 804px de
+          conținut într-o cutie de 759. O margine de jos se adaugă <em>după</em> ultimul rând și nu îl
+          poate urca, așa că cei 48px au fost luați din spații: inserțiile panoului și patru paddinguri
+          din meniu. Înălțimile de rând și spațiile de 6px pe care le fixează nodul 1:8503 sunt
+          neatinse. Măsurat acum la 390×844, în ambele moduri de mișcare: <em>Sign out</em> stă între
+          708 și 748, panoul are 757 înălțime la un conținut de 756 — nu se mai derulează nimic — și
+          pagina rămâne 390 lățime. Capturile de mai jos sunt dinaintea reparației.
         </p>
         <div class="ba">
           <figure><img src="cmp/figma-jackpot-menu-postlogin.png" alt="Meniul post-login în Figma"><figcaption>Figma</figcaption></figure>
@@ -1470,7 +1476,8 @@ skillNames: "resource:figma-design-to-code".
         <p class="small muted" style="margin:0 0 14px">
           Aceleași rânduri ca la jucătorul logat, plus insigna <em>VIP</em> și pastila verde
           <em>Vip Manager</em>. Aceleași două diferențe ca mai sus: identificatorul de cont și moneda.
-          Rândul <em>Sign out</em> se măsoară la fel — 741 la 781, sub bara care începe la 760.
+          Rândul <em>Sign out</em> a fost reparat odată cu meniul de mai sus: 708 la 748, fără derulaj.
+          Captura de mai jos e dinaintea reparației.
         </p>
         <div class="ba">
           <figure><img src="cmp/figma-jackpot-menu-vip.png" alt="Meniul VIP în Figma"><figcaption>Figma</figcaption></figure>
@@ -1496,8 +1503,12 @@ skillNames: "resource:figma-design-to-code".
         <p class="small muted" style="margin:0 0 14px">
           Diferența voită: nodul 1:2218 păstrează benzile cu logo-uri sub mesaj. La noi, când nimic nu
           se potrivește, nu mai există logo-uri de desenat — benzile ar arăta un rezultat pe care
-          mesajul tocmai l-a negat. A doua diferență, mai mică: lupa din câmp e gri la noi, unde Figma
-          o desenează albastră.
+          mesajul tocmai l-a negat. Lupa din câmp era gri la noi; acum e albastră, ca în design —
+          <code>search-blue.svg</code> e geometria nodului 1:2239 retrasată, folosită numai de câmpul
+          de provideri. Rasterizată din pagina care rulează, glifa măsoară
+          <span class="mono">#007AFF</span> la 390 și la 1440. Rămâne o întrebare pentru tine: exportul
+          Figma al aceleiași glife e <span class="mono">#36BCFF</span>, un albastru deschis care nu e
+          nici tokenul albastru, nici cyanul <span class="mono">#00F0FF</span>.
         </p>
         <div class="ba">
           <figure><img src="cmp/figma-mobile-providers-no-results.png" alt="Căutarea de provideri fără rezultate, mobil, în Figma"><figcaption>Figma</figcaption></figure>
@@ -1600,8 +1611,8 @@ skillNames: "resource:figma-design-to-code".
         <p class="small muted" style="margin:0 0 14px">
           Măsurat în DOM la 1440: popoverul are 720 lățime, chenar de 1px și padding 32 — deci câmpul
           iese 654 lat, unde Figma desenează 656, pentru că acolo cadrul nu are chenar. Doi pixeli, din
-          bordură. A doua diferență e aceeași ca pe mobil: lupa din câmp e gri la noi, albastră în
-          design. Cadrul din Figma e doar popoverul, fără pagina din spate — de asta captura din stânga
+          bordură. Lupa din câmp e acum albastră și aici, aceeași <code>search-blue.svg</code>; întrebarea
+          despre <span class="mono">#36BCFF</span> din exportul Figma e cea de mai sus. Cadrul din Figma e doar popoverul, fără pagina din spate — de asta captura din stânga
           se oprește la marginea lui.
         </p>
         <div class="ba">
@@ -1645,68 +1656,99 @@ skillNames: "resource:figma-design-to-code".
       <!-- accessibility -->
       <div class="card">
         <div class="sec-head" style="margin-bottom:10px">
-          <span class="badge warn">Prima trecere</span>
-          <h3>Accesibilitate — prima trecere</h3>
+          <span class="badge ok">Rezolvat</span>
+          <h3>Accesibilitate — zero încălcări, verificate automat</h3>
           <span class="small muted mono">axe-core 4.10.2 · 9 stări</span>
         </div>
         <p class="small muted" style="margin:0 0 14px">
-          Există acum un pas automat: <code>node scripts/a11y.mjs &lt;director&gt;</code> deschide nouă
-          stări, injectează axe-core din CDN și scrie rezultatele. Nicio dependență nouă în proiect.
-          Numerele de mai jos sunt noduri, nu reguli, și vin din rularea de azi. Mobil întâi.
+          <code>node scripts/a11y.mjs &lt;director&gt;</code> deschide nouă stări, injectează axe-core din
+          CDN și scrie rezultatele. Nicio dependență nouă în proiect. Prima trecere raporta 12–15
+          încălcări „serioase" pe fiecare stare; după cele trei decizii de mai jos nu mai rămâne
+          niciuna, de nicio gravitate. Numerele sunt noduri, nu reguli, și vin din rularea de azi.
+          Mobil întâi.
         </p>
         <div class="tbl-wrap">
           <table>
             <thead><tr><th>Stare</th><th>critice</th><th>serioase</th><th>moderate</th><th>minore</th></tr></thead>
             <tbody>
-              <tr><td class="mono">mob-home (390×844)</td><td>0</td><td>13</td><td>1</td><td>0</td></tr>
-              <tr><td class="mono">mob-menu (390)</td><td>0</td><td>13</td><td>0</td><td>0</td></tr>
-              <tr><td class="mono">mob-menu-prelogin (390)</td><td>0</td><td>13</td><td>0</td><td>0</td></tr>
-              <tr><td class="mono">mob-providers-no-results (390)</td><td>0</td><td>13</td><td>1</td><td>0</td></tr>
-              <tr><td class="mono">desktop-home (1440×1000)</td><td>0</td><td>12</td><td>1</td><td>0</td></tr>
-              <tr><td class="mono">desktop-panel-balance</td><td>0</td><td>12</td><td>0</td><td>0</td></tr>
-              <tr><td class="mono">desktop-panel-personal</td><td>0</td><td>12</td><td>0</td><td>0</td></tr>
-              <tr><td class="mono">desktop-search-suggestions</td><td>0</td><td>15</td><td>0</td><td>0</td></tr>
-              <tr><td class="mono">desktop-providers-no-results</td><td>0</td><td>12</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">mob-home (390×844)</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">mob-menu (390)</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">mob-menu-prelogin (390)</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">mob-providers-no-results (390)</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">desktop-home (1440×1000)</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">desktop-panel-balance</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">desktop-panel-personal</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">desktop-search-suggestions</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td class="mono">desktop-providers-no-results</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
             </tbody>
           </table>
         </div>
         <p class="small muted" style="margin:14px 0">
-          Zero probleme critice, oriunde. Toate cele serioase sunt aceeași regulă,
-          <span class="mono">color-contrast</span>, și vin din trei perechi de culori:
+          <strong style="color:var(--text)">Contrastul.</strong> Toate încălcările serioase erau
+          aceeași regulă, <span class="mono">color-contrast</span>, din patru perechi de culori luate
+          ca atare din Figma. Decizia ta a fost să schimbăm culorile până trec AA și să scriem
+          abaterea. Fiecare valoare nouă păstrează exact nuanța și saturația originalului; s-a mutat
+          numai luminozitatea. Tabelul complet, cu nodul Figma și fundalul compus pe care e calculat
+          fiecare raport, e în <code>docs/tokens.md</code> §2b.
         </p>
-        <ul class="small" style="color:var(--text-muted);padding-left:20px;margin:0 0 14px">
-          <li style="margin-bottom:8px">Pastila <em>Get</em> din hero-ul mobil — alb pe albastru,
-            <code>HeroBanner.tsx:100</code>.</li>
-          <li style="margin-bottom:8px">Pastilele <em>See All (206)</em> din antetul fiecărui rând —
-            albastru pe albastru la 13% (<span class="mono">--see-all-bg</span>,
-            <code>globals.css:97</code>), construite în <code>SectionHeader.tsx:43-51</code>. Ele dau
-            cele mai multe dintre nodurile numărate mai sus.</li>
-          <li>Insignele albastre din sugestiile de căutare — <code>Badge.tsx:21</code>,
-            <span class="mono">bg-blue-tint text-blue</span>, randate de
-            <code>SearchSuggestions.tsx:106</code>.</li>
-        </ul>
-        <p class="small muted" style="margin:0 0 14px">
-          Toate trei sunt perechi de culori luate din design, nu improvizații ale noastre. De aceea nu
-          le-am schimbat: a le repara înseamnă a schimba design-ul — un albastru mai deschis sub
-          pastila <em>See All</em>, sau text mai închis pe butonul albastru. E decizia ta, nu o
-          reparație de cod.
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Token</th><th>Figma</th><th>Acum</th><th>Unde se vede</th><th>Raport</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="mono">--blue</td><td class="mono">#007AFF</td><td class="mono">#006EE6</td>
+                <td>alb pe albastru plin: pastila <em>Get</em> din hero-ul mobil, butonul primar</td>
+                <td class="mono">4,02 → 4,80:1</td>
+              </tr>
+              <tr>
+                <td class="mono">--blue-text</td><td class="mono">#007AFF</td><td class="mono">#479FFF</td>
+                <td>text albastru pe tentă: <em>See All (206)</em>, insignele din sugestii, eyebrow-ul din hero</td>
+                <td class="mono">3,51–4,06 → 5,15–5,97:1</td>
+              </tr>
+              <tr>
+                <td class="mono">--text-legal</td><td class="mono">#65616A</td><td class="mono">#7F7A85</td>
+                <td>banda legală din footer</td>
+                <td class="mono">3,17 → 4,58:1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small muted" style="margin:14px 0">
+          Tentele albastre păstrează canalele <span class="mono">0 122 255</span> ale design-ului: sunt
+          fundaluri, iar închiderea lor ar fi înrăutățit exact textul pe care îl susțin. Banda legală
+          din footer nu era pe lista celor trei perechi din raport, dar era o încălcare serioasă în
+          fiecare dintre cele nouă stări, deci fără ea verificarea nu putea ajunge la zero. Stările
+          hover și pressed ale pastilei <em>See All</em> au fost calculate și ele, la 5,31:1 și 4,72:1,
+          pentru că axe măsoară doar starea de repaus.
         </p>
         <p class="small muted" style="margin:0 0 14px">
-          Singura problemă moderată e <span class="mono">page-has-heading-one</span>: pagina nu are
-          niciun <span class="mono">&lt;h1&gt;</span>. Titlurile de secțiune sunt
-          <span class="mono">&lt;h2&gt;</span>, deci un cititor de ecran nu găsește titlul paginii. Se
-          rezolvă cu un singur titlu ascuns vizual, dar cineva trebuie să decidă ce scrie în el.
+          <strong style="color:var(--text)">Titlul paginii.</strong> Un singur
+          <span class="mono">&lt;h1&gt;</span> ascuns vizual, care scrie
+          <span class="mono">Jackpot — Online Casino</span>, pentru că design-ul nu are titlu scris cu
+          text — sigla e o imagine. Stă în interiorul lui <span class="mono">&lt;main&gt;</span>: pus
+          deasupra landmark-ului rezolva <span class="mono">page-has-heading-one</span>, dar aprindea
+          <span class="mono">region</span>, fiindcă un conținut în afara oricărui landmark e la rândul
+          lui o încălcare.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          <strong style="color:var(--text)">Verificarea rulează acum singură.</strong> La fiecare push
+          pe <span class="mono">main</span>, workflow-ul construiește exportul static, îl servește
+          local și rulează aceleași nouă stări peste el. Dacă apare fie și o singură încălcare critică
+          sau serioasă, build-ul pică înainte de publicare, iar raportul
+          <span class="mono">a11y.json</span> se încarcă oricum, ca să poată fi citit. Deci starea din
+          tabel nu e o fotografie de azi: e o condiție pe care fiecare livrare viitoare trebuie să o
+          îndeplinească.
         </p>
         <p class="small muted" style="margin:0">
-          <strong style="color:var(--text)">O întrebare de produs, pentru tine.</strong>
+          <strong style="color:var(--text)">Ce rămâne deschis, prin decizia ta.</strong>
           Cardurile de joc și de provider nu sunt linkuri. Măsurat pe pagina de start, la 390 și la
           1440 deopotrivă: 90 de elemente <span class="mono">&lt;article&gt;</span> și zero linkuri de
           card. <code>GameCard</code> și <code>ProviderCard</code> acceptă un
           <span class="mono">href</span> și devin <span class="mono">&lt;a&gt;</span> când îl primesc,
-          dar nimeni nu îl trimite, pentru că demo-ul nu are pagini de joc. Consecința: cine navighează
-          cu tastatura sau cu cititor de ecran aude nouăzeci de articole, nu nouăzeci de linkuri, și nu
-          poate ajunge la ele cu Tab. Dacă apar pagini de joc, se rezolvă de la sine; dacă nu, trebuie
-          decis ce face un card la clic.
+          dar nimeni nu îl trimite, pentru că demo-ul nu are pagini de joc. Ai decis să rămână
+          <span class="mono">&lt;article&gt;</span> câtă vreme e așa: un link care nu duce nicăieri e
+          mai rău decât niciun link. Când apar paginile de joc, se rezolvă de la sine. Regula axe nu
+          semnalează acest lucru, deci verificarea din CI rămâne verde în ambele situații.
         </p>
       </div>
 
