@@ -43,3 +43,6 @@ node_modules/
 .next/
 .next-build/
 out/
+
+# Temporary review captures and scripts made by workers
+.review-tmp/
