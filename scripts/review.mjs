@@ -31,6 +31,18 @@ const MOTION = [
   ['no-preference', 'motion'],
 ]
 
+/** Scroll the whole page past the viewport once and come back, so every lazy image has been seen. */
+async function settleLazyImages(page) {
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
+      window.scrollTo(0, y)
+      await new Promise((resolve) => setTimeout(resolve, 80))
+    }
+    window.scrollTo(0, 0)
+  })
+  await page.waitForTimeout(300)
+}
+
 async function shot(name, { width, height, url = BASE, steps, full = false }) {
   for (const [reducedMotion, suffix] of MOTION) {
     const page = await browser.newPage({
@@ -49,6 +61,10 @@ async function shot(name, { width, height, url = BASE, steps, full = false }) {
       await page.goto(url, { waitUntil: 'networkidle', timeout: 60_000 })
       if (steps) await steps(page)
       await page.waitForTimeout(500)
+      // `fullPage` resizes the viewport once and captures, so Next's default `loading="lazy"` never
+      // fires and the footer's payment, partner and flag logos come out blank. Walking the page down
+      // and back first is what puts them in view long enough to load.
+      if (full) await settleLazyImages(page)
       await page.screenshot({ path: `${OUT}/${name}.${suffix}.png`, fullPage: full })
       // Horizontal overflow is a mobile bug, so only the 390 states are measured for it.
       if (width <= 390) {

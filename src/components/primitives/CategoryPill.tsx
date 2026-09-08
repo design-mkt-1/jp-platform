@@ -18,7 +18,14 @@ const BASE_CLASSES = [
   'inline-flex h-[54px] shrink-0 items-center gap-2 rounded-full px-[22px] py-3',
   'font-display text-sm uppercase tracking-[0.6px] transition-colors',
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue',
+  // Mobile is its own chip, not the desktop one scaled: node 1:5799 draws 32px tall, 14px inset,
+  // 6px gap, 12px label. At the desktop size four of these need 573px of a 374px row, so only one
+  // and a half were ever reachable without a swipe nothing signalled.
+  'mobile:h-8 mobile:gap-1.5 mobile:px-[14px] mobile:py-2 mobile:text-xs',
 ].join(' ')
+
+/** 20px on desktop, 16px in the mobile chip — node 1:5799 again. */
+const ICON_CLASSES = 'size-5 shrink-0 mobile:size-4'
 
 const ACTIVE_CLASSES = [
   'bg-elevated font-bold text-primary',
@@ -56,7 +63,7 @@ export default function CategoryPill({
 
   const content = (
     <>
-      {icon ? <Icon name={icon} width={20} height={20} className="size-5 shrink-0" /> : null}
+      {icon ? <Icon name={icon} width={20} height={20} className={ICON_CLASSES} /> : null}
       <span>{label}</span>
       {trailing}
     </>

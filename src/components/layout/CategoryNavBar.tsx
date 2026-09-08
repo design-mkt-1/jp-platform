@@ -26,9 +26,9 @@ import type { Category, CategoryId } from '@/lib/types'
  * capsule, right-aligned to its outer edge. There is no second field anywhere in those frames.
  *
  * So this component owns the desktop dropdown and `SearchOverlay` stands down while it does, which
- * it learns from `useSearchBarHost`. Below the `mobile:` breakpoint the design puts the field in
- * the header instead, so the claim is dropped and the control here goes back to being a button
- * that hands over to the overlay.
+ * it learns from `useSearchBarHost`. Below the `mobile:` breakpoint the design has no search
+ * control in this bar at all (node 1:5799) — it is the header magnifier's job there — so the claim
+ * is dropped, the trigger is hidden and the chip track takes the whole row.
  *
  * ## How the panel is positioned
  *
@@ -51,7 +51,10 @@ const SEARCH_TRIGGER_CLASSES = [
   'text-left text-[13px] font-semibold text-nav',
   'transition-colors hover:border-medium hover:text-primary',
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue',
-  'mobile:w-auto mobile:flex-1',
+  // Node 1:5799 lays the chips across the whole 390 row and carries no search field: on mobile
+  // the search control is the header magnifier (node 1:5743), which calls the same `openSearch`.
+  // A second trigger here claimed 244px of the row and left the scroller showing one chip.
+  'mobile:hidden',
 ].join(' ')
 
 /**
@@ -143,7 +146,9 @@ export default function CategoryNavBar({
 
   return (
     <div
-      className={['relative w-full px-page-x pb-6 mobile:px-4', className].filter(Boolean).join(' ')}
+      className={['relative w-full px-page-x pb-6 mobile:pl-4 mobile:pr-0', className]
+        .filter(Boolean)
+        .join(' ')}
     >
       {/* Node 1:2434, redrawn rather than imported: Figma exports it as a pre-blurred SVG, and this
           component may not add files under public/. A blurred ellipse in the cyan token is the same
@@ -165,9 +170,15 @@ export default function CategoryNavBar({
           'relative z-10 mx-auto flex max-w-content scroll-mt-6 items-center justify-between gap-4 p-4',
           // 44px, not `rounded-full`: the capsule is 78px tall, so a pill radius would be 39.
           'rounded-[44px] border border-solid border-divider bg-card',
+          // Node 1:5799 has no capsule padding on mobile — the chip track starts 16px from the
+          // page edge, which the wrapper's own `mobile:pl-4` already gives it, and runs to the
+          // right edge so the chip that does not fit is visibly cut rather than hidden.
+          'mobile:p-0',
         ].join(' ')}
       >
-        <div className="no-scrollbar flex min-w-0 items-center gap-3 overflow-x-auto">
+        {/* `mobile:gap-1.5` is node 1:5799's Horizontal-Chips-Track, which sets the chips 6px
+            apart rather than the desktop bar's 12px. */}
+        <div className="no-scrollbar flex min-w-0 items-center gap-3 overflow-x-auto mobile:gap-1.5">
           {categories.map((category) => (
             <CategoryPill
               key={category.id}

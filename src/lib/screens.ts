@@ -85,7 +85,8 @@ export const screens: ScreenSpec[] = [
     label: 'Mobile — navigation',
     viewport: 390,
     figmaNodeId: '1:8235',
-    description: 'Mobile navigation drawer.',
+    description:
+      'The tab bar fixed to the bottom of every mobile page: Casino, Live Casino, the raised Menu disc, Sport, Promos.',
   },
   {
     id: 'jackpot-menu-prelogin',
