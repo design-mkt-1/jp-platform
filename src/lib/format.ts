@@ -53,12 +53,31 @@ function trimZeros(value: number): string {
   return value.toFixed(2).replace(/\.?0+$/, '')
 }
 
+/** The promos are weekly, so a deadline that has passed is next due seven days later. */
+const PERIOD_MS = 7 * 24 * 60 * 60 * 1000
+
 /**
- * Seconds left on a countdown, clamped at zero so a stale data file counts down to "00" rather
- * than up through negative numbers.
+ * The next time `endsAt` comes round, as a timestamp strictly after `from` and at most a week
+ * later.
+ *
+ * `tournaments.json` carries the Figma clock (nodes 1:3453 / 1:3545) and that date is now in the
+ * past, which is why every banner read "00:00:00". The date stays as written — it is content — and
+ * the recurrence is applied here instead, at read time. Rolling forward whole periods keeps the
+ * deadline on the wall-clock minute and second the design draws.
+ */
+export function nextCountdownEnd(endsAt: string, from: number = Date.now()): number {
+  const end = new Date(endsAt).getTime()
+  if (end > from) return end
+  // `+ 1` so a deadline exactly on `from` rolls to the next period rather than staying at zero.
+  return end + Math.ceil((from - end + 1) / PERIOD_MS) * PERIOD_MS
+}
+
+/**
+ * Seconds left on a countdown. Still clamped at zero: `nextCountdownEnd` cannot return the past,
+ * but an unparseable date would otherwise count up through negative numbers.
  */
 function remainingSeconds(endsAt: string, from: number): number {
-  return Math.floor(Math.max(0, new Date(endsAt).getTime() - from) / 1000)
+  return Math.floor(Math.max(0, nextCountdownEnd(endsAt, from) - from) / 1000)
 }
 
 const pad = (value: number) => String(value).padStart(2, '0')
@@ -66,9 +85,9 @@ const pad = (value: number) => String(value).padStart(2, '0')
 /**
  * "08h : 12m : 36s" — the clock of nodes 1:3453 and 1:3545.
  *
- * A snapshot, not a live timer: the banner is a server component, and a ticking clock would either
- * force it to the client or hydrate against a value a second older than the server's.
- * `suppressHydrationWarning` at the call site covers that one-second drift.
+ * Pure in `from`, so it formats the same value on the server, during hydration and on every tick
+ * of `useCountdown`. The one-second drift between the server's snapshot and the client's first
+ * frame is what `suppressHydrationWarning` at the call site still covers.
  */
 export function formatCountdown(endsAt: string, from: number = Date.now()): string {
   const total = remainingSeconds(endsAt, from)

@@ -1,8 +1,11 @@
+'use client'
+
 import Image from 'next/image'
 import Badge from '../primitives/Badge'
 import Button from '../primitives/Button'
 import { PROMO_BANNERS } from '@/lib/assets'
 import { formatCountdown } from '@/lib/format'
+import { useCountdown } from '@/lib/useCountdown'
 import type { PromoBannerData, PromoPill, PromoVariant } from '@/lib/types'
 
 /**
@@ -95,7 +98,10 @@ export default function PromoBanner({
   const bannerPills = pills ?? data.pills
   const stats = data.stats
   const clockLabel = timerLabel ?? data.timerLabel
-  const clock = timer ?? (data.endsAt ? formatCountdown(data.endsAt) : undefined)
+  // A client component for one reason: the clock. Everything else here is static, but a countdown
+  // rendered once on the server is a countdown that reads "00:00:00" the day after the deploy.
+  const live = useCountdown(data.endsAt, formatCountdown)
+  const clock = timer ?? live
 
   return (
     <section
@@ -192,6 +198,9 @@ export default function PromoBanner({
             }
           >
             <span className="text-xs text-muted">{clockLabel}</span>
+            {/* Still suppressed, and measured: the server snapshot and the client's first frame
+                are a second apart on about one load in three, which React reports as a hydration
+                error. `useCountdown` overwrites the text on mount either way. */}
             <time
               {...(data.endsAt ? { dateTime: data.endsAt } : {})}
               suppressHydrationWarning

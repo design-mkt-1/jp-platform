@@ -1,8 +1,11 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import Button from '../primitives/Button'
 import { PROMO_BANNERS } from '@/lib/assets'
 import { formatCountdownClock } from '@/lib/format'
+import { useCountdown } from '@/lib/useCountdown'
 import type { PromoBannerData, PromoVariant } from '@/lib/types'
 
 /**
@@ -86,7 +89,8 @@ export default function PromoBannerMobile({
 
 /** Nodes 1:6250–1:6260: the title block at the top, the join-and-countdown pill at the bottom. */
 function TournamentBody({ data }: { data: PromoBannerData }) {
-  const clock = data.endsAt ? formatCountdownClock(data.endsAt) : undefined
+  // Ticks on the client; see `useCountdown`. Server-rendered once, this card froze at "00:00:00".
+  const clock = useCountdown(data.endsAt, formatCountdownClock)
 
   return (
     // Figma measures this column at 180 outside a border it draws inside the frame; ours is a
