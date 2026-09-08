@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react'
 import SearchInput from '../primitives/SearchInput'
 import { useOverlayBehavior } from '../primitives/Panel'
+import Sheet from '../primitives/Sheet'
 import { games, providers } from '@/lib/data'
 import { getSuggestions } from '@/lib/search'
 import type { Game } from '@/lib/types'
@@ -24,11 +25,11 @@ import SearchSuggestions from './SearchSuggestions'
  * ships it the two pieces it needs: `SearchDropdownBody` (the three states) and
  * `SEARCH_PANEL_CLASSES` (the card chrome).
  *
- * This component is then the fallback: the mobile layout, where the field sits in the header and
- * the panel is a full-width sheet under it, and any page that mounts the overlay without a
- * category bar (`/dev/screens`). It renders nothing while a bar is on screen to host the dropdown
- * — `useSearchBarHost` below is how the bar says so — because two panels for one query is exactly
- * the "two search fields at once" this arrangement exists to remove.
+ * This component is then the fallback: the mobile layout, where the search is a full-screen sheet,
+ * and any page that mounts the overlay without a category bar (`/dev/screens`). It renders nothing
+ * while a bar is on screen to host the dropdown — `useSearchBarHost` below is how the bar says so
+ * — because two panels for one query is exactly the "two search fields at once" this arrangement
+ * exists to remove.
  *
  * ## The state is not a prop
  *
@@ -243,19 +244,57 @@ export default function SearchOverlay({ games: catalogue = games, className }: S
   const closeSearch = useAppStore((state) => state.closeSearch)
 
   const barHosted = useSyncExternalStore(subscribeBarHosts, readBarHosts, readBarHostsOnServer)
+  const desktop = useDesktopViewport()
 
-  // Still called unconditionally while a bar hosts the dropdown — it is a hook, and it does nothing
-  // when its first argument is false.
+  // Still called unconditionally while a bar hosts the dropdown or the sheet owns the surface — it
+  // is a hook, and it does nothing when its first argument is false.
   const { surfaceRef, mounted, onBackdropMouseDown } = useOverlayBehavior(
-    open && !barHosted,
+    open && !barHosted && desktop,
     closeSearch,
   )
+
+  /*
+   * Below the `mobile:` breakpoint the search is a sheet anchored at the top of the viewport, the
+   * same form the jackpot menu takes: the field first, the results under it, and nothing of the
+   * header left showing. Figma has no mobile search frame at all — the three nodes above are all
+   * 1440 wide — and the dropdown drawn as a floating card at 390 left a 16px strip of the header
+   * above it with the balance pill cut in half. `Sheet` already owns the trap, Escape, the backdrop
+   * and focus restoration, through the same `useOverlayBehavior` this file uses, so the mobile
+   * layout is a different container and not a second implementation.
+   *
+   * It stays mounted whether or not the search is open and is told which through the prop: `Sheet`
+   * portals nothing until its own first client render, so a copy mounted at the moment the search
+   * opens would miss that pass and never move focus into the field.
+   */
+  if (!desktop) {
+    return (
+      <Sheet
+        open={open && !barHosted}
+        onClose={closeSearch}
+        title="Search games"
+        hideTitle
+        anchor="top"
+      >
+        {/* The sheet's own top inset is 8px; the rest of the app's rhythm at 390 is 16, and this
+            field is the first thing under the phone's status bar. */}
+        <div className="pt-2">
+          <SearchInput value={query} onValueChange={setQuery} />
+        </div>
+        {/* The panel below insets every state by its own `p-4`, and that inset is what the empty
+            state's `-my-4` is measured against. The sheet has no inset of its own, so the 16 is
+            given here instead — without it the no-results glyph rides up under the field. */}
+        <div className={['py-4', className].filter(Boolean).join(' ')}>
+          <SearchDropdownBody games={catalogue} />
+        </div>
+      </Sheet>
+    )
+  }
 
   if (!mounted || !open || barHosted) return null
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 overflow-y-auto px-page-x pb-8 pt-[88px] mobile:px-4 mobile:pt-4"
+      className="fixed inset-0 z-50 overflow-y-auto px-page-x pb-8 pt-[88px]"
       onMouseDown={onBackdropMouseDown}
     >
       {/* The same handler on both layers: it closes only when the press lands on the element it is
@@ -277,9 +316,9 @@ export default function SearchOverlay({ games: catalogue = games, className }: S
             .join(' ')}
         >
           {/*
-            The field is inside the panel here because this is the header-anchored layout: the
-            mobile frame has no bar field to grow into. On desktop `CategoryNavBar` draws node
-            1:4568 in the capsule instead and this whole component stands down.
+            The field is inside the panel here because this is the fallback layout — a desktop
+            page with no category bar for the capsule to grow into (`/dev/screens`). Where a bar is
+            on screen it draws node 1:4568 itself and this whole component stands down.
             `useOverlayBehavior` focuses the first control in the surface, which is this one, so it
             needs no autoFocus of its own.
           */}
