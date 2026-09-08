@@ -1,0 +1,45 @@
+{
+  "profile": {
+    "id": "user-luckytest",
+    "displayName": "luckytest1234567",
+    "email": "luckytest1234567@jack-pot.com",
+    "phone": "+44 7700 900412",
+    "dob": "1991-04-17",
+    "address": "48 Cranbourn Street, London, WC2H 7AN, United Kingdom",
+    "tier": "standard",
+    "kycVerified": true
+  },
+  "vipProfile": {
+    "id": "user-luckytest",
+    "displayName": "luckytest1234567",
+    "email": "luckytest1234567@jack-pot.com",
+    "phone": "+44 7700 900412",
+    "dob": "1991-04-17",
+    "address": "48 Cranbourn Street, London, WC2H 7AN, United Kingdom",
+    "tier": "vip",
+    "kycVerified": true
+  },
+  "balances": {
+    "prelogin": {
+      "totalGbp": 0,
+      "cashGbp": 0,
+      "bonusGbp": 0,
+      "withdrawableGbp": 0,
+      "wagering": { "requiredGbp": 0, "completedGbp": 0 }
+    },
+    "postlogin": {
+      "totalGbp": 5500,
+      "cashGbp": 4820.5,
+      "bonusGbp": 679.5,
+      "withdrawableGbp": 4820.5,
+      "wagering": { "requiredGbp": 13590, "completedGbp": 5236.75 }
+    },
+    "vip": {
+      "totalGbp": 48720.4,
+      "cashGbp": 46220.4,
+      "bonusGbp": 2500,
+      "withdrawableGbp": 46220.4,
+      "wagering": { "requiredGbp": 50000, "completedGbp": 47500 }
+    }
+  }
+}

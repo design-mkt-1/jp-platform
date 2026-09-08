@@ -1,0 +1,144 @@
+{
+  "paymentLogos": [
+    {
+      "id": "cascading-gbp",
+      "label": "Cascading GBP",
+      "src": "/images/payments/cascading-gbp-a.svg"
+    },
+    {
+      "id": "gateway-crypto",
+      "label": "Gateway Crypto",
+      "src": "/images/payments/gateway-crypto.svg"
+    },
+    {
+      "id": "bitcoin-cash",
+      "label": "Bitcoin Cash",
+      "src": "/images/payments/gatewaycrypto-bch.svg"
+    },
+    {
+      "id": "bitcoin",
+      "label": "Bitcoin",
+      "src": "/images/payments/gatewaycrypto-btc.svg"
+    },
+    {
+      "id": "ethereum",
+      "label": "Ethereum",
+      "src": "/images/payments/gatewaycrypto-eth.svg"
+    },
+    {
+      "id": "tether",
+      "label": "Tether USDT",
+      "src": "/images/payments/gatewaycrypto-usdt.svg"
+    },
+    {
+      "id": "visa-mastercard",
+      "label": "Visa / Mastercard",
+      "src": "/images/payments/mock.svg"
+    }
+  ],
+  "partnerLogos": [
+    {
+      "id": "casinostest",
+      "label": "Casinostest",
+      "src": "/images/partners/casinostest.svg",
+      "href": "https://example.com/casinostest"
+    },
+    {
+      "id": "gamblersbet",
+      "label": "GamblersBet",
+      "src": "/images/partners/gamblersbet.svg",
+      "href": "https://example.com/gamblersbet"
+    },
+    {
+      "id": "casino-bonus-now",
+      "label": "Casino Bonus Now",
+      "src": "/images/partners/cbn.svg",
+      "href": "https://example.com/casino-bonus-now"
+    },
+    {
+      "id": "no-deposit",
+      "label": "No Deposit",
+      "src": "/images/partners/nodeposit.svg",
+      "href": "https://example.com/no-deposit"
+    },
+    {
+      "id": "casino-bonus-club",
+      "label": "Casino Bonus Club",
+      "src": "/images/partners/cbc.svg",
+      "href": "https://example.com/casino-bonus-club"
+    },
+    {
+      "id": "zamsino",
+      "label": "Zamsino",
+      "src": "/images/partners/zamsino.png",
+      "href": "https://example.com/zamsino"
+    },
+    {
+      "id": "deutschland-casinos",
+      "label": "Deutschland Casinos",
+      "src": "/images/partners/deutschland-casinos.png",
+      "href": "https://example.com/deutschland-casinos"
+    }
+  ],
+  "columns": [
+    {
+      "title": "Navigation",
+      "links": [
+        {
+          "label": "Payments",
+          "href": "/payments"
+        },
+        {
+          "label": "Providers",
+          "href": "/providers"
+        },
+        {
+          "label": "Support@jack-pot.com",
+          "href": "mailto:support@jack-pot.com"
+        },
+        {
+          "label": "Responsible Gaming",
+          "href": "/responsible-gaming"
+        },
+        {
+          "label": "Refer a Friend",
+          "href": "/refer-a-friend"
+        },
+        {
+          "label": "Sport Book",
+          "href": "/sport"
+        }
+      ]
+    },
+    {
+      "title": "Policies & Legal",
+      "links": [
+        {
+          "label": "Terms of Use",
+          "href": "/legal/terms-of-use"
+        },
+        {
+          "label": "Privacy Policy",
+          "href": "/legal/privacy-policy"
+        },
+        {
+          "label": "Bonus Policy",
+          "href": "/legal/bonus-policy"
+        },
+        {
+          "label": "AML Policy",
+          "href": "/legal/aml-policy"
+        },
+        {
+          "label": "KYC Policy",
+          "href": "/legal/kyc-policy"
+        },
+        {
+          "label": "Payment Policy",
+          "href": "/legal/payment-policy"
+        }
+      ]
+    }
+  ],
+  "legal": "© 2025 Wettzo. All rights reserved. The website flashdashcasino.com is operated by Wollstonecraft Partners Limited, address: 6405 Glover Spurs Apt. 956, East Shadland, Switzerland, 77990. All gambling services are licensed by Wollstonecraft Partners B.V., a company registered and established under the laws of Curacao."
+}

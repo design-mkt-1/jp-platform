@@ -1,0 +1,197 @@
+'use client'
+
+import type { ReactNode } from 'react'
+import Button from '../primitives/Button'
+import userData from '@/data/user.json'
+import { formatGbp } from '@/lib/format'
+import { useAppStore } from '@/store/useAppStore'
+import type { AuthMode, Balance, UserProfile } from '@/lib/types'
+
+/**
+ * The right-hand cluster of the header for a signed-in player: Figma node 1:4272 on desktop
+ * (balance pill, DEPOSIT, profile pill) and node 1:5736 on mobile (emerald balance pill with its
+ * own deposit action).
+ *
+ * `AccountCluster` is exported because the VIP header is this cluster plus a tier badge and a
+ * different balance — two files rendering the same widget from one source beats two files that
+ * drift apart the first time the pill changes radius.
+ *
+ * None of the overlays live here. The balance and profile controls only call `openPanel`; the
+ * panels themselves are built elsewhere.
+ */
+
+const BALANCES = userData.balances as Record<AuthMode, Balance>
+const PROFILE = userData.profile as UserProfile
+const VIP_PROFILE = userData.vipProfile as UserProfile
+
+/** The two signed-in states. `prelogin` has no cluster to render. */
+export type AccountTier = Extract<AuthMode, 'postlogin' | 'vip'>
+
+const FOCUS_RING =
+  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue'
+
+/**
+ * Node 1:4280's glyph was exported as a flattened 32x32 SVG that bakes in its own circle and fill,
+ * so it cannot follow the pill it sits in. Redrawn on `currentColor` instead — the same call the
+ * SearchInput primitive already makes for its clear control. See the report's change request.
+ */
+function ChevronDownIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M4 6.5L8 10.5L12 6.5" />
+    </svg>
+  )
+}
+
+/** Node 1:5741, same reasoning as the chevron. */
+function PlusIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      aria-hidden
+    >
+      <path d="M8 3.5v9M3.5 8h9" />
+    </svg>
+  )
+}
+
+/** The dark disc that closes both desktop pills (nodes 1:4280, 1:48). */
+function PillAffordance({ children }: { children: ReactNode }) {
+  return (
+    <span
+      aria-hidden
+      className="flex size-8 shrink-0 items-center justify-center rounded-full bg-elevated text-secondary"
+    >
+      {children}
+    </span>
+  )
+}
+
+/** Node 1:8536. The design's three-stop yellow is the brand gold gradient at a smaller radius. */
+export function VipBadge() {
+  return (
+    <span
+      className={[
+        'inline-flex shrink-0 items-center gap-1 rounded-xl px-2.5 py-1',
+        'bg-gradient-gold text-[11px] font-bold uppercase tracking-[1.5px] text-page',
+        'shadow-[0_0_8px_color-mix(in_srgb,var(--gold-light)_50%,transparent)]',
+      ].join(' ')}
+    >
+      <span aria-hidden className="text-xs leading-none">
+        ★
+      </span>
+      VIP
+    </span>
+  )
+}
+
+export interface AccountClusterProps {
+  tier: AccountTier
+}
+
+export function AccountCluster({ tier }: AccountClusterProps) {
+  const openPanel = useAppStore((state) => state.openPanel)
+
+  const isVip = tier === 'vip'
+  const user = isVip ? VIP_PROFILE : PROFILE
+  const total = formatGbp(BALANCES[tier].totalGbp)
+
+  // Deposit is a step inside the balance overlay in the design (frame 1:4116), not a route of its
+  // own, so every deposit affordance in the header opens that overlay.
+  const openBalance = () => openPanel('balance')
+
+  return (
+    <>
+      {/* Desktop — node 1:4272 */}
+      <div className="flex items-center gap-3.5 mobile:hidden">
+        <button
+          type="button"
+          onClick={openBalance}
+          aria-label={`Balance ${total} — open balance details`}
+          className={`flex h-10 items-center gap-2 rounded-[20px] bg-card px-2 transition-colors hover:brightness-125 ${FOCUS_RING}`}
+        >
+          <span className="text-[13px] font-semibold text-primary">{total}</span>
+          <PillAffordance>
+            <ChevronDownIcon />
+          </PillAffordance>
+        </button>
+
+        {isVip ? <VipBadge /> : null}
+
+        {/* The primitive's gold variant is 16px; the header sets every label at 13px. `!` because a
+            plain override would depend on which font-size utility Tailwind emits last. */}
+        <Button onClick={openBalance} className="!h-9 !text-[13px] uppercase">
+          Deposit
+        </Button>
+
+        <button
+          type="button"
+          onClick={() => openPanel('personalInfo')}
+          aria-label={`${user.displayName} — open personal information`}
+          className={`flex h-9 items-center gap-2 rounded-[20px] bg-elevated px-2 transition-colors hover:brightness-150 ${FOCUS_RING}`}
+        >
+          <span className="max-w-[140px] truncate text-[13px] font-semibold text-primary">
+            {user.displayName}
+          </span>
+          <PillAffordance>
+            <ChevronDownIcon />
+          </PillAffordance>
+        </button>
+      </div>
+
+      {/* Mobile — node 1:5736. Two controls inside one outlined shell: a button cannot nest inside
+          a button, so the shell is a plain element and the label and the action are siblings. */}
+      <div
+        className={[
+          'hidden h-10 items-center gap-3 rounded-[22px] px-2 py-1 mobile:flex',
+          'border-[1.5px] border-solid border-[color:color-mix(in_srgb,var(--emerald)_50%,transparent)]',
+          'bg-[color:color-mix(in_srgb,var(--emerald)_4%,transparent)]',
+          'shadow-[0_2px_8px_color-mix(in_srgb,var(--emerald)_12%,transparent)]',
+        ].join(' ')}
+      >
+        <button
+          type="button"
+          onClick={openBalance}
+          aria-label={`Balance ${total} — open balance details`}
+          className={`rounded-full px-1 text-sm font-extrabold tracking-[-0.14px] text-emerald ${FOCUS_RING}`}
+        >
+          {total}
+        </button>
+
+        <button
+          type="button"
+          onClick={openBalance}
+          aria-label="Deposit"
+          className={[
+            'flex size-8 shrink-0 items-center justify-center rounded-[20px] text-page',
+            'border border-solid border-[color:color-mix(in_srgb,var(--text-primary)_40%,transparent)]',
+            // Explicit `image:` hint so Tailwind cannot mistake the gradient for a colour.
+            'bg-[image:linear-gradient(90deg,var(--emerald),var(--blue))]',
+            'shadow-[0_10px_18px_color-mix(in_srgb,var(--emerald)_20%,transparent)]',
+            FOCUS_RING,
+          ].join(' ')}
+        >
+          <PlusIcon />
+        </button>
+      </div>
+    </>
+  )
+}
+
+export default function HeaderPostlogin() {
+  return <AccountCluster tier="postlogin" />
+}

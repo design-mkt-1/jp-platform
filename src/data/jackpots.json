@@ -1,0 +1,6 @@
+[
+  { "id": "jackpot-grand", "tier": "grand", "amountGbp": 1284930.55, "label": "Grand" },
+  { "id": "jackpot-major", "tier": "major", "amountGbp": 48612.4, "label": "Major" },
+  { "id": "jackpot-minor", "tier": "minor", "amountGbp": 3204.85, "label": "Minor" },
+  { "id": "jackpot-mini", "tier": "mini", "amountGbp": 186.7, "label": "Mini" }
+]

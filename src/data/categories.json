@@ -1,0 +1,6 @@
+[
+  { "id": "popular", "label": "Popular", "icon": "popular", "count": 9 },
+  { "id": "slots", "label": "Slots", "icon": "slots", "count": 40 },
+  { "id": "live-casino", "label": "Live Casino", "icon": "live-casino", "count": 6 },
+  { "id": "jackpots", "label": "Jackpots", "icon": "jackpots", "count": 7 }
+]

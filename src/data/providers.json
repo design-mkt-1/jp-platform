@@ -1,0 +1,74 @@
+[
+  {
+    "id": "pragmatic-play",
+    "name": "Pragmatic Play",
+    "logo": "/images/providers/pragmatic-play.svg",
+    "gameCount": 8
+  },
+  {
+    "id": "three-oaks-gaming",
+    "name": "3 Oaks Gaming",
+    "logo": "/images/providers/three-oaks-gaming.svg",
+    "gameCount": 6
+  },
+  {
+    "id": "bgaming",
+    "name": "BGaming",
+    "logo": "/images/providers/bgaming.svg",
+    "gameCount": 7
+  },
+  {
+    "id": "nolimit-city",
+    "name": "Nolimit City",
+    "logo": "/images/providers/nolimit-city.svg",
+    "gameCount": 5
+  },
+  {
+    "id": "spribe",
+    "name": "Spribe",
+    "logo": "/images/providers/spribe.svg",
+    "gameCount": 7
+  },
+  {
+    "id": "evoplay",
+    "name": "Evoplay",
+    "logo": null,
+    "gameCount": 5
+  },
+  {
+    "id": "evolution",
+    "name": "Evolution",
+    "logo": null,
+    "gameCount": 5
+  },
+  {
+    "id": "relax-gaming",
+    "name": "Relax Gaming",
+    "logo": null,
+    "gameCount": 5
+  },
+  {
+    "id": "play-n-go",
+    "name": "Play'n GO",
+    "logo": null,
+    "gameCount": 3
+  },
+  {
+    "id": "netent",
+    "name": "NetEnt",
+    "logo": null,
+    "gameCount": 3
+  },
+  {
+    "id": "push-gaming",
+    "name": "Push Gaming",
+    "logo": null,
+    "gameCount": 3
+  },
+  {
+    "id": "hacksaw-gaming",
+    "name": "Hacksaw Gaming",
+    "logo": null,
+    "gameCount": 3
+  }
+]

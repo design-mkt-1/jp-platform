@@ -136,6 +136,50 @@ Acestea sunt și fundalurile placeholder-elor pentru cardurile de joc fără ima
 
 ---
 
+## 2b. Valori din layere, absente din ambele UI Kit-uri
+
+Cele două UI Kit-uri nu acoperă tot ce e desenat efectiv în pagini. Agenții care au construit
+header-ul, footer-ul și bannerele au dat peste valorile de mai jos, au refuzat corect să le scrie
+ca hex în componente și le-au cerut în rapoarte. Sunt transcrise aici din nodurile indicate.
+
+**Regula:** orice adăugare în acest tabel trebuie să citeze nodul din care vine. Fără citare,
+lista devine un depozit de culori ad-hoc și ne întoarcem exact la problema pe care tokenii o rezolvă.
+
+| Valoare | Token Tailwind | Variabilă CSS | Nod Figma | Unde apare |
+|---|---|---|---|---|
+| `#080814` | `bg-header` | `--bg-header` | `1:4245` | bara de header, mai închisă decât pagina |
+| `#18273A` | `border-header` | `--border-header` | `1:4245` | linia de sub header |
+| `#070F1D` | `bg-footer` | `--bg-footer` | `1:3666` | suprafața footerului |
+| `#1A1D2E` | `bg-field` | `--bg-field` | `1:4314` | umplerea câmpului de căutare |
+| `#F59E0B @ 10%` | `bg-amber-tint` | `--amber-tint` | `1:3436`, `1:3532`, `1:3587` | pastilele de avertizare de pe bannerele promo |
+| `#19191D` | `border-flag` | `--border-flag` | `1:4016` | inelul din jurul steagurilor de limbă |
+| `#65616A` | `text-legal` | `--text-legal` | `1:4115` | banda legală din footer |
+| `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2433` | separatorul din tickerul de câștiguri |
+
+### Abateri acceptate, fără token nou
+
+Trei valori din design sunt suficient de aproape de un token existent încât un token nou ar
+adăuga zgomot fără câștig vizibil. Sunt notate ca să nu fie redescoperite ca „bug" la verificarea vizuală.
+
+| Design | Token folosit | Diferența |
+|---|---|---|
+| `#00E5FF` (inelul pastilei active, nod `1:2503`) | `cyan` `#00F0FF` | imperceptibilă |
+| `#FFFFFF @ 9%` (fundalul pastilei active) | `bg-elevated` `@ 6%` | 3 puncte de opacitate |
+| `#11111A` (fundalul cardului de joc, nod `1:2602`) | `bg-card` `#151624` | `#11111A` e fundalul de pagină **desktop**, pe care decizia „câștigă mobile" l-a înlocuit cu `#0F121D` |
+
+### Animații
+
+| Utilitar | Definiție | Nod Figma |
+|---|---|---|
+| `.animate-marquee` | translație de la 0 la −50%, 40s liniar, infinit | `1:2658` |
+| `.animate-marquee-reverse` | inversul, pentru a doua bandă | `1:2919` |
+
+Banda de provideri e desenată în Figma ca o pistă de 1680px într-un decupaj de 1280px — adică un
+marquee. Pista trebuie să își randeze elementele de două ori, ca bucla să nu aibă cusătură.
+Ambele respectă `prefers-reduced-motion`.
+
+---
+
 ## 3. Total
 
 - 26 de culori în UI Kit Desktop, 22 în UI Kit Mobile

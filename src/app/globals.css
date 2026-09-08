@@ -58,6 +58,23 @@
   /* Documented exception: the file's only Figma variable, BG/Quaternary.
      Not part of either UI Kit palette — used only where a node asks for it. */
   --bg-quaternary: #0d1420;
+
+  /*
+   * Layer values the design uses but neither UI Kit documents.
+   *
+   * The wave-1 agents hit each of these, correctly refused to inline a hex, and reported it.
+   * They are transcribed here from the nodes named beside them so components keep a token to
+   * reach for. Anything added below must cite its node — that is what keeps this list from
+   * becoming a dumping ground for one-off colours.
+   */
+  --bg-header: #080814; /* header bar, node 1:4245 — darker than the page itself */
+  --border-header: #18273a; /* header bottom rule, node 1:4245 */
+  --bg-footer: #070f1d; /* footer surface, node 1:3666 */
+  --bg-field: #1a1d2e; /* search field fill, node 1:4314 */
+  --amber-tint: rgb(245 158 11 / 0.1); /* promo warning pills, nodes 1:3436 / 1:3532 / 1:3587 */
+  --border-flag: #19191d; /* language flag ring, node 1:4016 */
+  --text-legal: #65616a; /* footer legal strip, node 1:4115 */
+  --border-emphasis: rgb(255 255 255 / 0.15); /* wins-ticker divider, node 1:2433 */
 }
 
 @layer base {
@@ -84,6 +101,45 @@
 
   .bg-gradient-orange {
     background-image: linear-gradient(160deg, var(--orange-start), var(--orange-end));
+  }
+
+  /*
+   * The Leading Providers row is drawn in Figma as a 1680px track inside a 1280px clip
+   * (nodes 1:2658 / 1:2919), i.e. a marquee. Reproducing that needs a keyframe, which only
+   * exists here — a component cannot declare one.
+   * The track must render its items twice for the wrap to be seamless.
+   */
+  @keyframes marquee-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes marquee-right {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee-left 40s linear infinite;
+  }
+
+  .animate-marquee-reverse {
+    animation: marquee-right 40s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-marquee,
+    .animate-marquee-reverse {
+      animation: none;
+    }
   }
 
   /* Horizontal card rails scroll but never show a scrollbar, as in the design. */

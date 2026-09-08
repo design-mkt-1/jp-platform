@@ -19,6 +19,9 @@ export default {
         subtle: 'var(--bg-subtle)',
         elevated: 'var(--bg-elevated)',
         quaternary: 'var(--bg-quaternary)',
+        header: 'var(--bg-header)',
+        footer: 'var(--bg-footer)',
+        field: 'var(--bg-field)',
 
         // Text
         primary: 'var(--text-primary)',
@@ -29,11 +32,13 @@ export default {
         nav: 'var(--text-nav)',
         label: 'var(--text-label)',
         'footer-heading': 'var(--text-footer-heading)',
+        legal: 'var(--text-legal)',
 
         // Accent & brand
         blue: 'var(--blue)',
         'blue-tint': 'var(--blue-tint)',
         amber: 'var(--amber)',
+        'amber-tint': 'var(--amber-tint)',
         gold: 'var(--gold)',
         green: 'var(--green)',
         emerald: 'var(--emerald)',
@@ -52,6 +57,9 @@ export default {
         medium: 'var(--border-medium)',
         strong: 'var(--border-strong)',
         separator: 'var(--border-separator)',
+        header: 'var(--border-header)',
+        flag: 'var(--border-flag)',
+        emphasis: 'var(--border-emphasis)',
       },
 
       fontFamily: {
