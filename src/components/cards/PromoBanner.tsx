@@ -2,7 +2,8 @@ import Image from 'next/image'
 import Badge from '../primitives/Badge'
 import Button from '../primitives/Button'
 import { PROMO_BANNERS } from '@/lib/assets'
-import type { PromoBannerData, PromoPill } from '@/lib/types'
+import { formatCountdown } from '@/lib/format'
+import type { PromoBannerData, PromoPill, PromoVariant } from '@/lib/types'
 
 /**
  * The three 1280x260 promo rows — TournamentBanner (1:3436), LotteryCard (1:3532) and
@@ -13,36 +14,52 @@ import type { PromoBannerData, PromoPill } from '@/lib/types'
  * 180x44 gold button. Only the middle of each column differs, so the variants branch there and
  * nowhere else. Three files would have meant fixing the same padding bug three times.
  *
- * Everything the design draws now lives in `PromoBannerData`, so a page can render a banner from
- * the data file alone. The props below still win when passed — a screen that wants to override one
- * label should not have to clone the whole record.
+ * Everything the design draws lives in `PromoBannerData` — including the wheel's stat rows — so a
+ * page can render a banner from the data file alone. The props below still win when passed: a
+ * screen that wants to override one label should not have to clone the whole record.
+ *
+ * The three variants keep the same skeleton but not the same rhythm; Figma spaces each one
+ * differently, so the gaps that differ are class maps keyed by variant rather than branches.
  */
 
 export type { PromoPill }
 
-/** Label/value rows of the wheel's right column (nodes 1:3594–1:3602). */
-export interface PromoStat {
-  label: string
-  value: string
+/** Title to subtitle: 6 in the tournament (1:3442), 12 in lottery (1:3534) and wheel (1:3589). */
+const TITLE_GAP: Record<PromoVariant, string> = {
+  tournament: 'gap-1.5',
+  lottery: 'gap-3',
+  wheel: 'gap-3',
+}
+
+/** Subtitle to pills: 16 in the tournament (1:3445), 12 in the lottery (1:3537). */
+const LEFT_GAP: Record<PromoVariant, string> = {
+  tournament: 'gap-4',
+  lottery: 'gap-3',
+  wheel: 'gap-4',
+}
+
+/** Between pills: 12 in the tournament (1:3445), 8 in the lottery (1:3537). */
+const PILL_GAP: Record<PromoVariant, string> = {
+  tournament: 'gap-3',
+  lottery: 'gap-2',
+  wheel: 'gap-3',
+}
+
+/** Timer or stats to the button: 20 (1:3451), 16 (1:3543), 24 (1:3593). */
+const RIGHT_GAP: Record<PromoVariant, string> = {
+  tournament: 'gap-5',
+  lottery: 'gap-4',
+  wheel: 'gap-6',
 }
 
 /**
- * "08h : 12m : 36s" — the clock of nodes 1:3453 and 1:3545.
- *
- * A snapshot, not a live timer: this is a server component, and a ticking clock would either force
- * the whole banner to the client or hydrate against a value a second older than the server's.
- * `suppressHydrationWarning` at the call site covers that one-second drift.
+ * The wheel's subtitle wraps to the width of its own title (1:3591 is min-content inside a 280px
+ * column), where the other two run wider than theirs — so the min-content rule is not general.
  */
-export function formatCountdown(endsAt: string, from: number = Date.now()): string {
-  const remaining = Math.max(0, new Date(endsAt).getTime() - from)
-  const totalSeconds = Math.floor(remaining / 1000)
-
-  const hours = Math.floor(totalSeconds / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = totalSeconds % 60
-  const pad = (value: number) => String(value).padStart(2, '0')
-
-  return `${pad(hours)}h : ${pad(minutes)}m : ${pad(seconds)}s`
+const SUBTITLE_WIDTH: Record<PromoVariant, string> = {
+  tournament: 'max-w-[420px]',
+  lottery: 'max-w-[420px]',
+  wheel: 'w-min min-w-full',
 }
 
 export interface PromoBannerProps {
@@ -55,8 +72,6 @@ export interface PromoBannerProps {
   timerLabel?: string
   /** Pre-formatted countdown. Omit and it is derived from `data.endsAt`. */
   timer?: string
-  /** Wheel only: the stacked ticket/winner/spin rows. */
-  stats?: PromoStat[]
   priority?: boolean
   className?: string
 }
@@ -67,7 +82,6 @@ export default function PromoBanner({
   pills,
   timerLabel,
   timer,
-  stats,
   priority = false,
   className,
 }: PromoBannerProps) {
@@ -79,6 +93,7 @@ export default function PromoBanner({
 
   const bannerEyebrow = eyebrow ?? data.eyebrow
   const bannerPills = pills ?? data.pills
+  const stats = data.stats
   const clockLabel = timerLabel ?? data.timerLabel
   const clock = timer ?? (data.endsAt ? formatCountdown(data.endsAt) : undefined)
 
@@ -103,7 +118,11 @@ export default function PromoBanner({
       />
 
       {/* Left column: eyebrow, titles, pills. */}
-      <div className="relative flex flex-col justify-center gap-4 p-8">
+      <div
+        className={`relative flex flex-col items-start justify-center p-8 ${
+          LEFT_GAP[data.variant]
+        }`}
+      >
         {bannerEyebrow ? (
           <p className="flex items-center gap-2 text-xs font-bold uppercase text-amber">
             <span aria-hidden className="size-2 rounded-full bg-amber" />
@@ -111,10 +130,10 @@ export default function PromoBanner({
           </p>
         ) : null}
 
-        <div className="flex flex-col gap-1.5">
+        <div className={`flex flex-col ${TITLE_GAP[data.variant]}`}>
           <h2 className="text-[32px] font-black leading-none text-primary">{data.title}</h2>
           <p
-            className={`max-w-[420px] text-sm text-muted ${
+            className={`text-sm text-muted ${SUBTITLE_WIDTH[data.variant]} ${
               // The tournament subtitle is sentence case in Figma; lottery and wheel are caps.
               data.variant === 'tournament' ? '' : 'uppercase'
             }`}
@@ -124,7 +143,7 @@ export default function PromoBanner({
         </div>
 
         {bannerPills && bannerPills.length > 0 ? (
-          <div className="flex flex-wrap gap-3">
+          <div className={`flex flex-wrap ${PILL_GAP[data.variant]}`}>
             {bannerPills.map((pill) => (
               <Badge
                 key={pill.label}
@@ -140,18 +159,21 @@ export default function PromoBanner({
 
       {/* Right column: timer or stats, then the call to action. */}
       <div
-        className={`relative flex flex-col justify-center gap-5 p-8 ${
+        className={`relative flex flex-col justify-center p-8 ${RIGHT_GAP[data.variant]} ${
           isWheel ? 'items-center' : 'items-end'
         }`}
       >
         {stats && stats.length > 0 ? (
-          <ul className="flex w-full flex-col gap-2">
+          <ul className="flex w-full flex-col gap-[9px]">
             {stats.map((stat) => (
               // Nodes 1:3594–1:3600 sit on the same amber tenth as the warning pills, not on the
-              // white tint the rest of the elevated surfaces use.
+              // white tint the rest of the elevated surfaces use. The row is 34 tall, which is
+              // Figma's 22px line box inside 6px of padding — not `text-lg`'s own 28px leading.
               <li
                 key={stat.label}
-                className="flex gap-1.5 rounded-[9px] bg-amber-tint px-3 py-1.5 text-lg"
+                className={
+                  'flex gap-1.5 rounded-[9px] bg-amber-tint px-3 py-1.5 text-lg leading-[22px]'
+                }
               >
                 <span className="font-medium text-label">{stat.label}</span>
                 <span className="font-bold text-amber">{stat.value}</span>

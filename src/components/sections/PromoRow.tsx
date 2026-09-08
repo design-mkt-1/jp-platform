@@ -1,7 +1,7 @@
 import tournamentsData from '@/data/tournaments.json'
 import type { PromoSectionSpec } from '@/lib/sections'
 import type { PromoBannerData } from '@/lib/types'
-import PromoBanner, { type PromoStat } from '../cards/PromoBanner'
+import PromoBanner from '../cards/PromoBanner'
 import SectionHeader from './SectionHeader'
 
 /**
@@ -19,24 +19,10 @@ import SectionHeader from './SectionHeader'
 
 const promos = tournamentsData.promos as PromoBannerData[]
 
-/**
- * Nodes 1:3594–1:3602. The wheel's right column is three label/value rows, but `PromoBannerData`
- * has no field for them and `tournaments.json` therefore carries none — so without this the wheel
- * would render as a title beside a lone button. Transcribed here rather than invented: see the
- * change request to move it into the data file, after which this constant goes away.
- */
-const WHEEL_STATS: readonly PromoStat[] = [
-  { label: 'Your tickets', value: '1' },
-  { label: 'Winners', value: '20' },
-  { label: 'Spin', value: '20 GBP' },
-]
-
 export interface PromoRowProps {
   section: PromoSectionSpec
   /** Defaults to the banners in tournaments.json; passed in by the screens harness. */
   promos?: PromoBannerData[]
-  /** Overrides the wheel's stacked rows. Ignored by the other two variants, which draw none. */
-  stats?: PromoStat[]
   /** Set only if a promo row ever lands above the fold; all three sit mid-page today. */
   priority?: boolean
   className?: string
@@ -45,7 +31,6 @@ export interface PromoRowProps {
 export default function PromoRow({
   section,
   promos: banners = promos,
-  stats,
   priority = false,
   className,
 }: PromoRowProps) {
@@ -58,8 +43,6 @@ export default function PromoRow({
 
   if (!data) return null
 
-  const bannerStats = stats ?? (data.variant === 'wheel' ? [...WHEEL_STATS] : undefined)
-
   return (
     <section
       aria-label={section.title}
@@ -68,11 +51,7 @@ export default function PromoRow({
     >
       <SectionHeader title={section.title} icon={section.icon} rule="fixed" />
 
-      <PromoBanner
-        data={data}
-        priority={priority}
-        {...(bannerStats ? { stats: bannerStats } : {})}
-      />
+      <PromoBanner data={data} priority={priority} />
     </section>
   )
 }

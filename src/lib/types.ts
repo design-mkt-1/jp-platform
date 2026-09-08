@@ -130,6 +130,12 @@ export interface PromoPill {
   tone?: 'amber' | 'neutral'
 }
 
+/** A label/value row of the wheel's right column (nodes 1:3594–1:3602). */
+export interface PromoStat {
+  label: string
+  value: string
+}
+
 export interface PromoBannerData {
   id: string
   variant: PromoVariant
@@ -142,6 +148,8 @@ export interface PromoBannerData {
   eyebrow?: string
   /** Absent rather than empty when the banner draws no pills — the wheel (1:3587) has none. */
   pills?: PromoPill[]
+  /** Stacked label/value rows of the right column (nodes 1:3594–1:3602). Wheel only. */
+  stats?: PromoStat[]
   /** "Time left to join" (1:3452) / "Draw ends in:" (1:3544). Omit to hide the timer. */
   timerLabel?: string
   /**

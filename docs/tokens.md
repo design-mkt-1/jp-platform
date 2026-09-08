@@ -164,7 +164,7 @@ lista devine un depozit de culori ad-hoc și ne întoarcem exact la problema pe 
 | `#18273A` | `border-header` | `--border-header` | `1:4245` | linia de sub header |
 | `#070F1D` | `bg-footer` | `--bg-footer` | `1:3666` | suprafața footerului |
 | `#1A1D2E` | `bg-field` | `--bg-field` | `1:4314` | umplerea câmpului de căutare |
-| `#F59E0B @ 10%` | `bg-amber-tint` | `--amber-tint` | `1:3436`, `1:3532`, `1:3587` | pastilele de avertizare de pe bannerele promo |
+| `#F2C146 @ 10%` | `bg-amber-tint` | `--amber-tint` | `1:3446`, `1:3538`, `1:3594`–`1:3600` | pastilele de avertizare de pe bannerele promo |
 | `#19191D` | `border-flag` | `--border-flag` | `1:4016` | inelul din jurul steagurilor de limbă |
 | `#65616A` | `text-legal` | `--text-legal` | `1:4115` | banda legală din footer |
 | `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2433` | separatorul din tickerul de câștiguri |

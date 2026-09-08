@@ -67,7 +67,12 @@
       "subtitle": "Spin the wheel everyday and get crazy prizes",
       "image": "/images/hero/wheel-banner.png",
       "ctaLabel": "SPIN",
-      "ctaHref": "/promotions/wheel"
+      "ctaHref": "/promotions/wheel",
+      "stats": [
+        { "label": "Your tickets", "value": "1" },
+        { "label": "Winners", "value": "20" },
+        { "label": "Spin", "value": "20 GBP" }
+      ]
     }
   ]
 }
