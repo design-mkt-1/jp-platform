@@ -90,3 +90,7 @@ server to `/jp-platform` and break the screenshot scripts, which address the roo
 - Currency is GBP throughout, where the design writes `$` in places and `RON` on one pill.
 - The mobile hero shows one offer; Figma's node 1:5749 is a three-card track whose second card
   starts outside the 390px frame.
+- The mobile lottery card keeps its own copy; Figma's node 1:6253 repeats the tournament's there.
+- The mobile countdown reads `hh:mm:ss` where Figma writes four groups, `08:12:36:35`.
+- The mobile artwork is the desktop image re-cropped; Figma feeds those frames a wider 4:1 export.
+- The Drops & Wins header reads `DROPS & WINS`; Figma node 1:3556 is literally `drop&wins`.

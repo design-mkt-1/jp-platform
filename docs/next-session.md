@@ -6,9 +6,10 @@ The demo is built, pushed to `main`, and deployed.
 
 - **Review build:** https://design-mkt-1.github.io/jp-platform/
 - **Screen registry:** https://design-mkt-1.github.io/jp-platform/dev/screens/
-- **Design vs implementation:** https://design-mkt-1.github.io/jp-platform/review/ — ten pairs, Figma
-  beside the built page. Sections 01–12 of that report are the history: what was measured in the
-  Figma file before any code, and every decision taken since. Section 13 is the comparison.
+- **Design vs implementation:** https://design-mkt-1.github.io/jp-platform/review/ — fourteen
+  comparisons, Figma beside the built page. Sections 01–12 of that report are the history: what was
+  measured in the Figma file before any code, and every decision taken since. Section 13 is the
+  comparison.
 - **Why the architecture looks like this:** [`docs/build-plan.md`](build-plan.md)
 - **Repo:** https://github.com/design-mkt-1/jp-platform (public, `noindex` + `robots.txt` disallow)
 
@@ -47,18 +48,32 @@ has the same effect — restart the server after touching it.
 
 ## What is left, in the order agreed
 
-### 1. Content rows not yet compared — 9 of 15
+### 1. Content rows compared — 15 of 15 — done
 
-Compared so far: Popular, Leading Providers, Current Tournaments.
+The nine rows that were still open have been shot beside their Figma nodes and are in section 13 of
+the review report.
 
-Not yet looked at: **Crash Games** (1:3230), **Must-Play Slots** (1:3285), **Bonus Buy** (1:3364),
-**Megaways** (1:3456), **Jackpots** (1:3485), **Weekly Lottery** (1:3524), **Drops & Wins** (1:3548),
-**Wheel** (1:3580), **Egypt** (1:3635).
+- **Weekly Lottery** (1:3524) — the content already matched; four gaps were corrected against node
+  1:3532 (title-subtitle 6 to 12, subtitle-pills 16 to 12, pill gap 12 to 8, timer-button 20 to 16).
+- **Wheel** (1:3580) — the three stat rows were a constant in `PromoRow`; they now live in
+  `tournaments.json` under `stats`. Row height 40 to 34, gap 8 to 9, column gap 20 to 24, and the
+  subtitle wraps to its own title's width the way node 1:3591 does.
+- **Both of those banners** — the amber behind their pills is `#F2C146` at 10%, not `#F59E0B`.
+  `tokens.md` had recorded it wrongly; `--amber-tint` is now the colour Figma actually paints.
+- **The promo banners at 390px** (1:6195 / 1:6247 / 1:6282) — the desktop banner was being squeezed
+  to 339px with JOIN NOW clipped off the edge. Figma draws a 358x220 card there instead;
+  `PromoBannerMobile` is that card.
+- **Crash Games** (1:3230), **Must-Play Slots** (1:3285), **Bonus Buy** (1:3364), **Megaways**
+  (1:3456), **Jackpots** (1:3485), **Drops & Wins** (1:3548), **Egypt** (1:3635) — all seven have
+  Popular's structure and match it: 28px header, See All (206), 203x264 cards, one or two grids.
+- **Two header icons were wrong** — `drops-wins` (1:3551) and `egypt` (1:3638) were whole-subtree
+  exports carrying the wrong artwork. Replaced with the single-leaf SVGs from `get_design_context`.
+- **`bonus-buy` (1:3367) still differs** — Figma draws a crown over the BONUS banner, ours draws
+  three stars. Not fixed: that glyph is fifteen masked fragments in Figma, so there is no clean
+  vector to export, and at 20px the difference is hard to see.
 
-Start with **Lottery and Wheel**. They are variants of the same `PromoBanner` as Tournaments but
-with different content — node 1:3587 draws three stat rows where Tournaments draws pills, and the
-wave-2 agent reported that `PromoBannerData` has no field for them. If that is still true, those
-two banners are missing content rather than mis-styled.
+New Games, Recommended and Instant Games were not shot on their own: they are the same `GameRow`
+with a different filter, compared under Popular.
 
 ### 2. The screen registry — 13 entries, none walked through
 
@@ -71,7 +86,6 @@ Two have never been seen at all, in code or on screen: `empty-search-state-deskt
 | What                                         | Why it matters                                                                                                                                                    |
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Badge` has no `xs` size (only `sm`, `md`)   | The mobile hero's two pills are local `<span>`s because `sm` renders them a third too tall. Two ways to draw the same pill.                                       |
-| `formatCountdown` lives in `PromoBanner.tsx` | `format.ts` opens with "no component reaches for `toFixed` on its own"; a countdown is the same class of decision.                                                |
 | No `src/lib/data.ts`                         | Every consumer writes its own cast from JSON at each import site.                                                                                                 |
 | Icon Button states (node 1:5687)             | Design wants white at 12% hover, 4% active. The circle is painted inside the exported SVG, so honouring it means rebuilding the control around a real background. |
 
@@ -91,6 +105,14 @@ sixty game cards have accessible names, or does a screen reader announce "link" 
 - The mobile hero shows one offer. Figma node 1:5749 is a three-card track, but the second card
   starts at x=380 in a 390-wide frame, so none of it is visible. A carousel needs an offers data
   source that does not exist.
+- The mobile lottery card keeps its own copy. Figma node 1:6253 repeats the tournament's
+  `SPIN CHALLENGE 2000` inside the lottery card.
+- The mobile countdown reads `hh:mm:ss`, the three groups the rest of the site counts in, where
+  Figma writes four: `08:12:36:35`.
+- The mobile artwork is the desktop image re-cropped. Figma feeds those frames a wider 4:1 export of
+  each scene against our 4.92:1 banner, so the crop can match the framing but not the zoom.
+- The Drops & Wins header reads `DROPS & WINS`. Figma node 1:3556 is literally `drop&wins`, which
+  renders `DROP&WINS`.
 
 ## Things worth remembering about this codebase
 

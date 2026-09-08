@@ -265,7 +265,7 @@
       Secțiunile <strong>01–12</strong> sunt istoricul: ce s-a măsurat în fișierul Figma înainte de a
       scrie cod, ce decizii s-au luat și ce a ieșit la verificările dinaintea construcției. Toate
       întrebările de acolo au primit deja răspuns; sunt păstrate ca urmă scrisă.
-      <strong>Secțiunea 13</strong> e comparația propriu-zisă: zece perechi Figma / implementare.
+      <strong>Secțiunea 13</strong> e comparația propriu-zisă: paisprezece comparații Figma / implementare.
     </p>
     <div class="chips">
       <a class="badge ok" href="../" style="text-decoration:none">Deschide demo-ul →</a>
@@ -1451,6 +1451,130 @@ skillNames: "resource:figma-design-to-code".
         <div class="ba">
           <figure><img src="cmp/figma-tournament.png" alt="Bannerul de turneu în Figma"><figcaption>Figma</figcaption></figure>
           <figure><img src="cmp/app-tournament.png" alt="Bannerul de turneu în implementare"><figcaption>Implementare</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- lottery -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Reparat în timpul verificării</span>
+          <h3>Weekly Lottery</h3>
+          <span class="small muted mono">nod 1:3524</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Conținutul se potrivea de la început — același titlu, același subtitlu, aceleași două
+          pastile, aceeași numărătoare. Nu se potriveau patru distanțe și o culoare. Măsurate pe
+          nodul 1:3532: între titlu și subtitlu 12, nu 6; între subtitlu și pastile 12, nu 16;
+          între pastile 8, nu 12; între cronometru și buton 16, nu 20. Iar amberul din spatele
+          pastilelor e un al doilea amber — Figma pictează nodul 1:3538 cu
+          <span class="mono">rgba(242,193,70,.1)</span>, adică <span class="mono">#F2C146</span>,
+          nu <span class="mono">#F59E0B</span>, culoarea pe care o are chiar textul de deasupra.
+          <code>docs/tokens.md</code> notase valoarea greșit; acum <code>--amber-tint</code> o spune
+          corect, iar asta e singura schimbare de pixeli pe care a primit-o și bannerul de turneu.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-lottery.png" alt="Bannerul de loterie în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-lottery.png" alt="Bannerul de loterie în implementare, după reparație"><figcaption>Implementare, după reparație</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- wheel -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Reparat în timpul verificării</span>
+          <h3>Wheel</h3>
+          <span class="small muted mono">nod 1:3580</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Cele trei rânduri de statistici — <em>Your tickets</em>, <em>Winners</em>, <em>Spin</em> —
+          se randau, dar erau o constantă scrisă în <code>PromoRow</code>. Raportul din valul 2
+          spusese că datele nu au câmp pentru ele; era adevărat pe jumătate, pentru că lipsa
+          câmpului făcea falsă chiar afirmația din capul lui <code>PromoBanner</code>, aceea că tot
+          ce desenează design-ul stă în date. Acum stau în <code>tournaments.json</code>, sub
+          <span class="mono">stats</span>. Măsurate pe nodul 1:3587: rândul are 34px, nu 40 — e o
+          cutie de text de 22px în 6px de padding, nu interlinia proprie a lui
+          <span class="mono">text-lg</span> — distanța dintre rânduri e 9, nu 8, iar coloana lor
+          stă la 24 de buton, nu la 20. Subtitlul se rupe acum pe lățimea propriului titlu, ca
+          nodul 1:3591. Regula nu e generală: celelalte două subtitluri curg mai lat decât
+          titlurile lor și își păstrează lățimea maximă.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-wheel.png" alt="Bannerul roții în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-wheel.png" alt="Bannerul roții în implementare, după reparație"><figcaption>Implementare, după reparație</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- mobile promo -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge ok">Reparat</span>
+          <h3>Bannerele promo pe mobil — era desktopul strivit</h3>
+          <span class="small muted mono">noduri 1:6195, 1:6247, 1:6282</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          La 390px toate trei randau compoziția desktop de 1280×260 strânsă în 339: butonul
+          <em>JOIN NOW</em> ieșea tăiat de marginea din dreapta, <em>Draw ends in</em> călca peste
+          artă, pastilele stăteau peste personaje, iar rândul de turneu creștea la 367px înălțime.
+          Figma desenează acolo altceva — nodurile 1:6195, 1:6247 și 1:6282 sunt un card de 358×220
+          cu îndemnul strâns într-o pastilă lângă cronometru. E acum <code>PromoBannerMobile</code>,
+          o a doua componentă și nu niște reguli <span class="mono">mobile:</span> peste prima:
+          alte cutii, alte mărimi de text, altă ordine de citire.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Patru diferențe sunt voite. Loteria își păstrează textul propriu, pentru că nodul 1:6253
+          repetă în cardul de loterie copy-ul turneului — <em>SPIN CHALLENGE 2000</em>. Ceasul arată
+          <span class="mono">hh:mm:ss</span>, cele trei grupuri pe care le numără tot restul sitului,
+          unde Figma scrie patru: <span class="mono">08:12:36:35</span>. Arta e imaginea de desktop
+          re-încadrată — Figma hrănește acele cadre cu un export mai lat al aceleiași scene, 4:1
+          față de 4,92:1 cât are al nostru, deci putem alege ce treime se vede, nu și cât de
+          aproape. Iar subtitlul roții scrie <em>everyday</em> unde Figma are greșeala de tipar
+          <em>EVERY DAT</em>.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-mob-promo-tournament.png" alt="Bannerul de turneu pe mobil în Figma"><figcaption>Figma — turneu</figcaption></figure>
+          <figure><img src="cmp/app-mob-promo-tournament.png" alt="Bannerul de turneu pe mobil în implementare"><figcaption>Implementare — turneu</figcaption></figure>
+        </div>
+        <div class="ba" style="margin-top:14px">
+          <figure><img src="cmp/figma-mob-promo-lottery.png" alt="Bannerul de loterie pe mobil în Figma"><figcaption>Figma — loterie</figcaption></figure>
+          <figure><img src="cmp/app-mob-promo-lottery.png" alt="Bannerul de loterie pe mobil în implementare"><figcaption>Implementare — loterie</figcaption></figure>
+        </div>
+        <div class="ba" style="margin-top:14px">
+          <figure><img src="cmp/figma-mob-promo-wheel.png" alt="Bannerul roții pe mobil în Figma"><figcaption>Figma — roată</figcaption></figure>
+          <figure><img src="cmp/app-mob-promo-wheel.png" alt="Bannerul roții pe mobil în implementare"><figcaption>Implementare — roată</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- games rows -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Reparat în timpul verificării</span>
+          <h3>Cele șapte rânduri de jocuri</h3>
+          <span class="small muted mono">noduri 1:3230, 1:3285, 1:3364, 1:3456, 1:3485, 1:3548, 1:3635</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Crash Games, Must-Play Slots, Bonus Buy, Megaways, Jackpots, Drops &amp; Wins și Egypt au
+          exact structura lui Popular și se potrivesc: antet de 28px, <em>See All (206)</em>, carduri
+          de 203×264, una sau două grile, așa cum le declară <code>sections.ts</code>. Șase titluri
+          din șapte se potrivesc după transformarea în majuscule.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Ce nu se potrivea erau două pictograme. <span class="mono">drops-wins</span> (1:3551) și
+          <span class="mono">egypt</span> (1:3638) veniseră ca exporturi de subarbore întreg și
+          desenau altă artă decât design-ul: o explozie de raze în loc de cercul festonat, un bust
+          de faraon în loc de cupola abstractă. Sunt înlocuite cu vectorii de o singură frunză,
+          citiți cu <code>get_design_context</code> — aceeași lecție ca la butonul de căutare.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          Rămân două diferențe. Pictograma <span class="mono">bonus-buy</span> (1:3367): Figma
+          desenează o coroană peste bannerul BONUS, noi desenăm trei stele. Nu e reparată, pentru că
+          în Figma glifa e făcută din cincisprezece fragmente mascate, deci nu există un vector
+          curat de exportat, iar la 20px diferența abia se distinge. Și titlul: nodul 1:3556 scrie
+          literal <span class="mono">drop&amp;wins</span>, care se randează <em>DROP&amp;WINS</em>;
+          noi scriem <em>DROPS &amp; WINS</em>, engleza citibilă.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-dropswins.png" alt="Rândul Drops and Wins în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-dropswins.png" alt="Rândul Drops and Wins în implementare, după reparație"><figcaption>Implementare, după reparație</figcaption></figure>
         </div>
       </div>
 
