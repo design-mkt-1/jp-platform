@@ -1,0 +1,4 @@
+# This is an unreleased design shown to a client for review, not a public site.
+# The GitHub Pages URL is shareable, but it should not turn up in search results.
+User-agent: *
+Disallow: /

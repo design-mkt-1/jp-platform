@@ -12,12 +12,36 @@ import type { IconName, PromoVariant } from './types'
  * that exist on disk, so a component can decide to fall back before it ever requests a 404.
  */
 
-export const gameThumb = (slug: string) => `/images/games/${slug}.png`
+/**
+ * Everything under `public/` moves when the site is served from a sub-path.
+ *
+ * The GitHub Pages review build lives at `/jp-platform/`, and Next's `basePath` rewrites links and
+ * its own bundles but NOT the `src` of an image. Without this prefix every picture on the deployed
+ * page 404s — the hero, all three real game thumbnails, the logo — while the dev server, served
+ * from the root, looks perfectly fine. That is exactly the failure a local check cannot see.
+ *
+ * Empty in development and in any root-hosted deployment.
+ */
+export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 
-export const providerLogo = (id: string) => `/images/providers/${id}.svg`
+/**
+ * Prefixes a root-relative asset path with the deployment's base path.
+ *
+ * Paths that come out of `src/data/*.json` — game thumbnails, footer logos, promo backgrounds —
+ * bypass the helpers below, so their call sites have to pass them through this.
+ */
+export const withBase = (path: string): string =>
+  path.startsWith('/') ? `${BASE_PATH}${path}` : path
+
+export const gameThumb = (slug: string) => withBase(`/images/games/${slug}.png`)
+
+export const providerLogo = (id: string) => withBase(`/images/providers/${id}.svg`)
 
 /** Section headers and the category bar. `IconName` is closed, so a typo fails to compile. */
-export const sectionIcon = (name: IconName) => `/images/icons/${name}.svg`
+export const sectionIcon = (name: IconName) => withBase(`/images/icons/${name}.svg`)
+
+/** The Jackpot wordmark, node 1:4250. Was a literal in two components before the sub-path move. */
+export const LOGO = withBase('/images/logo.svg')
 
 /**
  * The three game slugs whose artwork was actually baked into the Figma design. Everything else in
@@ -54,20 +78,20 @@ export const providerLogoOrNull = (id: string): string | null =>
   hasProviderLogo(id) ? providerLogo(id) : null
 
 /** Hero art under the header (Figma node 1:2437), exported at scale 1 to stay under 600 KB. */
-export const HERO_BONUS = '/images/hero/welcome-bonus.png'
+export const HERO_BONUS = withBase('/images/hero/welcome-bonus.png')
 
 /**
  * The mobile hero has its own artwork in Figma (node 1:5751), not a crop of the desktop one: the
  * navy gradient, the figure and the violet shard in the bottom corner are all painted into it.
  * Exported at 3x for a 358x170 card.
  */
-export const HERO_BONUS_MOBILE = '/images/hero/welcome-bonus-mobile.png'
+export const HERO_BONUS_MOBILE = withBase('/images/hero/welcome-bonus-mobile.png')
 
 /** Backdrops for the three promo rows. Keyed by `PromoVariant` so the banner needs no switch. */
 export const PROMO_BANNERS: Readonly<Record<PromoVariant, string>> = {
-  tournament: '/images/hero/tournament-banner.png',
-  lottery: '/images/hero/lottery-banner.png',
-  wheel: '/images/hero/wheel-banner.png',
+  tournament: withBase('/images/hero/tournament-banner.png'),
+  lottery: withBase('/images/hero/lottery-banner.png'),
+  wheel: withBase('/images/hero/wheel-banner.png'),
 }
 
 /**
@@ -76,13 +100,13 @@ export const PROMO_BANNERS: Readonly<Record<PromoVariant, string>> = {
  * map exists rather than a template string.
  */
 export const PAYMENT_LOGOS: Readonly<Record<string, string>> = {
-  'cascading-gbp': '/images/payments/cascading-gbp-a.svg',
-  'gateway-crypto': '/images/payments/gateway-crypto.svg',
-  'bitcoin-cash': '/images/payments/gatewaycrypto-bch.svg',
-  bitcoin: '/images/payments/gatewaycrypto-btc.svg',
-  ethereum: '/images/payments/gatewaycrypto-eth.svg',
-  tether: '/images/payments/gatewaycrypto-usdt.svg',
-  'visa-mastercard': '/images/payments/mock.svg',
+  'cascading-gbp': withBase('/images/payments/cascading-gbp-a.svg'),
+  'gateway-crypto': withBase('/images/payments/gateway-crypto.svg'),
+  'bitcoin-cash': withBase('/images/payments/gatewaycrypto-bch.svg'),
+  bitcoin: withBase('/images/payments/gatewaycrypto-btc.svg'),
+  ethereum: withBase('/images/payments/gatewaycrypto-eth.svg'),
+  tether: withBase('/images/payments/gatewaycrypto-usdt.svg'),
+  'visa-mastercard': withBase('/images/payments/mock.svg'),
 }
 
 /**
@@ -90,13 +114,13 @@ export const PAYMENT_LOGOS: Readonly<Record<string, string>> = {
  * absent: the Figma slot (node 1:3993) is an empty frame.
  */
 export const PARTNER_LOGOS: Readonly<Record<string, string>> = {
-  casinostest: '/images/partners/casinostest.svg',
-  gamblersbet: '/images/partners/gamblersbet.svg',
-  'casino-bonus-now': '/images/partners/cbn.svg',
-  'no-deposit': '/images/partners/nodeposit.svg',
-  'casino-bonus-club': '/images/partners/cbc.svg',
+  casinostest: withBase('/images/partners/casinostest.svg'),
+  gamblersbet: withBase('/images/partners/gamblersbet.svg'),
+  'casino-bonus-now': withBase('/images/partners/cbn.svg'),
+  'no-deposit': withBase('/images/partners/nodeposit.svg'),
+  'casino-bonus-club': withBase('/images/partners/cbc.svg'),
   // Zamsino was a raster fill in Figma, not a vector — the only partner that is not an SVG.
-  zamsino: '/images/partners/zamsino.png',
+  zamsino: withBase('/images/partners/zamsino.png'),
 }
 
 export const paymentLogo = (id: string): string | null => PAYMENT_LOGOS[id] ?? null
@@ -120,10 +144,10 @@ export const LANGUAGE_FLAGS: readonly string[] = [
   'se',
 ]
 
-export const languageFlag = (code: string) => `/images/flags/${code}.svg`
+export const languageFlag = (code: string) => withBase(`/images/flags/${code}.svg`)
 
 /** 16px glyph inside the search input of the category bar (node 1:2589). */
-export const SEARCH_ICON = '/images/icons/search.svg'
+export const SEARCH_ICON = withBase('/images/icons/search.svg')
 
 /** 20px glyph of the standalone search button in the Leading Providers header (node 1:2656). */
-export const SEARCH_BUTTON_ICON = '/images/icons/search-btn.svg'
+export const SEARCH_BUTTON_ICON = withBase('/images/icons/search-btn.svg')

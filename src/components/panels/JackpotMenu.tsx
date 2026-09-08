@@ -10,7 +10,7 @@ import { VipBadge } from '../layout/HeaderPostlogin'
 import { MenuGlyph } from '../layout/MobileNavBar'
 import type { MenuGlyphName } from '../layout/MobileNavBar'
 import userData from '@/data/user.json'
-import { languageFlag } from '@/lib/assets'
+import { LOGO, languageFlag } from '@/lib/assets'
 import { formatGbp } from '@/lib/format'
 import { useAppStore } from '@/store/useAppStore'
 import type { AuthMode, Balance, UserProfile } from '@/lib/types'
@@ -218,7 +218,7 @@ export default function JackpotMenu() {
       {/* Node 1:8753 — the panel keeps its own header rather than borrowing the page's. */}
       <div className="mb-3 flex items-center justify-between gap-3">
         <Image
-          src="/images/logo.svg"
+          src={LOGO}
           alt="Jackpot"
           width={73}
           height={36}

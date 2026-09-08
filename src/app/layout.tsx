@@ -24,6 +24,13 @@ const bricolage = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: 'Jackpot',
   description: 'Casino platform demo built from the Jackpot Figma file.',
+  /*
+   * The review build is hosted publicly so a link can be handed to the client, but it is an
+   * unreleased design and carries third-party brand marks exported from Figma. robots.txt asks
+   * crawlers not to fetch it; this header asks them not to index it if they do anyway. Neither
+   * makes the URL secret — anyone holding it can open the page.
+   */
+  robots: { index: false, follow: false },
 }
 
 /*

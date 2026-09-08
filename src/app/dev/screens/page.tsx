@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { withBase } from '@/lib/assets'
 import BalancePanel from '@/components/panels/BalancePanel'
 import JackpotMenu from '@/components/panels/JackpotMenu'
 import PersonalInfoPanel from '@/components/panels/PersonalInfoPanel'
@@ -272,7 +273,8 @@ function Preview({ screen }: { screen: ScreenSpec }) {
       <div className="overflow-x-auto">
         <iframe
           key={screen.id}
-          src="/"
+          // withBase, or the preview frame loads the host's root instead of the deployed app.
+          src={withBase('/')}
           title={`Jackpot homepage at ${screen.viewport}px`}
           width={screen.viewport}
           height={820}

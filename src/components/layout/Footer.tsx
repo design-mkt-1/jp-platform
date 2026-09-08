@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import FooterBottom from './FooterBottom'
 import FooterLinkColumn from './FooterLinkColumn'
-import { LANGUAGE_FLAGS, languageFlag, partnerLogo, paymentLogo } from '@/lib/assets'
+import { LANGUAGE_FLAGS, languageFlag, partnerLogo, paymentLogo, withBase } from '@/lib/assets'
 import footerJson from '@/data/footer.json'
 import type { FooterData, FooterLogo } from '@/lib/types'
 
@@ -82,7 +82,9 @@ const FALLBACK_CLASSES =
   'px-2 text-center text-[11px] font-bold uppercase leading-tight tracking-[0.6px] text-label'
 
 function PaymentTile({ logo }: { logo: FooterLogo }) {
-  const src = logo.src ?? paymentLogo(logo.id)
+  // logo.src comes straight from footer.json, so it has to be prefixed here; paymentLogo()
+  // already is. Without this the deployed sub-path build shows seven empty payment tiles.
+  const src = logo.src ? withBase(logo.src) : paymentLogo(logo.id)
   const art = PAYMENT_ART[logo.id] ?? DEFAULT_PAYMENT_ART
 
   return (
@@ -104,7 +106,7 @@ function PaymentTile({ logo }: { logo: FooterLogo }) {
 }
 
 function PartnerSlot({ logo }: { logo: FooterLogo }) {
-  const src = logo.src ?? partnerLogo(logo.id)
+  const src = logo.src ? withBase(logo.src) : partnerLogo(logo.id)
   const art = PARTNER_ART[logo.id] ?? DEFAULT_PARTNER_ART
 
   const content = src ? (

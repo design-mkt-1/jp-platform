@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { withBase } from '@/lib/assets'
 import { gradientForId } from './GameCard'
 import { formatGbpSuffix } from '@/lib/format'
 import type { RecentWin } from '@/lib/types'
@@ -35,7 +36,7 @@ export default function RecentWinItem({
         <div className="relative size-[46px] shrink-0 overflow-hidden rounded-lg border border-solid border-strong bg-page">
           {win.thumb ? (
             <Image
-              src={win.thumb}
+              src={withBase(win.thumb)}
               alt=""
               fill
               sizes="46px"

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ComponentType } from 'react'
+import { LOGO } from '@/lib/assets'
 import Icon from '../primitives/Icon'
 import HeaderPostlogin from './HeaderPostlogin'
 import HeaderPrelogin from './HeaderPrelogin'
@@ -61,7 +62,7 @@ const FOCUS_RING =
  * primitive is scoped to `images/icons/` on purpose, so the path is named once here rather than
  * inlined at the use site. See the report's change request for moving it into assets.ts.
  */
-const LOGO_SRC = '/images/logo.svg'
+const LOGO_SRC = LOGO
 
 /**
  * Node 1:4250. Figma draws the 113.38x56.001 wordmark inside a 120.003x56.001 box, so the box and
@@ -131,6 +132,10 @@ export default function Header() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
+                      // Four of the five secondary sections have no screen in the design, so
+                      // prefetching them only fills the console with 404s on the static build.
+                      // They still resolve — to the demo's own not-found page.
+                      prefetch={false}
                       // The gold tint is the only cue for the current section, and colour alone
                       // never reaches a screen reader.
                       aria-current={active ? 'page' : undefined}
