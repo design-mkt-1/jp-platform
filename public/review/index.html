@@ -266,7 +266,9 @@
       scrie cod, ce decizii s-au luat și ce a ieșit la verificările dinaintea construcției. Toate
       întrebările de acolo au primit deja răspuns; sunt păstrate ca urmă scrisă.
       <strong>Secțiunea 13</strong> e comparația propriu-zisă: douăzeci și șase de comparații
-      Figma / implementare, plus o fișă de accesibilitate.
+      Figma / implementare, plus o fișă de accesibilitate. <strong>Secțiunea 14</strong> e ce a ieșit
+      din privitul site-ului în Chrome pe 9 septembrie: cinci defecte găsite și reparate, cu captura
+      de după lângă nodul din Figma.
     </p>
     <div class="chips">
       <a class="badge ok" href="../" style="text-decoration:none">Deschide demo-ul →</a>
@@ -2142,6 +2144,173 @@ skillNames: "resource:figma-design-to-code".
           dar al doilea începe la x=380 într-un cadru de 390, deci nu se vede nimic din el.
           Un carusel ar cere o sursă de date pentru oferte, care nu există.</li>
       </ul>
+    </div>
+  </section>
+
+
+  <!-- ======================= 14. VAZUT IN CHROME ======================= -->
+  <section id="chrome">
+    <div class="sec-head"><span class="sec-num">14</span><h2>Văzut în Chrome, 9 septembrie</h2></div>
+    <p class="sec-sub">
+      Două sesiuni de măsurători trecuseră — casete, axe-core, <span class="mono">scrollWidth</span> —
+      și pagina tot arăta greșit. Așa că sesiunea asta a <em>privit</em> site-ul în Claude in Chrome,
+      la 390 și la 1440, stare cu stare, lângă capturile din Figma. Standul e o pagină cu patru
+      iframe-uri de 390×844 din aceeași origine, fiecare cu bara de scroll ascunsă: o captură =
+      patru ecrane de telefon, cu zoom pentru detaliu. Fiindcă JPEG-ul micșorat înghite pictogramele
+      de 16px, orice „lipsește pictograma” se confirmă întâi cu
+      <span class="mono">img.naturalWidth</span>, nu din ochi.
+    </p>
+
+    <div class="grid" style="gap:26px">
+
+      <!-- B1 -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Reparat</span>
+          <h3>B1 — cronometrele promo stăteau la 00:00:00</h3>
+          <span class="small muted mono">nod 1:6195 · 202ba23</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          <span class="mono">tournaments.json</span> poartă termenul din design,
+          <span class="mono">endsAt: "2026-09-08T18:12:36Z"</span>, care e în trecut, iar bannerele
+          îl formatau o singură dată pe server, prin <span class="mono">Math.max(0, …)</span>. Acum
+          <span class="mono">nextCountdownEnd()</span> rostogolește un termen expirat înainte, în
+          perioade întregi de 7 zile, la citire, iar noul hook <span class="mono">useCountdown</span>
+          reformatează din <span class="mono">Date.now()</span> o dată pe secundă în client — de
+          aceea cele două bannere au devenit componente de client. Captura din dreapta arată
+          <span class="mono">164:03:23</span>, viu. Orele ajung la trei cifre fiindcă perioada e o
+          săptămână, unde design-ul scrie <span class="mono">08h</span>; o perioadă de 24 de ore e o
+          singură constantă de schimbat, dacă preferi lățimea din design.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-mob-promo-tournament.png" alt="Bannerul de turneu pe mobil în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-b1-countdown.png" alt="Bannerul de turneu cu cronometrul viu"><figcaption>Implementare, după</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- B2 -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Reparat</span>
+          <h3>B2 — subtitlul loteriei se pierdea în artă</h3>
+          <span class="small muted mono">nod 1:6247 · 9efd153</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Diagnosticul inițial — „textul e sub imagine” — era greșit:
+          <span class="mono">document.elementFromPoint</span> la capătul rândului întoarce
+          <span class="mono">&lt;p&gt;</span>, nu <span class="mono">&lt;img&gt;</span>, deci textul a
+          fost dintotdeauna desenat deasupra și un <span class="mono">z-index</span> n-ar fi schimbat
+          nimic pe ecran. Defectul real era contrastul: cuvântul „now” cade pe telefonul luminat din
+          mijlocul scenei, unde <span class="mono">text-subtitle</span> măsura 1.68:1 la 390.
+          Reparația stă în spatele cuvintelor — un voal radial de <span class="mono">--bg-card</span>
+          între imagine și corp, ancorat la marginea stângă. Cardul roții e exclus prin decizia ta
+          (nod 1:6282) și se randează pixel cu pixel identic. „now” măsoară acum 6.50:1, la fel în
+          ambele moduri de mișcare. Captura din stânga scrie <em>SPIN CHALLENGE 2000</em> fiindcă
+          nodul 1:6253 repetă acolo textul turneului — e o diferență conștientă, notată de mult;
+          textul nostru e copia reală a loteriei.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-mob-promo-lottery.png" alt="Bannerul de loterie pe mobil în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-b2-lottery-scrim.png" alt="Bannerul de loterie cu subtitlul lizibil"><figcaption>Implementare, după</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- B3 -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Reparat</span>
+          <h3>B3 — căutarea mobilă era un card plutitor peste header</h3>
+          <span class="small muted mono">f06e5ae</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          La 390 panoul de căutare era un card de 358×384 pornit de la y=16, care lăsa o fâșie de
+          header deasupra lui, cu pastila de sold tăiată în două. Figma n-are niciun cadru de
+          căutare mobilă — nodurile 1:4334, 1:4479 și 1:4611 sunt toate de 1440 lățime — așa că, prin
+          decizia ta, căutarea ia sub 768px exact forma meniului Jackpot: <span class="mono">Sheet</span>
+          cu <span class="mono">anchor="top"</span>. De aceea imaginea din stânga e cadrul meniului
+          Jackpot: e forma de referință, nu o captură a căutării. Măsurat:
+          <span class="mono">[role=dialog]</span> la top 0, lățime 390, niciun pixel de header
+          accesibil în spate, focus prins înăuntru, <span class="mono">Escape</span> îl întoarce pe
+          lupa din header. Desktopul e pixel cu pixel identic.
+        </p>
+        <p class="small muted" style="margin:0 0 14px">
+          <strong>Rămâne deschis, dinainte:</strong> un clic pe fundal lasă focusul pe
+          <span class="mono">body</span>. Se întâmplă la fel în sertarul meniului Jackpot — e în
+          <span class="mono">useOverlayBehavior</span>/<span class="mono">Sheet</span>, nu în căutare.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-jackpot-menu-prelogin.png" alt="Sertarul meniului Jackpot în Figma"><figcaption>Figma — meniul Jackpot, nod 1:8751 (forma de referință)</figcaption></figure>
+          <figure><img src="cmp/app-b3-search-sheet.png" alt="Căutarea mobilă ca sertar ancorat sus"><figcaption>Implementare, după</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- chip -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Reparat</span>
+          <h3>Eticheta din căutare scria „Popular” în loc de „Slots”</h3>
+          <span class="small muted mono">nod 1:4579 · 5251402</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          Ieșită din comparația sistematică a tuturor celor 15 stări. Eticheta lua
+          <span class="mono">categories[0]</span>, iar <span class="mono">games.json</span> pune fila
+          de curatare „popular” prima la cele șapte jocuri care o poartă — deci Sweet Bonanza primea
+          „Popular” acolo unde Figma scrie „Slots”. Acum eticheta preferă categoria de gen și cade
+          înapoi pe cea de curatare, așa că ordinea din <span class="mono">games.json</span>, de care
+          depinde fila Popular, rămâne neatinsă. Captura din dreapta e la 390; nodul din stânga e
+          panoul de 1440, singurul pe care îl desenează Figma.
+        </p>
+        <div class="ba">
+          <figure><img src="cmp/figma-search-chip.png" alt="Panoul de sugestii în Figma"><figcaption>Figma</figcaption></figure>
+          <figure><img src="cmp/app-search-chip.png" alt="Sugestiile în implementare, cu eticheta Slots"><figcaption>Implementare, după</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- footer -->
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:10px">
+          <span class="badge warn">Reparat</span>
+          <h3>Footerul mobil se aduna într-o singură coloană</h3>
+          <span class="small muted mono">nod 1:6517 · 5251402</span>
+        </div>
+        <p class="small muted" style="margin:0 0 14px">
+          A doua diferență scoasă de comparația sistematică. Cadrul mobil din Figma pornește fiecare
+          rând la x=8, nu la x=16, iar acei 16px erau exact cât făcea ca două plăci de plată de 160px
+          să nu încapă pe un rând de 316px. După aliniere: plăcile 2/2/2/1 la 160px, partenerii 3/3/1,
+          „Navigation” și „Policies &amp; Legal” din nou una lângă alta cu gutiera de 32px, iar
+          steagurile 5/5 în loc de 6/4 — fiindcă pe mobil ele scad la 32.2×31.7, cum le desenează
+          Figma. <span class="mono">scrollWidth</span> rămâne 390 în ambele moduri de mișcare, iar
+          footerul de desktop la 1440 e neschimbat (0 pixeli diferiți).
+        </p>
+        <div class="ba">
+          <figure><div style="max-height:560px;overflow:auto;border-radius:10px"><img src="cmp/figma-mob-footer.png" alt="Footerul mobil în Figma"></div><figcaption>Figma</figcaption></figure>
+          <figure><div style="max-height:560px;overflow:auto;border-radius:10px"><img src="cmp/app-mob-footer.png" alt="Footerul mobil în implementare"></div><figcaption>Implementare, după</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- verificate, nu se repara -->
+      <div class="card">
+        <span class="badge ok">Verificate lângă Figma · nu se repară</span>
+        <h3 style="margin:12px 0 6px">Ce arată ciudat, dar e exact cum desenează design-ul</h3>
+        <ul class="small" style="color:var(--text-muted);padding-left:20px;margin:8px 0 0">
+          <li style="margin-bottom:8px">Discul închis, de 64×64, din spatele butonului
+            <em>Menu</em> din bara de file (nod 1:8235).</li>
+          <li style="margin-bottom:8px">Linia scurtă din antetul <em>Leading Providers</em>.</li>
+          <li style="margin-bottom:8px"><em>Invite Friends</em> pe două rânduri în meniul de cont
+            (nod 1:4153).</li>
+          <li style="margin-bottom:8px">Textul portocaliu <em>SPIN THE WHEEL</em> peste roată
+            (nod 1:6282).</li>
+          <li>Rândul <em>Sign out</em> se vede fără scroll în meniul Jackpot, și post-login, și VIP.</li>
+        </ul>
+        <p class="small muted" style="margin:14px 0 0">
+          Decizia 2 a zilei: lupa din câmpul de provideri e <span class="mono">#36BCFF</span>,
+          culoarea pe care o exportă Figma pe nodurile 1:2239 și 1:4323 — nu tokenul albastru, nu
+          cyanul. Trăiește în <span class="mono">public/images/icons/search-blue.svg</span> și e
+          notată în <span class="mono">docs/tokens.md</span> §2b. Întrebarea deschisă despre culoarea
+          ei se închide aici.
+        </p>
+      </div>
+
     </div>
   </section>
 

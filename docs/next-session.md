@@ -9,7 +9,8 @@ The demo is built, pushed to `main`, and deployed.
 - **Design vs implementation:** https://design-mkt-1.github.io/jp-platform/review/ — twenty-six
   comparisons and one accessibility card, Figma beside the built page. Sections 01–12 of that report
   are the history: what was measured in the Figma file before any code, and every decision taken
-  since. Section 13 is the comparison.
+  since. Section 13 is the comparison. Section 14 is what came out of looking at the site in Chrome
+  on 2026-09-09 — five defects found and fixed, each with the after-capture beside its Figma node.
 - **Why the architecture looks like this:** [`docs/build-plan.md`](build-plan.md)
 - **Repo:** https://github.com/design-mkt-1/jp-platform (public, `noindex` + `robots.txt` disallow)
 
@@ -249,17 +250,60 @@ way.
   its edge.
 - That popover's field measures 654 wide against Figma's 656. The popover is 720 with 32px padding
   on each side, and ours carries a 1px border the frame does not have. Two pixels, from the border.
-- The magnifier inside both provider fields is now blue, as Figma draws it:
+- The magnifier inside both provider fields is blue, as Figma draws it:
   `public/images/icons/search-blue.svg` is the node 1:2239 geometry restroked, used by
   `ProviderSearch` alone — the header magnifier, the games field and `SearchNoResults` keep the grey
-  `search.svg`. Rasterised from the running page it measures `#007AFF` at both 390 and 1440. **Open
-  question:** Figma's own export of that glyph is `#36BCFF` on both node 1:2239 and node 1:4323 — a
-  light sky blue that is neither the blue token nor the `#00F0FF` cyan one — and the blue token is
-  now `#006EE6` after the contrast pass. So the glyph is a third blue whichever way it is read.
-- The `Sweet Bonanza` row in the search suggestions carries the badge `Popular`; Figma writes
-  `Slots`. The chip is the game's first category (`SearchSuggestions.tsx:31`) and that game is
-  `["popular", "slots"]` in `src/data/games.json` — the order of two strings in mock data, not
-  layout.
+  `search.svg`. It is a third blue, neither the `#006EE6` token nor the `#00F0FF` cyan, and that is
+  deliberate: the owner's decision of 2026-09-09 is Figma's own `#36BCFF` from nodes 1:2239 and
+  1:4323. Rasterised from the running page it measures `#36BCFF` at both 390 and 1440, and
+  `docs/tokens.md` §2b records it. Nothing left open here.
+
+### 6. Seen in Chrome, 2026-09-09
+
+Two sessions of measurements had gone by — bounding boxes, axe-core, `scrollWidth` — and the page
+still looked wrong. So this session **looked** at it. The site was opened in Claude in Chrome at 390
+and at 1440, state by state, beside its Figma captures (file `2MyylxdZblfGnf05nQacUz`), and every
+claim below started from something visible on screen rather than from a number.
+
+The rig is a single same-origin page holding four 390x844 iframes, each with
+`::-webkit-scrollbar{display:none}` injected, so one screenshot is four phone screens at once and
+the browser's own scrollbars do not eat 15px of every frame. Zoom into the raw PNG for detail. One
+trap is worth writing down: the downscaled JPEG that comes back from a screenshot hides 16px icons
+entirely, so "the icon is missing" is a claim the capture cannot support. Confirm it with
+`img.naturalWidth` first — twice this session an icon that looked absent was there.
+
+**What was found and fixed.**
+
+| # | What | Evidence | Fix | Commit |
+| - | ---- | -------- | --- | ------ |
+| B1 | Every promo countdown read `00:00:00` | `tournaments.json` carries the design's deadline `endsAt: "2026-09-08T18:12:36Z"`, which is in the past, and the banners formatted it once on the server through `Math.max(0, …)` | `nextCountdownEnd()` in `src/lib/format.ts` rolls a past deadline forward in whole 7-day periods at read time, and the new `useCountdown` hook re-formats from `Date.now()` once a second on the client; both promo banners became client components for that one reason. Measured live: `164:03:23`, ticking, 0 console errors and 0 hydration warnings. Hours now reach three digits (164h) where the design draws `08h`, because the period is a week — a 24-hour period is a one-constant change if you prefer the design's width | `202ba23` |
+| B2 | The mobile Weekly Lottery subtitle disappeared into the artwork | The reported diagnosis, "the text is under the image", was wrong: `document.elementFromPoint` at the end of that line returns the `<p>`, not the `<img>`, so the text has always been painted on top and a `z-index` would have changed nothing. The real defect is contrast — the copy wraps to two lines in the 190px column and "now" lands on the lit phone in the middle of the scene, where `text-subtitle` measured **1.68:1** at 390 | A radial scrim of `--bg-card` between the image and the body, anchored to the card's left edge, 400 wide against a 358 card so it never draws an edge of its own. Gated off the wheel card by the owner's decision (node 1:6282), which renders pixel-identical, 0 differing pixels. "now" measures **6.50:1**, the same under both motion preferences | `9efd153` |
+| B3 | At 390 the search was a floating card, 358x384 at y=16, with a strip of header showing above it and the balance pill cut in half | Figma has no mobile search frame at all — nodes 1:4334, 1:4479 and 1:4611 are all 1440 wide | Below 768px `SearchOverlay` renders through `Sheet` with `anchor="top"`, the same container the Jackpot menu uses. Measured: `[role=dialog]` at top 0, 390 wide, no header pixel reachable behind it, focus trapped across 30 tabs, `Escape` returns focus to the header magnifier. Desktop is pixel-identical. **Known, pre-existing, still open:** clicking the backdrop leaves focus on `body` — the same in the Jackpot menu sheet, so it lives in `useOverlayBehavior`/`Sheet`, not in the search | `f06e5ae` |
+| — | The search chip on Sweet Bonanza read `Popular` where Figma writes `Slots` (node 1:4479) | Found by the systematic app-vs-Figma diff of all 15 states (`.review-tmp/visual/report.md`). `chipLabel` took `categories[0]`, and `games.json` lists the curation tab "popular" first on the seven games that carry it | The chip now prefers a genre category and falls back to the curation one, so the order in `games.json` — which the Popular tab depends on — stays untouched. At 1440 the only change on `/?q=swe` is the chip itself, a 57x24 box at (1262,183) | `5251402` |
+| — | The mobile footer was one long single column: payment tiles one per row, partners two per row, the link columns stacked, flags 6+4. Figma's mobile frame (node 1:5720 / 1:6517) draws 2-column tiles, three partners per row, two link columns side by side and 5 flags per row | Same diff. Confirmed from computed layout, not pixels: the row is 316px wide but two fixed `w-40` (160px) tiles plus `gap-3` need 332px, so every tile wrapped | Figma's mobile frame starts every row at x=8 rather than x=16, and that 16px was the overflow. The footer's mobile padding now matches, the tile takes half the row minus the gap — exactly the 160px Figma draws — partner slots take a third of their row, Navigation and Policies & Legal sit side by side again with Figma's 32px gutter and 21.5px inset, and the flags drop to the 32.2x31.7 Figma uses on mobile. Measured at 390 in both motion modes: `scrollWidth` 390, tiles 2/2/2/1 at 160px, partners 3/3/1, flags 5/5, the two link columns at the same top. The desktop footer at 1440 is pixel-identical, 0 differing pixels | `5251402` |
+
+**Decision 2 of the day — the provider magnifier is `#36BCFF`.** That is the value Figma exports on
+nodes 1:2239 and 1:4323, and it is neither the blue token (`#006EE6` after the contrast pass) nor
+the `#00F0FF` cyan. It lives in `public/images/icons/search-blue.svg`, used by `ProviderSearch`
+alone, and `docs/tokens.md` §2b records it with its source node. No CSS variable and no Tailwind
+token come with it: `Icon` serves the file through `next/image` with `unoptimized`, so the colour
+lives in the SVG and nothing in the theme can reach it. This closes the open question that §5 used
+to carry.
+
+**Verified beside Figma and deliberately not fixed.** These all looked wrong on screen and are not.
+Nobody should re-open them:
+
+- The dark 64x64 disc behind the tab-bar `Menu` button — node 1:8235 draws it.
+- The short rule in the `Leading Providers` header — node 1:2650 fixes it at 160px.
+- `Invite Friends` on two lines in the account dropdown — node 1:4153 breaks it the same way.
+- The orange `SPIN THE WHEEL` text over the wheel artwork — node 1:6282.
+- `Sign out` visible without scrolling in the Jackpot menu, both post-login and VIP.
+- Plus the deliberate deviations the systematic diff re-confirmed: the gradient and initials
+  fallbacks where no artwork was ever exported, the provider "no results" state hiding the carousel,
+  the email standing in for an account id, GBP against the design's placeholder currency, and one
+  real `Jackpots` tab against Figma's three repeated placeholders.
+
+Section 14 of the review report is the same five fixes with the after-capture beside the Figma node.
 
 ## Things worth remembering about this codebase
 
