@@ -3,7 +3,7 @@ import Badge from '../primitives/Badge'
 import { gradientForId } from '../cards/GameCard'
 import { categories } from '@/lib/data'
 import { gameThumbOrNull } from '@/lib/assets'
-import type { Game } from '@/lib/types'
+import type { CategoryId, Game } from '@/lib/types'
 
 /**
  * The typing state — node 1:4579: a "Matching Suggestions" label over four 60px rows, each a
@@ -24,11 +24,21 @@ const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
 )
 
 /**
+ * "Popular" is a curation tab rather than a genre: it is how the category bar collects the house
+ * picks, and `games.json` deliberately lists it first on the games that carry it so that tab keeps
+ * its order. Reading `categories[0]` therefore chipped seven rows "Popular" where Figma (node
+ * 1:4479) chips the genre — "Slots" for Sweet Bonanza. Skipping it here leaves the data file alone.
+ */
+const CURATION_CATEGORIES: CategoryId[] = ['popular']
+
+/**
  * Crash and instant titles belong to no nav tab, so their `categories` array is empty and the chip
  * falls back to the first tag — the alternative is a row with a hole where every sibling has a chip.
+ * A game whose only category is a curation one still chips it: that is the truest label it has.
  */
 function chipLabel(game: Game): string | null {
-  const category = game.categories[0]
+  const category =
+    game.categories.find((id) => !CURATION_CATEGORIES.includes(id)) ?? game.categories[0]
   if (category) return CATEGORY_LABELS[category] ?? category
 
   const tag = game.tags[0]

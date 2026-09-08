@@ -86,7 +86,7 @@ function PaymentTile({ logo }: { logo: FooterLogo }) {
   const art = PAYMENT_ART[logo.id] ?? DEFAULT_PAYMENT_ART
 
   return (
-    <li className="flex h-[52px] w-40 flex-col items-center justify-center rounded-[10px] border border-solid border-medium bg-overlay px-4 py-2">
+    <li className="flex h-[52px] w-40 flex-col items-center justify-center rounded-[10px] border border-solid border-medium bg-overlay px-4 py-2 mobile:w-[calc(50%-6px)]">
       {src ? (
         <Image
           src={src}
@@ -114,7 +114,7 @@ function PartnerSlot({ logo }: { logo: FooterLogo }) {
       width={art.width}
       height={art.height}
       unoptimized
-      className="max-w-none object-contain"
+      className="max-w-none object-contain mobile:h-auto mobile:max-w-full"
     />
   ) : (
     <span className={FALLBACK_CLASSES}>{logo.label}</span>
@@ -122,7 +122,7 @@ function PartnerSlot({ logo }: { logo: FooterLogo }) {
 
   return (
     <li
-      className={`flex h-12 ${art.slotClass} shrink-0 items-center justify-center overflow-hidden`}
+      className={`flex h-12 ${art.slotClass} shrink-0 items-center justify-center overflow-hidden mobile:w-[calc(33.333%-11px)]`}
     >
       {logo.href ? (
         <a
@@ -142,7 +142,7 @@ function PartnerSlot({ logo }: { logo: FooterLogo }) {
 export default function Footer() {
   return (
     // `bg-footer` (node 1:3666), not `bg-page`: the footer is painted a shade below the page.
-    <footer className="flex w-full flex-col items-center gap-10 border-t border-solid border-separator bg-footer px-page-x pb-10 pt-[60px] mobile:gap-8 mobile:px-4 mobile:pt-10">
+    <footer className="flex w-full flex-col items-center gap-10 border-t border-solid border-separator bg-footer px-page-x pb-10 pt-[60px] mobile:gap-8 mobile:px-2 mobile:pt-10">
       <div className="flex w-full max-w-content flex-col items-center gap-10 mobile:gap-8">
         <section
           aria-labelledby="footer-payments"
@@ -180,13 +180,13 @@ export default function Footer() {
         <span aria-hidden className="w-full border-t border-dotted border-separator" />
 
         <div className="flex w-full items-start justify-center gap-20 mobile:flex-col mobile:items-center mobile:gap-8">
-          <div className="flex flex-1 items-start justify-center mobile:w-full mobile:flex-col mobile:items-start mobile:gap-8">
+          <div className="flex flex-1 items-start justify-center mobile:w-full mobile:gap-8 mobile:px-[21.5px]">
             {footer.columns.map((column) => (
               <FooterLinkColumn
                 key={column.title}
                 title={column.title}
                 links={column.links}
-                className="w-[300px] mobile:w-full"
+                className="w-[300px] mobile:w-auto mobile:flex-1"
               />
             ))}
           </div>
@@ -196,26 +196,26 @@ export default function Footer() {
               Figma paints with the gold ring. */}
           <ul
             aria-label="Available languages"
-            className="flex flex-1 flex-wrap items-center justify-center gap-2 pb-[15px] pt-2.5"
+            className="flex flex-1 flex-wrap items-center justify-center gap-2 pb-[15px] pt-2.5 mobile:max-w-[193px]"
           >
             {LANGUAGE_FLAGS.map((code, index) => (
               <li
                 key={code}
                 aria-current={index === 0 ? 'true' : undefined}
-                className={`flex h-11 w-[44.694px] items-center justify-center rounded-full px-[2.082px] py-[1.735px] ${
+                className={`flex h-11 w-[44.694px] items-center justify-center rounded-full px-[2.082px] py-[1.735px] mobile:h-[31.7px] mobile:w-[32.2px] mobile:px-[1.5px] mobile:py-[1.25px] ${
                   index === 0 ? 'bg-gradient-gold' : ''
                 }`}
               >
                 {/* `border-flag` (node 1:4016) is the near-black ring Figma draws between the gold
                     selection and the flag itself; `border-card` was a stand-in for it. */}
-                <span className="flex size-[40.53px] items-center justify-center overflow-hidden rounded-full border-[1.388px] border-solid border-flag">
+                <span className="flex size-[40.53px] items-center justify-center overflow-hidden rounded-full border-[1.388px] border-solid border-flag mobile:size-[29.2px]">
                   <Image
                     src={languageFlag(code)}
                     alt={LANGUAGE_NAMES[code] ?? code}
                     width={39}
                     height={39}
                     unoptimized
-                    className="size-[38.85px] rounded-full object-cover"
+                    className="size-[38.85px] rounded-full object-cover mobile:size-[27.99px]"
                   />
                 </span>
               </li>
