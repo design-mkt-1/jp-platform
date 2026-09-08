@@ -10,7 +10,7 @@ import {
   useDesktopViewport,
   useSearchBarHost,
 } from '../search/SearchOverlay'
-import categoriesData from '@/data/categories.json'
+import { categories as ALL_CATEGORIES } from '@/lib/data'
 import { useAppStore } from '@/store/useAppStore'
 import type { Category, CategoryId } from '@/lib/types'
 
@@ -41,8 +41,6 @@ import type { Category, CategoryId } from '@/lib/types'
  * The Figma bar shows six pills, three of them duplicate "Jackpots" placeholders. The four real
  * categories come from `categories.json` instead.
  */
-
-const ALL_CATEGORIES = categoriesData as Category[]
 
 /** 22px inset + 16px glyph + 8px gap + 176px label + 22px inset — node 1:2588 is 244 wide. */
 const SEARCH_TRIGGER_CLASSES = [

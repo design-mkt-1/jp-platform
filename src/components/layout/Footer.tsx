@@ -2,8 +2,8 @@ import Image from 'next/image'
 import FooterBottom from './FooterBottom'
 import FooterLinkColumn from './FooterLinkColumn'
 import { LANGUAGE_FLAGS, languageFlag, partnerLogo, paymentLogo, withBase } from '@/lib/assets'
-import footerJson from '@/data/footer.json'
-import type { FooterData, FooterLogo } from '@/lib/types'
+import { footer } from '@/lib/data'
+import type { FooterLogo } from '@/lib/types'
 
 /**
  * The page footer (Figma node 1:3666, 1440x729).
@@ -18,8 +18,6 @@ import type { FooterData, FooterLogo } from '@/lib/types'
  * falls back to its label, the same way `ProviderCard` falls back to initials: a hole in the row
  * is more noticeable than a wordmark.
  */
-
-const footer: FooterData = footerJson
 
 /**
  * Inner artwork size per payment slot, read off the Figma `image` frames. The tile is always

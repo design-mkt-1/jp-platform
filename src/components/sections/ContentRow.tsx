@@ -1,7 +1,6 @@
-import gamesData from '@/data/games.json'
-import providersData from '@/data/providers.json'
+import { games, providers } from '@/lib/data'
 import { selectGames, type GamesSectionSpec } from '@/lib/sections'
-import type { Game, Provider } from '@/lib/types'
+import type { Game } from '@/lib/types'
 import GameGrid from './GameGrid'
 import SectionHeader from './SectionHeader'
 
@@ -16,9 +15,6 @@ import SectionHeader from './SectionHeader'
  * Geometry from node 1:2592 and 1:3180: a 20px column gap between the header and the first grid
  * and between the two grids of a double row; the 12px gutter inside a grid belongs to GameGrid.
  */
-
-const games = gamesData as Game[]
-const providers = providersData as Provider[]
 
 /** Built once at module load: every row needs the same id → name lookup for its cards. */
 const PROVIDER_NAMES: Record<string, string> = Object.fromEntries(

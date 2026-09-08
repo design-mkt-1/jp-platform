@@ -1,13 +1,11 @@
-import providersData from '@/data/providers.json'
-import type { Game, Provider } from './types'
+import { providers } from './data'
+import type { Game } from './types'
 
 /**
  * One search implementation for all three search states (popular/recent, typing, no results).
  * Having the three screens share it is the point: otherwise "Bonanza" would return four rows in
  * one state and three in another and nobody would know which was right.
  */
-
-const providers = providersData as Provider[]
 
 const providerNameById = new Map(providers.map((provider) => [provider.id, provider.name]))
 

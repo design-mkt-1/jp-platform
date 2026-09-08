@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import providersData from '@/data/providers.json'
+import { providers } from '@/lib/data'
 import { SEARCH_BUTTON_ICON } from '@/lib/assets'
 import type { ProvidersSectionSpec } from '@/lib/sections'
 import type { Provider } from '@/lib/types'
@@ -29,8 +29,6 @@ import SectionHeader from './SectionHeader'
  * this row but the glyph. The store is deliberately provider-less, so this island can reach it
  * directly.
  */
-
-const providers = providersData as Provider[]
 
 export interface ProviderRowProps {
   section: ProvidersSectionSpec

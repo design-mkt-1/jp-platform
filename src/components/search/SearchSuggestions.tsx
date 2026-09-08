@@ -1,9 +1,9 @@
 import Image from 'next/image'
 import Badge from '../primitives/Badge'
 import { gradientForId } from '../cards/GameCard'
-import categoriesData from '@/data/categories.json'
+import { categories } from '@/lib/data'
 import { gameThumbOrNull } from '@/lib/assets'
-import type { Category, Game } from '@/lib/types'
+import type { Game } from '@/lib/types'
 
 /**
  * The typing state — node 1:4579: a "Matching Suggestions" label over four 60px rows, each a
@@ -20,7 +20,7 @@ import type { Category, Game } from '@/lib/types'
  */
 
 const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
-  (categoriesData as Category[]).map((category) => [category.id, category.label]),
+  categories.map((category) => [category.id, category.label]),
 )
 
 /**

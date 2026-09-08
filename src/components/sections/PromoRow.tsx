@@ -1,4 +1,4 @@
-import tournamentsData from '@/data/tournaments.json'
+import { promos } from '@/lib/data'
 import type { PromoSectionSpec } from '@/lib/sections'
 import type { PromoBannerData } from '@/lib/types'
 import PromoBanner from '../cards/PromoBanner'
@@ -17,8 +17,6 @@ import SectionHeader from './SectionHeader'
  * 160px rule pinned to the right margin with no "See All" pill after it, which is SectionHeader's
  * `fixed` rule and an omitted `total`.
  */
-
-const promos = tournamentsData.promos as PromoBannerData[]
 
 export interface PromoRowProps {
   section: PromoSectionSpec

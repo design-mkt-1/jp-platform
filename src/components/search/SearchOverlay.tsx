@@ -4,10 +4,9 @@ import { createPortal } from 'react-dom'
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react'
 import SearchInput from '../primitives/SearchInput'
 import { useOverlayBehavior } from '../primitives/Panel'
-import gamesData from '@/data/games.json'
-import providersData from '@/data/providers.json'
+import { games, providers } from '@/lib/data'
 import { getSuggestions } from '@/lib/search'
-import type { Game, Provider } from '@/lib/types'
+import type { Game } from '@/lib/types'
 import { useAppStore } from '@/store/useAppStore'
 import SearchNoResults from './SearchNoResults'
 import SearchPopularRecent from './SearchPopularRecent'
@@ -49,9 +48,6 @@ import SearchSuggestions from './SearchSuggestions'
  * Unlike Panel the backdrop is transparent: nodes 1:4334 and 1:4479 leave the category bar above
  * the panel at full brightness, so the page is dimmed by nothing here.
  */
-
-const games = gamesData as Game[]
-const providers = providersData as Provider[]
 
 /** Built once at module load — the row list needs the same id → name lookup on every keystroke. */
 const PROVIDER_NAMES: Record<string, string> = Object.fromEntries(

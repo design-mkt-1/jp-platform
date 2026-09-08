@@ -3,10 +3,9 @@
 import type { ReactNode } from 'react'
 import Button from '../primitives/Button'
 import Panel from '../primitives/Panel'
-import userData from '@/data/user.json'
+import { balances as BALANCES } from '@/lib/data'
 import { formatGbp } from '@/lib/format'
 import { useAppStore } from '@/store/useAppStore'
-import type { AuthMode, Balance } from '@/lib/types'
 
 /**
  * The balance breakdown that drops out of the header pill — frame `Balance Opened` (1:4116),
@@ -22,8 +21,6 @@ import type { AuthMode, Balance } from '@/lib/types'
  * (`bg-overlay` = `#161625 @ 80%`, not black at 20%) recorded in docs/tokens.md §1, not a bug,
  * and it is deliberately not compensated for here.
  */
-
-const BALANCES = userData.balances as Record<AuthMode, Balance>
 
 /** Roboto at 14/16 — the `Footnote_m` style the design reports for every row of the stack. */
 const ROW = 'flex items-center justify-between p-4 font-flex text-sm'

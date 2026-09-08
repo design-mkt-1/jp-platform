@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import RecentWinItem from '../cards/RecentWinItem'
-import recentWinsData from '@/data/recentWins.json'
+import { recentWins as ALL_WINS } from '@/lib/data'
 import type { RecentWin } from '@/lib/types'
 
 /**
@@ -19,8 +19,6 @@ import type { RecentWin } from '@/lib/types'
  * hairline is `border-strong` (white 10%). Node 1:2433 is white 15% — `border-emphasis`. Rendering
  * them as siblings inside the same `gap-3.5` flex puts them at the identical spacing.
  */
-
-const ALL_WINS = recentWinsData as RecentWin[]
 
 export interface RecentWinsTickerProps {
   wins?: RecentWin[]

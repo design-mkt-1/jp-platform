@@ -2,10 +2,10 @@
 
 import Button from '../primitives/Button'
 import Icon from '../primitives/Icon'
-import userData from '@/data/user.json'
+import { balances as BALANCES, profile as PROFILE, vipProfile as VIP_PROFILE } from '@/lib/data'
 import { formatGbp } from '@/lib/format'
 import { useAppStore } from '@/store/useAppStore'
-import type { AuthMode, Balance, UserProfile } from '@/lib/types'
+import type { AuthMode } from '@/lib/types'
 
 /**
  * The right-hand cluster of the header for a signed-in player: Figma node 1:4272 on desktop
@@ -19,10 +19,6 @@ import type { AuthMode, Balance, UserProfile } from '@/lib/types'
  * None of the overlays live here. The balance and profile controls only call `openPanel`; the
  * panels themselves are built elsewhere.
  */
-
-const BALANCES = userData.balances as Record<AuthMode, Balance>
-const PROFILE = userData.profile as UserProfile
-const VIP_PROFILE = userData.vipProfile as UserProfile
 
 /** The two signed-in states. `prelogin` has no cluster to render. */
 export type AccountTier = Extract<AuthMode, 'postlogin' | 'vip'>

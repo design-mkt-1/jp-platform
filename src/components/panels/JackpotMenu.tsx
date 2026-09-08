@@ -9,11 +9,10 @@ import Sheet from '../primitives/Sheet'
 import { VipBadge } from '../layout/HeaderPostlogin'
 import { MenuGlyph } from '../layout/MobileNavBar'
 import type { MenuGlyphName } from '../layout/MobileNavBar'
-import userData from '@/data/user.json'
+import { balances as BALANCES, profile as PROFILE, vipProfile as VIP_PROFILE } from '@/lib/data'
 import { LOGO, languageFlag } from '@/lib/assets'
 import { formatGbp } from '@/lib/format'
 import { useAppStore } from '@/store/useAppStore'
-import type { AuthMode, Balance, UserProfile } from '@/lib/types'
 
 /**
  * The account menu behind the centre action of the mobile tab bar: Figma nodes 1:8751 (pre-login),
@@ -28,10 +27,6 @@ import type { AuthMode, Balance, UserProfile } from '@/lib/types'
  * Presented through `Sheet` so the focus trap, Escape, backdrop dismissal and focus restoration
  * come from the same implementation the desktop panels use.
  */
-
-const BALANCES = userData.balances as Record<AuthMode, Balance>
-const PROFILE = userData.profile as UserProfile
-const VIP_PROFILE = userData.vipProfile as UserProfile
 
 const FOCUS_RING =
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue'

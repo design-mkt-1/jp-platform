@@ -1,9 +1,8 @@
 'use client'
 
 import Panel from '../primitives/Panel'
-import userData from '@/data/user.json'
+import { profile as PROFILE, vipProfile as VIP_PROFILE } from '@/lib/data'
 import { useAppStore } from '@/store/useAppStore'
-import type { UserProfile } from '@/lib/types'
 
 /**
  * The menu that drops out of the username pill — frame `Personal information Opened` (1:4153),
@@ -23,9 +22,6 @@ import type { UserProfile } from '@/lib/types'
  * As in `BalancePanel`, the modal behaviour is `Panel`'s and the backdrop is the dark
  * `bg-overlay` the tokens decision settled on, not the Figma frame's black at 20%.
  */
-
-const PROFILE = userData.profile as UserProfile
-const VIP_PROFILE = userData.vipProfile as UserProfile
 
 /** Nodes 1:4161 → 1:4186: 20px box, 18px glyph, stroked rather than filled. */
 const GLYPH = 'size-[18px]'
