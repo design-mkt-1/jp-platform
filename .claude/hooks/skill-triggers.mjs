@@ -12,7 +12,7 @@
  */
 const TRIGGERS = [
   'PROJECT SKILLS (.claude/skills, committed) — invoke them, do not improvise:',
-  '- Touching UI: ui-ux-pro-max:ui-styling + make-interfaces-feel-better BEFORE editing.',
+  '- Touching UI: ui-ux-pro-max:ui-ux-pro-max (the primary), then :ui-styling, plus make-interfaces-feel-better — BEFORE editing.',
   '- Before calling a UI change done: browser-qa (look at it) + click-path-audit (trace the states).',
   '- Explaining a bug or a decision: explica. Codebase questions: graphify. Writing code: ponytail.',
   '- Mobile 390px is the priority; 95% of traffic is a phone. Desktop must not regress.',

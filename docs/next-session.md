@@ -87,6 +87,37 @@ are closed across the app. All in §11.
 | 7  | A dead Figma node id cannot be detected | `screens.test.ts` checks that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing in the repo can do better without calling Figma. | §9 |
 | 8  | Thirteen deliberate differences         | Currency, fallback artwork, the mobile hero showing one offer, and ten more — each listed with its node and its reason. To be re-confirmed at sign-off, not fixed. | §5 |
 
+## How this repo is worked on — read before touching anything
+
+Since 2026-09-09 the working rules travel with the repo instead of living on one machine.
+
+- **[`CLAUDE.md`](../CLAUDE.md)** at the root carries them: which skill fires before which kind of
+  work, the standard gate, the measuring traps, the Figma rules, and the `caveman`/`explica` ordering.
+- **`.claude/skills/`** holds 20 skills, committed, so every clone has them.
+- **`.claude/hooks/skill-triggers.mjs`** is a `UserPromptSubmit` hook that injects the triggers on
+  every turn. It exists because the passive version failed: `ui-ux-pro-max` was enabled in
+  `.claude/settings.json` from the first commit and session 8 still ran a 49-control UI audit and
+  eight fixes without invoking it once. A file on disk waits to be read; a hook fires. Verified
+  working — the injected text appears above the first message of a session.
+- **[`docs/install-skills-in-a-repo.md`](install-skills-in-a-repo.md)** is the same set-up for
+  another repo.
+
+One thing worth knowing before reaching for it: **`ui-ux-pro-max` is not one skill, it is seven.**
+The primary for this repo's work is `ui-ux-pro-max:ui-ux-pro-max` ("designing, building, reviewing,
+or fixing interfaces"), with `:ui-styling` for the Tailwind specifics. `:design` is a router for
+logo, banner and slide *generation* — session 8 fired it by name and got a table about generating
+logos with Gemini. `:brand`, `:banner-design` and `:slides` make marketing assets and have nothing
+to do with this product.
+
+**A known-stale fact, recorded so nobody re-derives it.** The mobile subtree in Figma was rebuilt on
+2026-09-09. Roughly **54 distinct node ids across ~87 sites** in the `1:5720`–`1:6517` band now
+resolve to nothing — they are spread over 18 files including `globals.css`, mostly as comments.
+The live mobile pair is **`21:2896`** (post-login) and **`21:4154`** (pre-login), both 390x7129;
+the mobile footer is `21:3693`. Only the ids that *do* something are being corrected —
+`src/lib/screens.ts` and `MOBILE_NODE_IDS` in `src/lib/sections.ts`, which drive the `/dev/screens`
+deep links. `screens.test.ts` cannot catch any of this: it checks that an id matches `^\d+:\d+$`,
+which a dead id still does.
+
 ## Local commands
 
 ```bash
