@@ -1,85 +1,84 @@
 # Design tokens — Jackpot
 
-**Acest fișier este singura punte între Figma și cod.** Dacă se învechește, componentele încep să
-conțină culori scrise de mână și nu mai există un loc unic în care să schimbi ceva.
+**This file is the only bridge between Figma and the code.** If it goes stale, components start
+carrying hand-written colours and there is no longer one place to change anything.
 
-Sursă: fișierul Figma `2MyylxdZblfGnf05nQacUz`, frame-urile `UI Kit — Desktop / Colors` (nod `1:5199`)
-și `UI Kit — Mobile / Colors` (nod `1:4745`).
+Source: Figma file `2MyylxdZblfGnf05nQacUz`, frames `UI Kit — Desktop / Colors` (node `1:5199`)
+and `UI Kit — Mobile / Colors` (node `1:4745`).
 
-Figma **nu are variabile** în acest fișier — `get_variable_defs` întoarce `{"BG/Quaternary":"#0D1420"}`
-pe `desktop-main` și `{}` pe ambele UI Kit-uri. Toate valorile de mai jos sunt citite din fill-urile
-swatch-urilor și din textul scris de designer sub fiecare.
+Figma **has no variables** in this file — `get_variable_defs` returns `{"BG/Quaternary":"#0D1420"}`
+on `desktop-main` and `{}` on both UI Kits. Every value below is read off the swatch fills and the
+text the designer wrote under each of them.
 
-Fonturi: **Inter**, **Roboto Flex**, **Bricolage Grotesque** — toate Google Fonts, încărcate cu
+Fonts: **Inter**, **Roboto Flex**, **Bricolage Grotesque** — all Google Fonts, loaded with
 `next/font/google`.
 
 ---
 
-## 1. Decizia asupra conflictelor
+## 1. The decision on the conflicts
 
-Cele două UI Kit-uri folosesc cinci nume identice cu valori diferite. **Decizia owner-ului: câștigă
-valorile din kit-ul Mobile**, aplicate la ambele viewporturi. Un singur token, o singură valoare.
+The two UI Kits use five identical names with different values. **Owner's decision: the Mobile
+kit's values win**, applied at both viewports. One token, one value.
 
-| Nume Figma      | Desktop         | Mobile          | Valoare adoptată                             |
-| --------------- | --------------- | --------------- | -------------------------------------------- |
-| Page Background | `#11111A`       | `#0F121D`       | `#0F121D`                                    |
-| Overlay         | `#000000 @ 20%` | `#161625 @ 80%` | **ambele, comutate la 768px** — vezi mai jos |
-| Secondary Text  | `#FFFFFF @ 70%` | `#FFFFFF @ 60%` | `#FFFFFF @ 60%`                              |
-| Blue Tinted BG  | `#007AFF @ 13%` | `#007AFF @ 15%` | `#007AFF @ 15%`                              |
-| Card Border     | `#FFFFFF @ 4%`  | `#262632`       | `#262632`                                    |
+| Figma name      | Desktop         | Mobile          | Value adopted                              |
+| --------------- | --------------- | --------------- | ------------------------------------------ |
+| Page Background | `#11111A`       | `#0F121D`       | `#0F121D`                                  |
+| Overlay         | `#000000 @ 20%` | `#161625 @ 80%` | **both, switched at 768px** — see below    |
+| Secondary Text  | `#FFFFFF @ 70%` | `#FFFFFF @ 60%` | `#FFFFFF @ 60%`                            |
+| Blue Tinted BG  | `#007AFF @ 13%` | `#007AFF @ 15%` | `#007AFF @ 15%`                            |
+| Card Border     | `#FFFFFF @ 4%`  | `#262632`       | `#262632`                                  |
 
-### Singura excepție: `bg-overlay`
+### The one exception: `bg-overlay`
 
-Regula rămâne o valoare per token. `bg-overlay` e excepția, prin decizia owner-ului luată după
-verificarea vizuală, pentru că aici cele două kit-uri diferă dintr-un motiv, nu din neatenție:
+The rule stays one value per token. `bg-overlay` is the exception, by the owner's decision taken
+after the visual check, because here the two kits differ for a reason rather than by inattention:
 
-- pe **desktop** stratul stă în spatele unui panou mic din colț (nodul `1:4116`) — negru la 20%,
-  pagina rămâne lizibilă
-- pe **mobil** stă în spatele unei foi care acoperă aproape tot ecranul — `#161625` la 80%
+- on **desktop** the layer sits behind a small panel in the corner (node `1:4116`) — black at 20%,
+  and the page behind it stays readable
+- on **mobile** it sits behind a sheet that covers nearly the whole screen — `#161625` at 80%
 
-Forțarea unei singure valori făcea panourile de pe desktop mult mai închise decât în design.
-Comutarea se face în `globals.css` printr-un `@media (max-width: 767px)`.
-Orice alt token care ar vrea a doua valoare are nevoie de o justificare de aceeași natură.
+Forcing a single value made the desktop panels far darker than the design. The switch is made in
+`globals.css` through a `@media (max-width: 767px)`.
+Any other token that wants a second value needs a justification of the same kind.
 
-Decizia se aplică **numai** acestor cinci. Tokenii care există doar în kit-ul Desktop
+The decision applies **only** to these five. Tokens that exist in the Desktop kit alone
 (`Tertiary Text`, `Nav Inactive`, `Footer Heading`, `Gold Nav Active`, `Subtle Surface`,
-`Elevated Surface`, `Border Strong`, `Divider Light`) își păstrează valorile desktop —
-nu au corespondent mobil.
+`Elevated Surface`, `Border Strong`, `Divider Light`) keep their desktop values — they have no
+mobile counterpart.
 
-Două nume diferite pentru aceeași valoare, unificate:
+Two different names for the same value, unified:
 
-| Desktop       | Mobile        | Valoare        | Token adoptat      |
+| Desktop       | Mobile        | Value          | Token adopted      |
 | ------------- | ------------- | -------------- | ------------------ |
 | Separator     | Divider       | `#282936`      | `border-separator` |
 | Border Medium | Subtle Border | `#FFFFFF @ 8%` | `border-medium`    |
 
-### Consecințe cunoscute ale deciziei
+### Known consequences of the decision
 
-Trei abateri față de kit-ul Desktop, acceptate conștient. Fiecare se întoarce cu o singură linie
-în `globals.css` dacă la verificarea vizuală din faza 6 deranjează.
+Three deviations from the Desktop kit, accepted knowingly. Each comes back with a single line in
+`globals.css` if it turns out to be a problem at the phase-6 visual check.
 
-1. **`text-secondary` și `text-tertiary` devin identice.** Desktopul avea 70% și 60%, două trepte
-   distincte. Mobilul are un singur nivel, 60%. Adoptând mobilul, ambii tokeni ajung la
-   `#FFFFFF @ 60%`, deci diferența de ierarhie pe care designerul a desenat-o pe desktop dispare.
-   Se vede cel mai clar în footer, unde titlurile de coloană și linkurile secundare foloseau
-   trepte diferite.
-2. **Panourile de pe desktop se întunecă mult mai tare.** `bg-overlay` trece de la `#000000 @ 20%`
-   la `#161625 @ 80%`. Ăsta e stratul care acoperă pagina când se deschide panoul **Balance** din
-   header. La 20% pagina din spate rămâne lizibilă; la 80% aproape dispare. Frame-ul
-   `Balance Opened` (nod `1:4116`) va arăta vizibil mai închis decât în Figma.
-3. **Conturul cardurilor devine opac.** `border-card` trece de la `#FFFFFF @ 4%` — care lasă
-   fundalul să transpară — la `#262632`, o culoare plină. Peste `bg-page` diferența e mică; peste
-   `bg-section` sau peste o imagine se observă.
+1. **`text-secondary` and `text-tertiary` become identical.** Desktop had 70% and 60%, two distinct
+   steps. Mobile has a single level, 60%. Adopting mobile takes both tokens to `#FFFFFF @ 60%`, so
+   the hierarchy the designer drew on desktop disappears. It shows most clearly in the footer, where
+   the column headings and the secondary links used different steps.
+2. **The desktop panels get much darker.** `bg-overlay` moves from `#000000 @ 20%` to
+   `#161625 @ 80%`. That is the layer covering the page when the **Balance** panel opens from the
+   header. At 20% the page behind stays readable; at 80% it nearly disappears. The `Balance Opened`
+   frame (node `1:4116`) will look visibly darker than in Figma.
+3. **The card outline becomes opaque.** `border-card` moves from `#FFFFFF @ 4%` — which lets the
+   background show through — to `#262632`, a solid colour. Over `bg-page` the difference is small;
+   over `bg-section` or over an image it shows.
 
 ---
 
-## 2. Tabelul complet
+## 2. The full table
 
-`D` = apare în UI Kit Desktop · `M` = apare în UI Kit Mobile
+`D` = appears in the Desktop UI Kit · `M` = appears in the Mobile UI Kit
 
-### Fundaluri
+### Backgrounds
 
-| Nume Figma         | Valoare adoptată | Token Tailwind | Variabilă CSS   | Kit |
+| Figma name         | Value adopted    | Tailwind token | CSS variable    | Kit |
 | ------------------ | ---------------- | -------------- | --------------- | --- |
 | Page Background    | `#0F121D`        | `bg-page`      | `--bg-page`     | D M |
 | Card Background    | `#151624`        | `bg-card`      | `--bg-card`     | D M |
@@ -88,29 +87,29 @@ Trei abateri față de kit-ul Desktop, acceptate conștient. Fiecare se întoarc
 | Subtle Surface     | `#FFFFFF @ 2%`   | `bg-subtle`    | `--bg-subtle`   | D   |
 | Elevated Surface   | `#FFFFFF @ 6%`   | `bg-elevated`  | `--bg-elevated` | D   |
 
-#### Stările butonului-iconiță (nod `1:5687`)
+#### The icon button's states (node `1:5687`)
 
-Frame-ul `Icon Button (Search)` fixează un cerc de 40x40 (`Border Radius: 20px (circle)`,
-`Padding: N/A — fixed 40x40`) și îi scrie cele trei stări sub fiecare exemplar din `States`
-(`1:5697`). Repausul este chiar `--bg-elevated`, deci nu primește token nou. Umbră: niciuna, în
-toate trei.
+The `Icon Button (Search)` frame fixes a 40x40 circle (`Border Radius: 20px (circle)`,
+`Padding: N/A — fixed 40x40`) and writes its three states under each instance in `States`
+(`1:5697`). The resting state is `--bg-elevated` itself, so it gets no new token. Shadow: none, in
+all three.
 
-| Stare în Figma | Valoare adoptată | Token Tailwind     | Variabilă CSS          |
-| -------------- | ---------------- | ------------------ | ---------------------- |
-| `DEFAULT`      | `#FFFFFF @ 6%`   | `bg-elevated`      | `--bg-elevated`        |
+| State in Figma | Value adopted    | Tailwind token       | CSS variable           |
+| -------------- | ---------------- | -------------------- | ---------------------- |
+| `DEFAULT`      | `#FFFFFF @ 6%`   | `bg-elevated`        | `--bg-elevated`        |
 | `HOVER`        | `#FFFFFF @ 12%`  | `bg-icon-btn-hover`  | `--bg-icon-btn-hover`  |
 | `ACTIVE`       | `#FFFFFF @ 4%`   | `bg-icon-btn-active` | `--bg-icon-btn-active` |
 
-Apăsatul este mai deschis decât repausul — așa scrie nodul, nu e o inversare din cod.
+Pressed is lighter than resting — that is what the node says, not an inversion introduced in code.
 
-Cercul stătea până acum desenat în asset: `public/images/icons/search-btn.svg` își aducea propriul
-`<rect width="40" height="40" rx="20" fill="white" fill-opacity="0.0588"/>`, așa că hover și
-apăsat nu aveau ce muta. Fișierul păstrează doar glifa (20x20), iar cercul îl pune
-`src/components/primitives/IconButton.tsx`.
+The circle used to be drawn into the asset: `public/images/icons/search-btn.svg` brought its own
+`<rect width="40" height="40" rx="20" fill="white" fill-opacity="0.0588"/>`, so hover and pressed
+had nothing to move. The file now holds only the glyph (20x20), and
+`src/components/primitives/IconButton.tsx` supplies the circle.
 
 ### Text
 
-| Nume Figma     | Valoare adoptată | Token Tailwind        | Variabilă CSS           | Kit |
+| Figma name     | Value adopted    | Tailwind token        | CSS variable            | Kit |
 | -------------- | ---------------- | --------------------- | ----------------------- | --- |
 | Primary Text   | `#FFFFFF`        | `text-primary`        | `--text-primary`        | D M |
 | Secondary Text | `#FFFFFF @ 60%`  | `text-secondary`      | `--text-secondary`      | D M |
@@ -121,45 +120,45 @@ apăsat nu aveau ce muta. Fișierul păstrează doar glifa (20x20), iar cercul �
 | Label Text     | `#B2B8C2`        | `text-label`          | `--text-label`          | D M |
 | Footer Heading | `#DAD7E0`        | `text-footer-heading` | `--text-footer-heading` | D   |
 
-### Accent și brand
+### Accent and brand
 
-| Nume Figma      | Valoare adoptată | Token Tailwind | Variabilă CSS | Kit |
+| Figma name      | Value adopted    | Tailwind token | CSS variable  | Kit |
 | --------------- | ---------------- | -------------- | ------------- | --- |
 | Blue Primary    | `#006EE6` ¹      | `blue`         | `--blue`      | D M |
 | Blue Tinted BG  | `#007AFF @ 15%`  | `blue-tint`    | `--blue-tint` | D M |
-| — (derivat) ¹   | `#479FFF`        | `blue-text`    | `--blue-text` | —   |
+| — (derived) ¹   | `#479FFF`        | `blue-text`    | `--blue-text` | —   |
 | Amber / Warning | `#F59E0B`        | `amber`        | `--amber`     | D M |
 | Gold Nav Active | `#D4A352`        | `gold`         | `--gold`      | D   |
 | Success Green   | `#34C759`        | `green`        | `--green`     | D M |
 | Emerald Green   | `#00F299`        | `emerald`      | `--emerald`   | M   |
 | Cyan Accent     | `#00F0FF`        | `cyan`         | `--cyan`      | M   |
 
-¹ Figma scrie `#007AFF` în ambele kit-uri. Nu trece AA nici ca fundal sub text alb, nici ca text pe
-tentele albastre, așa că albastrul e acum două valori — vezi „Abateri de contrast" din §2b. Tentele
-(`--blue-tint`, `--see-all-bg`) păstrează canalele `0 122 255` ale designului: sunt fundaluri, iar
-închiderea lor ar fi înrăutățit exact textul pe care îl susțin.
+¹ Figma writes `#007AFF` in both kits. It passes AA neither as a background under white text nor as
+text on the blue tints, so the blue is now two values — see "Contrast deviations" in §2b. The tints
+(`--blue-tint`, `--see-all-bg`) keep the design's own `0 122 255` channels: they are backgrounds,
+and darkening them would only have made the text they carry harder to read.
 
-### Gradiente
+### Gradients
 
-| Nume Figma            | Valoare   | Token Tailwind | Variabilă CSS    | Kit |
+| Figma name            | Value     | Tailwind token | CSS variable     | Kit |
 | --------------------- | --------- | -------------- | ---------------- | --- |
 | Gold Light            | `#F0C775` | `gold-light`   | `--gold-light`   | D M |
 | Gold Dark             | `#C6903D` | `gold-dark`    | `--gold-dark`    | D M |
 | Orange Gradient Start | `#F8B900` | `orange-start` | `--orange-start` | D M |
 | Orange Gradient End   | `#E67508` | `orange-end`   | `--orange-end`   | D M |
 
-Gradiente compuse folosite în produs:
+Composed gradients used in the product:
 
-| Utilitar             | Definiție                                   |
+| Utility              | Definition                                  |
 | -------------------- | ------------------------------------------- |
 | `bg-gradient-gold`   | `linear-gradient(160deg, #F0C775, #C6903D)` |
 | `bg-gradient-orange` | `linear-gradient(160deg, #F8B900, #E67508)` |
 
-Acestea sunt și fundalurile placeholder-elor pentru cardurile de joc fără imagine reală.
+These are also the placeholder backgrounds for game cards with no real artwork.
 
-### Contururi și separatoare
+### Borders and separators
 
-| Nume Figma                    | Valoare adoptată | Token Tailwind     | Variabilă CSS        | Kit |
+| Figma name                    | Value adopted    | Tailwind token     | CSS variable         | Kit |
 | ----------------------------- | ---------------- | ------------------ | -------------------- | --- |
 | Card Border                   | `#262632`        | `border-card`      | `--border-card`      | D M |
 | Divider Light                 | `#FFFFFF @ 7%`   | `border-divider`   | `--border-divider`   | D   |
@@ -167,188 +166,189 @@ Acestea sunt și fundalurile placeholder-elor pentru cardurile de joc fără ima
 | Border Strong                 | `#FFFFFF @ 10%`  | `border-strong`    | `--border-strong`    | D   |
 | Separator / Divider           | `#282936`        | `border-separator` | `--border-separator` | D M |
 
-### Excepție
+### Exception
 
-| Nume Figma    | Valoare   | Observație                                                                                                                                             |
-| ------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| BG/Quaternary | `#0D1420` | Singura variabilă Figma din fișier. Nu apare în niciun swatch al celor două UI Kit-uri. Se folosește doar unde nodul o cere explicit; nu devine token. |
+| Figma name    | Value     | Note                                                                                                                                        |
+| ------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| BG/Quaternary | `#0D1420` | The only Figma variable in the file. It appears in no swatch of either UI Kit. Used only where a node asks for it explicitly; it does not become a token. |
 
-Trei locuri o cer: bara de jos de pe mobil (nodul `1:8235`), footerul, și — din 2026-09-09 — panoul
-meniului de jackpot. Eșantionat din cadrele reconstruite, panoul, banda de sub el și bara sunt toate
-`#0D1420`; de-asta ecranul se citește ca o singură suprafață. Panoul nostru era `--bg-card`
-`#151624` și era singura piesă în afara acordului. `Sheet` primește culoarea printr-o proprietate,
-nu global: sheet-ul de căutare de pe mobil folosește aceeași componentă, iar rândurile lui sunt
-`bg-card` — s-ar fi transformat în carduri vizibil mai deschise dacă suprafața se muta sub ele.
+Three places ask for it: the bottom bar on mobile (node `1:8235`), the footer, and — since
+2026-09-09 — the jackpot menu's panel. Sampled from the rebuilt frames, the panel, the strip beneath
+it and the bar are all `#0D1420`; that is why the screen reads as one surface. Our panel was
+`--bg-card` `#151624` and was the only piece outside the agreement. `Sheet` takes the colour through
+a prop rather than globally: the mobile search sheet uses the same component and its rows are
+`bg-card` — they would have turned into visibly lighter cards if the surface had moved under them.
 
 ---
 
-## 2b. Valori din layere, absente din ambele UI Kit-uri
+## 2b. Values read off layers, absent from both UI Kits
 
-Cele două UI Kit-uri nu acoperă tot ce e desenat efectiv în pagini. Agenții care au construit
-header-ul, footer-ul și bannerele au dat peste valorile de mai jos, au refuzat corect să le scrie
-ca hex în componente și le-au cerut în rapoarte. Sunt transcrise aici din nodurile indicate.
+The two UI Kits do not cover everything actually drawn in the pages. The agents who built the
+header, the footer and the banners ran into the values below, correctly refused to write them as hex
+in components, and asked for them in their reports. They are transcribed here from the nodes given.
 
-**Regula:** orice adăugare în acest tabel trebuie să citeze nodul din care vine. Fără citare,
-lista devine un depozit de culori ad-hoc și ne întoarcem exact la problema pe care tokenii o rezolvă.
+**The rule:** any addition to this table must cite the node it comes from. Without a citation the
+list becomes a dumping ground of ad-hoc colours and we are back to exactly the problem tokens solve.
 
-| Valoare         | Token Tailwind    | Variabilă CSS       | Nod Figma                             | Unde apare                                                                   |
+| Value           | Tailwind token    | CSS variable        | Figma node                            | Where it appears                                                            |
 | --------------- | ----------------- | ------------------- | ------------------------------------- | ---------------------------------------------------------------------------- |
-| `#080814`       | `bg-header`       | `--bg-header`       | `1:4245`                              | bara de header, mai închisă decât pagina                                     |
-| `#18273A`       | `border-header`   | `--border-header`   | `1:4245`                              | linia de sub header                                                          |
-| `#070F1D`       | `bg-footer`       | `--bg-footer`       | `1:3666`                              | suprafața footerului                                                         |
-| `#1A1D2E`       | `bg-field`        | `--bg-field`        | `1:4314`                              | umplerea câmpului de căutare                                                 |
-| `#F2C146 @ 10%` | `bg-amber-tint`   | `--amber-tint`      | `1:3446`, `1:3538`, `1:3594`–`1:3600` | pastilele de avertizare de pe bannerele promo                                |
-| `#19191D`       | `border-flag`     | `--border-flag`     | `1:4016`                              | inelul din jurul steagurilor de limbă                                        |
-| `#7F7A85` ¹     | `text-legal`      | `--text-legal`      | `1:4115`                              | banda legală din footer                                                      |
-| `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2433`                              | separatorul din tickerul de câștiguri                                        |
-| `#A5A6B5`       | `text-subtitle`   | `--text-subtitle`   | `1:6254`                              | subtitlul cardului promo de mobil                                            |
-| `#F2C146`       | `amber-soft`      | `--amber-soft`      | `1:6255`                              | pastila „join + timer" de pe cardul promo de mobil, plină                    |
-| `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | textul scris **pe** pastila aceea: eticheta butonului, „Time left" și ceasul |
-| `#36BCFF` ²     | — (doar SVG)      | —                   | `1:2239`, `1:4323`                    | lupa din câmpul de căutare de furnizori (`public/images/icons/search-blue.svg`) |
-| `rgba(8,8,20,0.75)` ³ | — (inline)  | —                   | `1:6179`                              | umbra cardului de joc pe mobil: `-2px 2px 12px`                              |
-| `#00B579` ⁴     | `deposit-green`   | `--deposit-green`   | `13:2340`                             | umplerea butonului `Deposit` din meniul de jackpot                           |
-| `#FF787A`       | `signout`         | `--text-signout`    | `13:2491`                             | eticheta „Sign out" din meniul de jackpot                                    |
-| `#222431` ⁵     | `menu-row`        | `--bg-menu-row`     | `13:2362`, `13:2342`                  | rândurile și câmpul de ID din meniul de jackpot                              |
-| `rgba(0,92,64,0.04)` | `balance-chip` | `--bg-balance-chip` | `13:2325`                             | pastila de sold din antetul aceluiași meniu                                  |
+| `#080814`       | `bg-header`       | `--bg-header`       | `1:4245`                              | the header bar, darker than the page                                        |
+| `#18273A`       | `border-header`   | `--border-header`   | `1:4245`                              | the rule under the header                                                   |
+| `#070F1D`       | `bg-footer`       | `--bg-footer`       | `1:3666`                              | the footer surface                                                          |
+| `#1A1D2E`       | `bg-field`        | `--bg-field`        | `1:4314`                              | the search field's fill                                                     |
+| `#F2C146 @ 10%` | `bg-amber-tint`   | `--amber-tint`      | `1:3446`, `1:3538`, `1:3594`–`1:3600` | the warning pills on the promo banners                                      |
+| `#19191D`       | `border-flag`     | `--border-flag`     | `1:4016`                              | the ring around the language flags                                          |
+| `#7F7A85` ¹     | `text-legal`      | `--text-legal`      | `1:4115`                              | the footer's legal strip                                                    |
+| `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2433`                              | the separator in the wins ticker                                            |
+| `#A5A6B5`       | `text-subtitle`   | `--text-subtitle`   | `1:6254`                              | the mobile promo card's subtitle                                            |
+| `#F2C146`       | `amber-soft`      | `--amber-soft`      | `1:6255`                              | the "join + timer" pill on the mobile promo card, solid                     |
+| `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | the text written **on** that pill: the button label, "Time left" and the clock |
+| `#36BCFF` ²     | — (SVG only)      | —                   | `1:2239`, `1:4323`                    | the magnifier in the provider search field (`public/images/icons/search-blue.svg`) |
+| `rgba(8,8,20,0.75)` ³ | — (inline)  | —                   | `1:6179`                              | the game card's shadow on mobile: `-2px 2px 12px`                           |
+| `#00B579` ⁴     | `deposit-green`   | `--deposit-green`   | `13:2340`                             | the `Deposit` button's fill in the jackpot menu                             |
+| `#FF787A`       | `signout`         | `--text-signout`    | `13:2491`                             | the "Sign out" label in the jackpot menu                                    |
+| `#222431` ⁵     | `menu-row`        | `--bg-menu-row`     | `13:2362`, `13:2342`                  | the rows and the ID field in the jackpot menu                               |
+| `rgba(0,92,64,0.04)` | `balance-chip` | `--bg-balance-chip` | `13:2325`                          | the balance pill in that menu's header                                      |
 
-¹ Figma scrie `#65616A`. Ridicat la `#7F7A85` pentru AA — vezi „Abateri de contrast" mai jos.
+¹ Figma writes `#65616A`. Raised to `#7F7A85` for AA — see "Contrast deviations" below.
 
-⁵ Se scria `bg-elevated`, adică alb la 6%. Cât timp panoul era `--bg-card`, cele două erau
-indistingibile: 6% peste `#151624` se compune în `#232431`, la o unitate de ce desenează Figma.
-Mutarea panoului pe `--bg-quaternary` (`#0D1420`, decizie de proprietar 2026-09-09) ar fi coborât
-aceeași umplere la `#1C222D` și ar fi stricat pe tăcute o culoare care era corectă. Nodul declară
-oricum o umplere opacă, nu una translucidă — iar o umplere translucidă nimerește designul doar cât
-timp e de acord cu suprafața de sub ea.
+⁵ This used to be `bg-elevated`, that is white at 6%. While the panel was `--bg-card` the two were
+indistinguishable: 6% over `#151624` composites to `#232431`, one unit off what Figma draws. Moving
+the panel to `--bg-quaternary` (`#0D1420`, owner's decision 2026-09-09) would have taken the same
+fill down to `#1C222D` and quietly broken a colour that was right. The node declares an opaque fill
+anyway, not a translucent one — and a translucent fill only matches the design while it agrees with
+the surface beneath it.
 
-⁴ Eticheta scrisă **pe** el e albă în Figma. Alb pe `#00B579` măsoară 2,66:1, deci eticheta e
-`text-page` — vezi „Abateri de contrast" mai jos. Verdele în sine rămâne cel din design.
+⁴ The label written **on** it is white in Figma. White on `#00B579` measures 2.66:1, so the label is
+`text-page` — see "Contrast deviations" below. The green itself stays exactly as the design has it.
 
-Ultimele patru valori vin din cadrele de meniu reconstruite în Figma pe 2026-09-09 (`13:2307`
-post-login, `13:2519` VIP; vechile `1:8260` / `1:8503` / `1:8504` nu se mai rezolvă). `#00B579` nu e
-din familia `emerald` — acela e `#00F299`, mult mai deschis, și rămâne pe butonul `Support`.
-`#FF787A` e singurul roșu din tot fișierul și nu are rudă în niciunul dintre UI Kit-uri; măsoară
-7,01:1 pe `--bg-card`, deci nu cere nicio abatere.
+The last four values come from the menu frames rebuilt in Figma on 2026-09-09 (`13:2307`
+post-login, `13:2519` VIP; the old `1:8260` / `1:8503` / `1:8504` no longer resolve). `#00B579` is
+not from the `emerald` family — that one is `#00F299`, much lighter, and stays on the `Support`
+button. `#FF787A` is the only red in the whole file and has no relative in either UI Kit; it
+measures 7.01:1 on `--bg-card`, so it asks for no deviation.
 
-³ Singura culoare de umbră din tot designul. Nu primește variabilă pentru că tema nu are culori de
-umbră deloc: cealaltă umbră a cardului, cea de desktop, e scrisă tot inline în `GameCard.tsx`, ca
-`rgb(0_0_0/0.25)`. Cadrele de telefon o desenează diferit de desktop — deplasată spre stânga, blur
-de trei ori mai mare și aproape opacă — deci cardul poartă acum ambele valori, despărțite de
-varianta `mobile:`.
+³ The only shadow colour in the entire design. It gets no variable because the theme carries no
+shadow colours at all: the card's other shadow, the desktop one, is also written inline in
+`GameCard.tsx`, as `rgb(0_0_0/0.25)`. The phone frames draw it differently from desktop — shifted
+left, three times the blur and nearly opaque — so the card now carries both values, separated by the
+`mobile:` variant.
 
-² Decizie de proprietar, 2026-09-09. Fișierul nostru desena lupa cu `#007AFF`, albastrul scris
-în ambele UI Kit-uri;Figma exportă `#36BCFF` pe ambele noduri (verificat cu `get_design_context` pe `1:2239`, care
-întoarce `stroke="#36BCFF"`). Nu se adaugă nicio variabilă CSS și niciun token Tailwind: singurul
-consumator al culorii e chiar fișierul SVG, iar `Icon` îl servește prin `next/image` cu
-`unoptimized`, adică un `<img src>` către fișierul exportat — nu există loc în care o clasă
-Tailwind să poată ajunge la stroke. Aceeași valoare mai apare, tot ca hex în SVG, în
-`bonus-buy.svg`. Dacă vreodată culoarea ajunge să fie scrisă și în CSS, atunci — și abia atunci —
-primește variabilă în `globals.css` plus token în `tailwind.config.ts`.
+² Owner's decision, 2026-09-09. Our file drew the magnifier with `#007AFF`, the blue written in both
+UI Kits; Figma exports `#36BCFF` on both nodes (checked with `get_design_context` on `1:2239`, which
+returns `stroke="#36BCFF"`). No CSS variable and no Tailwind token come with it: the only consumer
+of the colour is the SVG file itself, and `Icon` serves it through `next/image` with `unoptimized`,
+that is an `<img src>` pointing at the exported file — there is nowhere for a Tailwind class to
+reach the stroke. The same value also appears, again as hex inside an SVG, in `bonus-buy.svg`. If
+the colour ever ends up written in CSS as well, then — and only then — it gets a variable in
+`globals.css` plus a token in `tailwind.config.ts`.
 
-Niciuna dintre cele trei nu apare în cele două UI Kit-uri: tabelele de la §2 sunt transcrierea lor
-completă (26 de swatch-uri Desktop, 22 Mobile) și nu conțin nici `#A5A6B5`, nici `#09090D`, iar
-`#F2C146` apare acolo doar la 10% opacitate, ca `--amber-tint`. `--amber-soft` e aceeași culoare
-în formă plină, nu un al doilea chihlimbar.
+None of those three appears in the two UI Kits: the tables in §2 are their complete transcription
+(26 Desktop swatches, 22 Mobile) and contain neither `#A5A6B5` nor `#09090D`, while `#F2C146`
+appears there only at 10% opacity, as `--amber-tint`. `--amber-soft` is the same colour in solid
+form, not a second amber.
 
-Două valori derivate din `--ink` nu primesc token propriu, pentru că tema ține culori finite, nu
-canale RGB — vezi comentariul din `Button.tsx`. Fiecare e o clasă de opacitate pe elementul care o
-folosește, ceea ce e o schimbare mai mică decât un token folosit o singură dată:
+Two values derived from `--ink` get no token of their own, because the theme holds finite colours
+rather than RGB channels — see the comment in `Button.tsx`. Each is an opacity class on the element
+that uses it, which is a smaller change than a token used exactly once:
 
-| Design                                                | Cum se scrie                           | Nod      |
-| ----------------------------------------------------- | -------------------------------------- | -------- |
-| `#09090D @ 80%` — eticheta „Time left"                | `text-ink opacity-80`                  | `1:6259` |
-| `#09090D @ 15%` — linia verticală de 16px din pastilă | `bg-ink opacity-15`, pe un span de 1px | `1:6257` |
+| Design                                                | How it is written                       | Node     |
+| ----------------------------------------------------- | --------------------------------------- | -------- |
+| `#09090D @ 80%` — the "Time left" label               | `text-ink opacity-80`                   | `1:6259` |
+| `#09090D @ 15%` — the 16px vertical rule in the pill  | `bg-ink opacity-15`, on a 1px span      | `1:6257` |
 
-### Abateri acceptate, fără token nou
+### Accepted deviations, with no new token
 
-Trei valori din design sunt suficient de aproape de un token existent încât un token nou ar
-adăuga zgomot fără câștig vizibil. Sunt notate ca să nu fie redescoperite ca „bug" la verificarea vizuală.
+Three values in the design are close enough to an existing token that a new one would add noise for
+no visible gain. They are noted here so they are not rediscovered as a "bug" at the visual check.
 
-| Design                                                            | Token folosit        | Diferența                                                                                                                                  |
-| ----------------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `#00E5FF` (inelul pastilei active, nod `1:2503`)                  | `cyan` `#00F0FF`     | imperceptibilă                                                                                                                             |
-| `#FFFFFF @ 9%` (fundalul pastilei active)                         | `bg-elevated` `@ 6%` | 3 puncte de opacitate                                                                                                                      |
-| `#11111A` (fundalul cardului de joc, nod `1:2602`)                | `bg-card` `#151624`  | `#11111A` e fundalul de pagină **desktop**, pe care decizia „câștigă mobile" l-a înlocuit cu `#0F121D`                                     |
-| `#000000` (eticheta butonului din pastilă, nod `I1:6256;112:330`) | `ink` `#09090D`      | Figma scrie negru pur pe buton și `#09090D` pe ceasul de lângă el, la 3px distanță. Diferența e imperceptibilă, deci ambele folosesc `ink` |
+| Design                                                            | Token used           | The difference                                                                                                                       |
+| ----------------------------------------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `#00E5FF` (the active pill's ring, node `1:2503`)                 | `cyan` `#00F0FF`     | imperceptible                                                                                                                        |
+| `#FFFFFF @ 9%` (the active pill's background)                     | `bg-elevated` `@ 6%` | 3 points of opacity                                                                                                                  |
+| `#11111A` (the game card's background, node `1:2602`)             | `bg-card` `#151624`  | `#11111A` is the **desktop** page background, which the "mobile wins" decision replaced with `#0F121D`                                |
+| `#000000` (the pill button's label, node `I1:6256;112:330`)       | `ink` `#09090D`      | Figma writes pure black on the button and `#09090D` on the clock 3px away. The difference is imperceptible, so both use `ink`         |
 
-### Abateri de contrast — decizie de proprietar, 2026-09-08
+### Contrast deviations — owner's decision, 2026-09-08
 
-`node scripts/a11y.mjs` (axe-core 4.10.2, nouă stări, mobile first) raporta 12–15 încălcări
-`color-contrast` de gravitate „serious" pe fiecare stare. Toate veneau din patru perechi de culori
-luate ca atare din Figma, nu inventate aici. Decizia proprietarului: se schimbă culorile până când
-regula trece AA (4,5:1 pentru text normal), iar abaterea față de Figma se scrie aici.
+`node scripts/a11y.mjs` (axe-core 4.10.2, nine states, mobile first) was reporting 12–15
+`color-contrast` violations of "serious" severity in every state. All of them came from four colour
+pairs taken as-is from Figma, not invented here. The owner's decision: change the colours until the
+rule passes AA (4.5:1 for normal text), and write the deviation from Figma down here.
 
-Fiecare valoare nouă păstrează exact nuanța și saturația originalului; s-a mutat numai
-luminozitatea. `#006EE6` sunt canalele `0 122 255` înmulțite cu 0,9 — nuanță 211,3° și saturație
-100%, la fel ca `#007AFF`. `#479FFF` e aceeași nuanță și saturație urcată la luminozitate 64%.
-`#7F7A85` e nuanța 266,7° și saturația 4,4% ale lui `#65616A`, la luminozitate 50% în loc de 39,8%.
+Each new value keeps the original's hue and saturation exactly; only the lightness moved. `#006EE6`
+is the `0 122 255` channels multiplied by 0.9 — hue 211.3° and saturation 100%, the same as
+`#007AFF`. `#479FFF` is the same hue and saturation taken up to 64% lightness. `#7F7A85` is
+`#65616A`'s hue 266.7° and saturation 4.4% at 50% lightness instead of 39.8%.
 
-| Token                | Nod Figma          | Valoare Figma | Valoare nouă | Unde se vede                                                                 | Raport înainte → după |
-| -------------------- | ------------------ | ------------- | ------------ | ---------------------------------------------------------------------------- | --------------------- |
-| `--blue`             | `1:5199` / `1:4745` | `#007AFF`     | `#006EE6`    | alb pe albastru plin: pastila „Get" din hero-ul mobil, `Button` `primaryBlue` | 4,02:1 → 4,80:1      |
-| `--blue-text` (nou)  | `1:5199` / `1:4745` | `#007AFF`     | `#479FFF`    | text albastru pe tentă: pastila `See All (206)` (`1:5655`), badge-urile albastre din sugestii (`1:4479`), pastila-eyebrow din hero-ul mobil (`1:5756`) | 3,51–4,06:1 → 5,15–5,97:1 |
-| `--text-legal`       | `1:4115`           | `#65616A`     | `#7F7A85`    | banda legală din footer                                                      | 3,17:1 → 4,58:1      |
+| Token                | Figma node          | Figma value | New value | Where it shows                                                                | Ratio before → after |
+| -------------------- | ------------------- | ----------- | --------- | ----------------------------------------------------------------------------- | -------------------- |
+| `--blue`             | `1:5199` / `1:4745` | `#007AFF`   | `#006EE6` | white on solid blue: the mobile hero's "Get" pill, `Button` `primaryBlue`      | 4.02:1 → 4.80:1     |
+| `--blue-text` (new)  | `1:5199` / `1:4745` | `#007AFF`   | `#479FFF` | blue text on a tint: the `See All (206)` pill (`1:5655`), the blue badges in the suggestions (`1:4479`), the mobile hero's eyebrow pill (`1:5756`) | 3.51–4.06:1 → 5.15–5.97:1 |
+| `--text-legal`       | `1:4115`            | `#65616A`   | `#7F7A85` | the footer's legal strip                                                      | 3.17:1 → 4.58:1     |
 
-Rapoartele sunt calculate cu formula WCAG 2.1 pe **fundalul compus efectiv** — tenta așezată peste
-suprafața de sub ea, nu peste alb — și sunt confirmate de axe-core, care raportează aceleași
-numere în `passes`:
+The ratios are computed with the WCAG 2.1 formula against the **actual composited background** — the
+tint laid over the surface beneath it, not over white — and are confirmed by axe-core, which reports
+the same numbers in `passes`:
 
-| Perechea măsurată                                                | Fundal compus | Raport |
-| ------------------------------------------------------------------ | ------------- | ------ |
-| `#FFFFFF` pe `--blue`                                               | `#006EE6`     | 4,80:1 |
-| `--blue-text` pe `--see-all-bg` (13% peste `--bg-page`)             | `#0D203A`     | 5,97:1 |
-| `--blue-text` pe `--see-all-bg-hover` (22%)                         | `#0C294F`     | 5,31:1 |
-| `--blue-text` pe `--see-all-bg-active` (30%)                        | `#0B3161`     | 4,72:1 |
-| `--blue-text` pe `--blue-tint` peste `--bg-field`                   | `#162B4D`     | 5,15:1 |
-| `--blue-text` pe `--blue-tint` peste `--bg-section`                 | `#0F254B`     | 5,53:1 |
-| `--text-legal` pe `--bg-footer`                                     | `#070F1D`     | 4,58:1 |
+| The pair measured                                                   | Composited background | Ratio  |
+| ------------------------------------------------------------------- | --------------------- | ------ |
+| `#FFFFFF` on `--blue`                                                | `#006EE6`             | 4.80:1 |
+| `--blue-text` on `--see-all-bg` (13% over `--bg-page`)               | `#0D203A`             | 5.97:1 |
+| `--blue-text` on `--see-all-bg-hover` (22%)                          | `#0C294F`             | 5.31:1 |
+| `--blue-text` on `--see-all-bg-active` (30%)                         | `#0B3161`             | 4.72:1 |
+| `--blue-text` on `--blue-tint` over `--bg-field`                     | `#162B4D`             | 5.15:1 |
+| `--blue-text` on `--blue-tint` over `--bg-section`                   | `#0F254B`             | 5.53:1 |
+| `--text-legal` on `--bg-footer`                                      | `#070F1D`             | 4.58:1 |
 
-#### Adăugire, 2026-09-09: eticheta butonului `Deposit`
+#### Addition, 2026-09-09: the `Deposit` button's label
 
-Cadrele de meniu reconstruite scot butonul `Deposit` de pe rampa aurie și îl fac verde plin,
-`#00B579` (nod `13:2340`), cu eticheta `DEPOSIT` scrisă alb. Alb pe verdele acela măsoară **2,66:1**
-— sub 4,5 — iar două dintre cele nouă stări pe care `scripts/a11y.mjs` le verifică sunt chiar acest
-meniu (`mob-menu`, `mob-menu-prelogin`), deci desenat ca în Figma ar fi înroșit workflow-ul Pages.
+The rebuilt menu frames take the `Deposit` button off the gold ramp and make it solid green,
+`#00B579` (node `13:2340`), with the `DEPOSIT` label written in white. White on that green measures
+**2.66:1** — under 4.5 — and two of the nine states `scripts/a11y.mjs` checks are exactly this menu
+(`mob-menu`, `mob-menu-prelogin`), so drawing it as Figma has it would have turned the Pages
+workflow red.
 
-Aici decizia proprietarului merge pe **cealaltă** parte a perechii față de cele trei de mai sus: se
-păstrează verdele din design neatins și se schimbă eticheta, în `text-page` (`#0F121D`), care
-măsoară **7,01:1**. Motivul e că fondul e o suprafață mare și colorată — mutarea lui s-ar vedea, pe
-când eticheta are 12px și doar șapte litere. Aceeași alegere e deja făcută în `JackpotMenu` pentru
-butoanele verzi. Varianta trăiește în `Button.tsx` ca `deposit`, cu nodul citat lângă ea.
+Here the owner's decision goes to the **other** side of the pair than the three above: keep the
+design's green untouched and change the label, to `text-page` (`#0F121D`), which measures
+**7.01:1**. The reason is that the background is a large coloured surface — moving it would show —
+while the label is 12px and seven letters. The same choice is already made in `JackpotMenu` for the
+green buttons. The variant lives in `Button.tsx` as `deposit`, with the node cited beside it.
 
-| Perechea                        | Fundal    | Raport |
-| ------------------------------- | --------- | ------ |
-| `#FFFFFF` pe `--deposit-green`  | `#00B579` | 2,66:1 |
-| `--bg-page` pe `--deposit-green` | `#00B579` | 7,01:1 |
+| The pair                         | Background | Ratio  |
+| -------------------------------- | ---------- | ------ |
+| `#FFFFFF` on `--deposit-green`   | `#00B579`  | 2.66:1 |
+| `--bg-page` on `--deposit-green` | `#00B579`  | 7.01:1 |
 
-Cele două stări ale pastilei `See All` sunt în tabel pentru că axe măsoară numai starea de repaus:
-hover și apăsat au fost calculate separat, ca schimbarea să nu treacă AA doar cât timp nu atinge
-nimeni butonul.
+The two `See All` pill states are in the table because axe measures only the resting state: hover
+and pressed were computed separately, so the change does not pass AA only while nobody touches the
+button.
 
-A patra pereche, banda legală din footer, nu era în lista celor trei din raport, dar produce câte o
-încălcare „serious" în fiecare din cele nouă stări, deci `a11y.mjs` nu putea ieși cu 0 fără ea.
+The fourth pair, the footer's legal strip, was not in the report's list of three, but it produces one
+"serious" violation in each of the nine states, so `a11y.mjs` could not reach 0 without it.
 
-### Animații
+### Animations
 
-| Utilitar                   | Definiție                                       | Nod Figma |
-| -------------------------- | ----------------------------------------------- | --------- |
-| `.animate-marquee`         | translație de la 0 la −50%, 40s liniar, infinit | `1:2658`  |
-| `.animate-marquee-reverse` | inversul, pentru a doua bandă                   | `1:2919`  |
+| Utility                    | Definition                                  | Figma node |
+| -------------------------- | ------------------------------------------- | ---------- |
+| `.animate-marquee`         | translate from 0 to −50%, 40s linear, infinite | `1:2658`  |
+| `.animate-marquee-reverse` | the reverse, for the second band            | `1:2919`   |
 
-Banda de provideri e desenată în Figma ca o pistă de 1680px într-un decupaj de 1280px — adică un
-marquee. Pista trebuie să își randeze elementele de două ori, ca bucla să nu aibă cusătură.
-Ambele respectă `prefers-reduced-motion`.
+The provider band is drawn in Figma as a 1680px track inside a 1280px clip — that is, a marquee. The
+track has to render its items twice so the loop has no seam. Both respect
+`prefers-reduced-motion`.
 
 ---
 
-## 3. Total
+## 3. Totals
 
-- 26 de culori în UI Kit Desktop, 22 în UI Kit Mobile
-- **34 de tokeni distincți** după unificarea numelor duplicate și rezolvarea conflictelor (30 din primul val, plus `text-subtitle`, `amber-soft` și `ink`, cerute de cardurile promo de mobil, plus `blue-text`, cerut de pragul AA)
-- 2 gradiente compuse
-- 1 excepție documentată
+- 26 colours in the Desktop UI Kit, 22 in the Mobile UI Kit
+- **34 distinct tokens** after unifying the duplicate names and resolving the conflicts (30 from the first wave, plus `text-subtitle`, `amber-soft` and `ink`, required by the mobile promo cards, plus `blue-text`, required by the AA threshold)
+- 2 composed gradients
+- 1 documented exception
 
-## 4. Regula de disciplină
+## 4. The discipline rule
 
-Nicio componentă din `src/components/` nu are voie să conțină un cod hexazecimal scris direct.
-Se aplică printr-o regulă `eslint` care respinge `#[0-9a-fA-F]{3,8}` în acel director.
-Orice excepție se scrie aici, cu motivul ei.
+No component under `src/components/` may contain a hexadecimal code written directly.
+It is enforced by an `eslint` rule that rejects `#[0-9a-fA-F]{3,8}` in that directory.
+Every exception is written down here, with its reason.

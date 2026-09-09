@@ -1,182 +1,192 @@
-JACKPOT — CUM PORNESTI SESIUNEA URMATOARE
-=========================================
+JACKPOT — HOW TO START THE NEXT SESSION
+=======================================
 
-Proiect: demo al platformei de casino Jackpot, construit din fisierul Figma
-2MyylxdZblfGnf05nQacUz. Next.js 15 + TypeScript + Tailwind v3, fara backend.
-
-
-LINK-URI
---------
-
-Demo                    https://design-mkt-1.github.io/jp-platform/
-Lista de ecrane         https://design-mkt-1.github.io/jp-platform/dev/screens/
-Design vs implementare  https://design-mkt-1.github.io/jp-platform/review/
-Repo                    https://github.com/design-mkt-1/jp-platform
-
-Site-ul e public dar are noindex si robots.txt disallow: e un design nepublicat
-al clientului, cu marci ale altora in el (Pragmatic Play, Visa, Mastercard).
-Link-ul se poate da, dar nu trebuie sa apara in Google.
+Project: a demo of the Jackpot casino platform, built from Figma file
+2MyylxdZblfGnf05nQacUz. Next.js 15 + TypeScript + Tailwind v3, no backend.
 
 
-DE CE AI NEVOIE PE CALCULATORUL NOU
------------------------------------
+LINKS
+-----
+
+Demo                       https://design-mkt-1.github.io/jp-platform/
+Screen registry            https://design-mkt-1.github.io/jp-platform/dev/screens/
+Design vs implementation   https://design-mkt-1.github.io/jp-platform/review/
+Repo                       https://github.com/design-mkt-1/jp-platform
+
+The site is public but carries noindex and a robots.txt disallow: it is an
+unpublished client design with other companies' marks in it (Pragmatic Play,
+Visa, Mastercard). The link can be shared, but it must not turn up in Google.
+
+
+WHAT YOU NEED ON A NEW MACHINE
+------------------------------
 
 - Node 24
 - Git
 - Google Chrome
 
-Chrome-ul e obligatoriu, nu optional. Scripturile de capturi conduc browserul
-instalat pe masina (channel: 'chrome'), nu unul descarcat de Playwright —
-descarcarea aceea a esuat in mediul asta. Deci NU e nevoie de
-`npx playwright install`, doar de Chrome.
+Chrome is required, not optional. The capture scripts drive the browser already
+installed on the machine (channel: 'chrome'), not one downloaded by Playwright —
+that download fails in this environment. So `npx playwright install` is NOT
+needed, only Chrome.
 
 
-PORNIRE
--------
+GETTING STARTED
+---------------
 
     git clone https://github.com/design-mkt-1/jp-platform.git
     cd jp-platform
     npm ci
     npm run dev
 
-Apoi deschizi http://localhost:3000
+Then open http://localhost:3000
 
-Testat: clona curata + npm ci + build complet trec fara erori. 172 de fisiere.
+Tested: a clean clone plus npm ci plus a full build all pass. 172 files.
 
 
-PRIMA COMANDA PENTRU CLAUDE
+THE FIRST PROMPT FOR CLAUDE
 ---------------------------
 
-Deschizi Claude Code in folderul jp-platform si ii dai asta:
+Open Claude Code in the jp-platform folder and give it this:
 
-    Citeste README.md, docs/next-session.md si docs/build-plan.md.
-    Continuam de la punctul 1: cele 9 randuri de continut necomparate cu Figma.
-    Incepe cu Lottery si Wheel — sunt variante ale aceleiasi componente ca
-    Tournaments, dar nodul 1:3587 deseneaza trei randuri de statistici acolo
-    unde Tournaments are pastile, iar PromoBannerData s-ar putea sa n-aiba camp
-    pentru ele. Verifica inainte sa presupui.
-
-
-CE NU CALATORESTE CU REPO-UL
-----------------------------
-
-Asta e partea pe care nu o poti deduce din cod.
-
-Regulile tale de lucru sunt configuratie LOCALA, nu in repo. Cele doua reguli
-care apar la fiecare mesaj — "nu presupune, verifica" si "explica, nu doar
-raporta" — vin din:
-
-    C:\Users\grosu.b\.claude\settings.json     (sectiunea "hooks")
-    C:\Users\grosu.b\.claude\CLAUDE.md
-
-La fel modul caveman si cele 294 de skill-uri instalate.
-
-Pe alt calculator, fara ele, Claude va da rapoarte seci si va umple golurile cu
-presupuneri plauzibile in loc sa te intrebe — exact comportamentul pe care
-regulile astea il blocheaza. Daca vrei acelasi stil de lucru, copiaza cele doua
-fisiere de mai sus.
-
-Ce calatoreste cu repo-ul: .claude/settings.json din proiect, care activeaza
-doar pluginul ui-ux-pro-max.
-
-NECUNOSCUT: nu stiu daca conectarea la Figma prin MCP merge automat pe celalalt
-calculator. E legata de contul claude.ai, deci probabil da, dar nu am cum sa
-verific de aici. Test rapid in prima sesiune: cere-i sa ruleze get_metadata pe
-fisierul 2MyylxdZblfGnf05nQacUz. Daca raspunde cu pagina "Platform", e in
-regula. Daca nu, trebuie reconectat conectorul Figma.
+    Read README.md, docs/next-session.md and docs/build-plan.md.
+    Then read docs/audit-session-8.md — it is the ranked list of everything
+    found by pressing every control on the deployed build, and nothing on it
+    has been fixed yet. Start from the owner's picks in Rank 1.
+    Verify before you assume.
 
 
-CAPCANA CARE TE COSTA O ORA DACA NU O STII
-------------------------------------------
+WHAT DOES NOT TRAVEL WITH THE REPO
+----------------------------------
 
-NU rula `npm run build` cat timp `next dev` este pornit.
+This is the part you cannot infer from the code.
 
-Amandoua detin acelasi director .next. Cand se calca reciproc, il corup, si
-TOATE rutele incep sa dea 500 cu mesajul:
+Your working rules are LOCAL configuration, not repo configuration. The two
+rules that show up on every message — "do not assume, verify" and "explain, do
+not just report" — come from:
+
+    <your home>/.claude/settings.json     (the "hooks" section)
+    <your home>/.claude/CLAUDE.md
+
+The same goes for caveman mode and the installed skills.
+
+On another machine, without them, Claude will produce dry reports and fill gaps
+with plausible guesses instead of asking — exactly the behaviour those rules
+block. If you want the same working style, copy those two files across.
+
+What does travel with the repo: the project's own .claude/settings.json, which
+enables only the ui-ux-pro-max plugin.
+
+UNKNOWN: I do not know whether the Figma MCP connection works automatically on
+another machine. It is tied to the claude.ai account, so probably yes, but there
+is no way to check from here. Quick test in the first session: ask it to run
+get_metadata on file 2MyylxdZblfGnf05nQacUz. If it answers with the "Platform"
+page, you are fine. If not, the Figma connector needs reconnecting.
+
+
+THE TRAP THAT COSTS YOU AN HOUR IF YOU DO NOT KNOW IT
+-----------------------------------------------------
+
+Do NOT run `npm run build` while `next dev` is running.
+
+Both own the same .next directory. When they tread on each other they corrupt
+it, and EVERY route starts returning 500 with:
 
     ENOENT: no such file or directory, open
-    .next\static\development\_buildManifest.js.tmp.<caractere aleatoare>
+    .next\static\development\_buildManifest.js.tmp.<random characters>
 
-Codul e perfect valid. Pare bug in aplicatie si nu este. S-a intamplat exact
-asa, o data, in sesiunea anterioara.
+The code is perfectly valid. It looks like an application bug and it is not.
+This happened exactly that way once, in an earlier session.
 
-Pentru asta exista:
+That is what this exists for:
 
     npm run build:check
 
-care trimite build-ul in .next-build si nu poate atinge serverul care ruleaza.
+which sends the build to .next-build and cannot touch the running server.
 
-Acelasi lucru se intampla dupa ce editezi next.config.ts cat dev-ul ruleaza:
-Next reporneste singur la schimbarea configului si se calca pe el. Dupa orice
-modificare acolo, opreste si reporneste serverul manual.
+The same thing happens after you edit next.config.ts while dev is running: Next
+restarts itself when the config changes and treads on itself. After any change
+there, stop and restart the server by hand.
 
 
-COMENZI UTILE
--------------
+USEFUL COMMANDS
+---------------
 
-    npm run dev              server de review pe :3000
-    npm test                 vitest, 58 de teste; ruleaza si in CI, inainte de build
-    npm run build:check      build de productie, sigur cat dev ruleaza
+    npm run dev              review server on :3000
+    npm test                 vitest, 58 tests; also runs in CI, before the build
+    npm run build:check      production build, safe while dev is running
     npx tsc --noEmit
     npx eslint src --max-warnings=0
 
-    node scripts/shot.mjs <url> <iesire.png> <latime> <inaltime> viewport '<selector|offset>'
-    node scripts/review.mjs <director>        toate cele 15 stari, in ambele moduri de motion
-    node scripts/a11y.mjs <director> [url]    axe-core pe 9 stari; iese cu 1 la violari serioase
+    node scripts/shot.mjs <url> <out.png> <width> <height> viewport '<selector|offset>'
+    node scripts/review.mjs <dir>          all 15 states, in both motion modes
+    node scripts/a11y.mjs <dir> [url]      axe-core over 9 states; exits 1 on serious violations
     node scripts/clean-svg.mjs public/images --dry
-    node scripts/to-webp.mjs public/images --dry   reconverteste exporturile PNG noi
+    node scripts/to-webp.mjs public/images --dry   re-encode any new PNG export
 
 
-DEEP-LINK-URI PENTRU O STARE ANUME
-----------------------------------
+DEEP LINKS FOR ONE PARTICULAR STATE
+-----------------------------------
 
-Se adauga la adresa demo-ului:
+Append these to the demo's address:
 
-    ?auth=prelogin   sau  ?auth=vip     headerul si meniul in starea aceea
-    ?panel=balance                      panoul de sold, nodul Figma 1:4116
-    ?panel=personalInfo                 meniul de cont, nodul 1:4153
-    ?panel=jackpotMenu                  meniul mobil, nodurile 1:8751 / 13:2307 / 13:2519
-    ?q=swe                              starea de sugestii la cautare, nodul 1:4479
+    ?auth=prelogin   or  ?auth=vip     the header and menu in that state
+    ?panel=balance                     the balance panel, Figma node 1:4116
+    ?panel=personalInfo                the account menu, node 1:4153
+    ?panel=jackpotMenu                 the mobile menu, nodes 1:8751 / 13:2307 / 13:2519
+    ?q=swe                             the search suggestions state, node 1:4479
 
-Exista pentru ca o stare la care nu poti da link nu poate fi verificata. O
-captura numita "panoul Balance" era, pana sa fie implementate, doar o captura a
-paginii implicite.
-
-
-CE A MAI RAMAS DE FACUT
------------------------
-
-Detaliat in docs/next-session.md, sectiunile 6, 7 si 8. Acest fisier ramasese in
-urma: cele noua randuri, cele 13 ecrane, cele patru cereri deschise si primul
-pas de accesibilitate sunt facute.
-
-Ce e chiar deschis acum:
-
-1. Perioada cronometrului. PERIOD_MS din src/lib/format.ts rostogoleste un
-   termen expirat cu 7 zile, deci ora are trei cifre (164h) acolo unde designul
-   deseneaza doua (08h). O perioada de 24h e o schimbare de o constanta. Decizia
-   ta.
-2. Zece din cele 21 de icoane contin planșa Figma intreaga — un dreptunghi
-   1440x7453 in fiecare fisier. Azi sunt invizibile doar pentru ca acea culoare
-   e exact fundalul paginii. bonus-buy.svg are 16,9 KB pentru un glif de 20px.
-3. Intre 768 si 1279 px meniul din header e o fasie ingusta care se deruleaza.
-   Toate link-urile raman accesibile, dar Figma nu are cadru pentru intervalul
-   asta, deci a-l largi inseamna a-l desena.
-4. Cardurile de joc raman <article> fara link, prin decizia ta din 2026-09-08:
-   un link catre nicaieri e mai rau decat niciun link. Se rezolva singur cand
-   apar paginile de joc.
-5. Click pe fundalul unui sheet lasa focusul pe body in loc sa-l dea inapoi
-   declansatorului. Escape functioneaza corect.
-6. Diferentele constiente, de reconfirmat inainte de semnare: providerii cu
-   initiale, cardurile cu gradient, moneda GBP, hero-ul mobil ca oferta unica.
+They exist because a state you cannot link to cannot be reviewed. A capture
+called "the Balance panel" was, until these were built, only a capture of the
+default page.
 
 
-DOCUMENTE IN REPO
------------------
+WHAT IS LEFT TO DO
+------------------
 
-README.md               ce e proiectul, cum se ruleaza
-docs/next-session.md    ce a ramas de facut
-docs/build-plan.md      de ce arhitectura arata asa, si capcanele deja intalnite
-docs/tokens.md          CITESTE INAINTE DE A ATINGE O CULOARE. Fisierul Figma nu
-                        are variabile, deci documentul asta e singura punte
-                        intre design si cod
+Detailed in docs/next-session.md, sections 6, 7 and 8, and in
+docs/audit-session-8.md, which is the newest and the longest list.
+
+What is genuinely open right now:
+
+1. The countdown period. PERIOD_MS in src/lib/format.ts rolls an expired
+   deadline forward in 7-day steps, so the hours field has three digits (149h)
+   where the design draws two (08h). A 24-hour period is a one-constant change.
+   Your call — with the editorial cost that the copy beside the clock reads
+   "Weekly tournament" and a 24-hour timer contradicts it.
+2. Between 768 and 1279 px the header nav is a narrow scrolling strip. At 768 it
+   is a 33px window onto 569px of links — the header renders "CAS", clipped
+   mid-word. Nothing overflows. Figma has no frame for this range, so widening
+   it means designing it.
+3. Game cards stay <article> with no link, by your decision of 2026-08-08: a
+   link to nowhere is worse than no link. It resolves itself when game pages
+   arrive.
+4. The deliberate differences, to re-confirm before sign-off: providers shown as
+   initials, cards with a gradient fallback, GBP as the currency, the mobile
+   hero showing a single offer.
+5. Everything in docs/audit-session-8.md. The short version: of 49 controls on
+   the desktop homepage, 8 do what they say.
+
+Two items that used to be on this list are closed and are recorded here so
+nobody re-opens them:
+
+  - The ten icons carrying the whole Figma artboard were cleaned in dd2886e.
+    Six SVGs still carry a smaller one — see audit-session-8.md §3.5 — and that
+    is a different, invisible case.
+  - Clicking a sheet's backdrop now returns focus to its trigger. Re-verified
+    on 2026-09-09 with real mouse presses, which is the only way to test it:
+    a scripted element.click() does not move focus and makes a working
+    restoration look broken.
+
+
+DOCUMENTS IN THE REPO
+---------------------
+
+README.md                  what the project is, how to run it
+docs/next-session.md       what is left to do
+docs/audit-session-8.md    everything found by pressing every control, ranked
+docs/build-plan.md         why the architecture looks like this, and the traps
+                           already hit
+docs/tokens.md             READ BEFORE TOUCHING A COLOUR. The Figma file has no
+                           variables, so this document is the only bridge
+                           between the design and the code

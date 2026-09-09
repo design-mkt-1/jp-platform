@@ -53,11 +53,17 @@ flight.
 | 1 | The countdown period            | `PERIOD_MS` in `src/lib/format.ts` rolls a past deadline forward in 7-day steps, which makes the hours field three digits (`164h : 06m : 33s`) where the design draws `08h : 12m : 36s`. A 24-hour period keeps two digits — one constant plus the roll-forward assert. | §7 |
 | 2 | 768–1279 px                     | The nav works but is a narrow scrollable sliver — measured at 1024, a 272px window onto 569px of content. The page does not overflow. Figma draws 390 and 1440 and nothing between, so widening it means designing it. | §8 |
 
-**Agreed, just not done yet:**
+**Waiting on an owner decision — the session 8 audit:**
+
+| # | What | The short version | Where |
+| - | ---- | ----------------- | ----- |
+| 3 | Which audit findings get fixed | Of the **49 controls on the desktop homepage, 8 do what they say**: the four category tabs are dead, so is every `See All (206)` pill, so is picking a search suggestion. Both header popovers open in a fixed viewport corner instead of under their trigger. The four mobile tab-bar marks are drawn at 62–82% of their box where Figma fills it. Ranked, with evidence and causes. | [`docs/audit-session-8.md`](audit-session-8.md) |
+
+**Agreed and done:**
 
 | # | What                         | Size                                                                                             | Where |
 | - | ---------------------------- | -------------------------------------------------------------------------------------------------- | ----- |
-| 3 | Romanian docs become English | Three files: `docs/tokens.md` (~380 lines), `docs/start-here.txt` (182), `public/review/index.html` (2343). One pass, not piecemeal. | §10 |
+| ~~3~~ | ~~Romanian docs become English~~ — **done in session 8** | It was **four** files, not the three this table used to name. All converted in one pass. | §10 |
 
 **Done in session 7 — kept here only so the trail is findable:** the menu panel moved onto Figma's
 `#0D1420` with opaque `#222431` rows, the identity line and ID follow the rebuilt frames, the
@@ -547,18 +553,26 @@ Owner's instruction, 2026-09-09: the code is going to a team with no Romanian, s
 file has to be in English. Not urgent, and explicitly not to be done piecemeal — new writing goes
 in English from now on, and what already exists in Romanian gets converted in one pass at the end.
 
-What is Romanian today:
+**Done in session 8.** All of it, in one pass. The table below is kept because the list it
+originally carried was wrong, and that is worth remembering: it named three files and there were
+**four**. `scripts/to-webp.mjs` was missed, and it would have stayed missed — a scan by diacritics
+does not find `docs/start-here.txt`, which is written without them, and a scan for `.md` and `.html`
+does not find a `.mjs`. The list was re-derived here twice, once by diacritics and once by a
+diacritic-free keyword list, and both sweeps have to agree before the job can be called finished.
 
-| File                      | Lines | Note                                                          |
-| ------------------------- | ----- | ------------------------------------------------------------- |
-| `docs/tokens.md`          | ~360  | the Figma-to-code token mapping; the one document that must not go stale |
-| `docs/start-here.txt`     | 182   | how to open the next session                                  |
-| `public/review/index.html` | 2343 | the design-vs-implementation report, also deployed under `/review/` |
+| File                       | Lines | Note                                                                     |
+| -------------------------- | ----- | ------------------------------------------------------------------------ |
+| `public/review/index.html` | 2343  | the design-vs-implementation report, deployed at `/review/`. The only Romanian a non-developer could see. `lang="ro"` → `lang="en"`; the 14 Romanian `id`s left alone on purpose, so any URL already shared with the client still resolves |
+| `docs/tokens.md`           | 354   | the Figma-to-code token mapping; the one document that must not go stale. Section numbers `1 / 2 / 2b / 3 / 4` preserved — four other files cross-reference them |
+| `docs/start-here.txt`      | 182   | how to open the next session. Romanian written *without* diacritics, which is why a diacritic scan alone is not enough |
+| `scripts/to-webp.mjs`      | 5 printed lines | the one the old list missed; the file paths inside the strings are unchanged |
 
-`README.md`, `docs/next-session.md` and `docs/build-plan.md` are already English. Section 9 above
-and the two token rows added with it are the first writing under the new rule; the additions made
-to `docs/tokens.md` in the same change stayed Romanian on purpose, so that file is converted whole
-rather than left half and half.
+`README.md`, `docs/next-session.md` and `docs/build-plan.md` were already English.
+
+One thing was changed rather than translated, and it needs the owner's eye: `docs/start-here.txt`
+used to print the previous developer's absolute Windows paths (`C:\Users\grosu.b\.claude\…`). That
+file goes to an outside team, so the paths are now written as `<your home>/.claude/…`. The
+information is the same; the username is gone.
 
 ### 11. Session 7 — what looking at the deployed build in a browser found
 

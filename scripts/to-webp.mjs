@@ -63,7 +63,7 @@ for (const result of results) {
   totalBefore += result.before
   totalAfter += result.kept ? result.before : result.after
 
-  const note = result.kept ? '  (PNG pastrat, WebP ar fi mai mare)' : ''
+  const note = result.kept ? '  (PNG kept, WebP would have been larger)' : ''
   console.log(
     `${(result.before / 1024).toFixed(0).padStart(6)} KB -> ` +
       `${(result.after / 1024).toFixed(0).padStart(6)} KB  ${result.file}${note}`,
@@ -73,14 +73,14 @@ for (const result of results) {
 const converted = results.filter((result) => !result.kept).length
 
 console.log(
-  `\n${converted} din ${results.length} fisiere ${DRY ? 'ar fi ' : ''}convertite. ` +
+  `\n${converted} of ${results.length} file(s) ${DRY ? 'would be ' : ''}converted. ` +
     `Total ${(totalBefore / 1024).toFixed(0)} KB -> ${(totalAfter / 1024).toFixed(0)} KB ` +
-    `(${Math.round((1 - totalAfter / totalBefore) * 100)}% mai putin).`,
+    `(${Math.round((1 - totalAfter / totalBefore) * 100)}% smaller).`,
 )
 
 if (converted > 0) {
   console.log(
-    '\nReferintele nu se schimba singure: src/lib/assets.ts si caile .png din src/data/*.json.\n' +
-      'Testul din src/lib/__tests__/assets.test.ts pica pana cand toate sunt actualizate.',
+    '\nThe references do not update themselves: src/lib/assets.ts and the .png paths in src/data/*.json.\n' +
+      'src/lib/__tests__/assets.test.ts fails until every one of them has been updated.',
   )
 }
