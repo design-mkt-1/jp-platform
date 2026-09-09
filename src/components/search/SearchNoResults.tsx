@@ -10,7 +10,14 @@ import Icon from '../primitives/Icon'
  *
  * The copy is a prop rather than a branch on some `subject` union: the two nodes say "No games
  * found" and "No providers found", and a third caller will want a third noun. Defaults reproduce
- * node 1:4711 so the common case stays a one-word call.
+ * node 1:4711 so the common case stays a one-word call — with one word of it dropped, on purpose.
+ *
+ * Node 1:4711's line ends "…or browse our categories below". There are no categories below: this
+ * block's only child is the "Clear search" pill, and the category pills live in the same bar as
+ * the field, to the left of it and above this panel. Both default callers — the search dropdown
+ * (`SearchOverlay`) and the category view — inherit that sentence, so both were sending the reader
+ * to something that is not there. The half that was true is kept; the half that was a direction is
+ * not. `ProviderRow` already passes exactly this shorter line.
  */
 
 /** `lg` is the search dropdown (node 1:4711); `sm` the in-section form (nodes 1:4321, 1:2218). */
@@ -27,7 +34,7 @@ export interface SearchNoResultsProps {
 
 export default function SearchNoResults({
   title = 'No games found',
-  description = 'Try a different search term or browse our categories below',
+  description = 'Try a different search term',
   size = 'lg',
   onClear,
   className,
