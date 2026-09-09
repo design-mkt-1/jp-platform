@@ -9,6 +9,7 @@ import {
   SearchDropdownBody,
   useDesktopViewport,
   useSearchBarHost,
+  useSearchFieldKeys,
 } from '../search/SearchOverlay'
 import { categories as ALL_CATEGORIES } from '@/lib/data'
 import { useAppStore } from '@/store/useAppStore'
@@ -68,7 +69,10 @@ const SEARCH_FIELD_CLASSES = [
 
 export interface CategoryNavBarProps {
   categories?: Category[]
-  /** Only the outlined tab; the demo does not re-filter the page from here. */
+  /**
+   * Forces the outlined tab. Only `/dev/screens` passes it, to capture one tab without driving
+   * the store; the page itself leaves it undefined and the bar reads the selection from the store.
+   */
   activeCategory?: CategoryId
   searchPlaceholder?: string
   className?: string
@@ -76,7 +80,7 @@ export interface CategoryNavBarProps {
 
 export default function CategoryNavBar({
   categories = ALL_CATEGORIES,
-  activeCategory = 'popular',
+  activeCategory,
   searchPlaceholder = 'Search games...',
   className,
 }: CategoryNavBarProps) {
@@ -86,11 +90,19 @@ export default function CategoryNavBar({
   const openSearch = useAppStore((state) => state.openSearch)
   const closeSearch = useAppStore((state) => state.closeSearch)
   const setQuery = useAppStore((state) => state.setQuery)
+  const storeCategory = useAppStore((state) => state.activeCategory)
+  const setCategory = useAppStore((state) => state.setCategory)
+
+  const selected = activeCategory ?? storeCategory
 
   const fieldId = useId()
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const capsuleRef = useRef<HTMLDivElement | null>(null)
   const panelRef = useRef<HTMLDivElement | null>(null)
+
+  // Enter commits the query and ArrowDown drops focus into the panel below the field; both were
+  // dead until 2026-09-09. `panelRef` is already the element holding the suggestion rows.
+  const onFieldKeyDown = useSearchFieldKeys(panelRef)
 
   const desktop = useDesktopViewport()
   useSearchBarHost(desktop)
@@ -182,7 +194,8 @@ export default function CategoryNavBar({
               key={category.id}
               label={category.label}
               icon={category.icon}
-              active={category.id === activeCategory}
+              active={category.id === selected}
+              onClick={() => setCategory(category.id)}
             />
           ))}
         </div>
@@ -209,6 +222,7 @@ export default function CategoryNavBar({
                 value={query}
                 placeholder={searchPlaceholder}
                 onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={onFieldKeyDown}
                 autoComplete="off"
                 className={[
                   'min-w-0 flex-1 bg-transparent text-[13px] font-semibold text-primary',

@@ -8,6 +8,7 @@ import RecentWinsTicker from '@/components/layout/RecentWinsTicker'
 import BalancePanel from '@/components/panels/BalancePanel'
 import PersonalInfoPanel from '@/components/panels/PersonalInfoPanel'
 import SearchOverlay from '@/components/search/SearchOverlay'
+import CategoryView from '@/components/sections/CategoryView'
 import SectionRenderer from '@/components/sections/SectionRenderer'
 import UrlStateBridge from '@/components/UrlStateBridge'
 import { desktopSections, mobileSections } from '@/lib/sections'
@@ -128,7 +129,14 @@ export default function Home() {
 
         <div className="w-full px-page-x pb-12 pt-12 mobile:px-4 mobile:pb-5 mobile:pt-2 mobile:order-4">
           <div className="mx-auto flex max-w-content flex-col gap-12 mobile:gap-5">
-            <HomeSections />
+            {/*
+              `HomeSections` stays a server render and is handed to the client wrapper as children,
+              so choosing a tab does not push the fifteen rows into the browser bundle. On the
+              Popular tab this renders exactly what it rendered before the tabs were wired up.
+            */}
+            <CategoryView>
+              <HomeSections />
+            </CategoryView>
           </div>
         </div>
       </main>

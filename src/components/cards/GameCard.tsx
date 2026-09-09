@@ -45,6 +45,17 @@ const CARD_CLASSES = [
   // where the desktop one is a quarter-black drop. It has no token because the theme carries no
   // shadow colours; docs/tokens.md §2b records it with its node.
   'mobile:shadow-[-2px_2px_12px_rgb(8_8_20/0.75)]',
+  // The audit of 2026-09-09 found the grid did not respond to a pointer at all: no hover, no
+  // press, no cursor change, on all ninety cards. That is separate from the recorded decision to
+  // render `article` rather than a link — a card can acknowledge the cursor without pretending to
+  // lead somewhere, and on a casino homepage the card *is* the product. The lift is 2px and the
+  // ring is `border-medium`, both already in the theme, so no new token comes with it.
+  'transition-[transform,box-shadow,border-color] duration-150 ease-out',
+  'hover:-translate-y-0.5 hover:border-medium hover:shadow-[0_10px_20px_rgb(0_0_0/0.45)]',
+  'active:translate-y-0 active:shadow-[0_4px_8px_rgb(0_0_0/0.25)]',
+  // Reduce Motion keeps the shadow and the ring — the parts that say "this is under the cursor" —
+  // and drops only the movement, which is the part the preference is about.
+  'motion-reduce:transition-none motion-reduce:hover:translate-y-0',
 ].join(' ')
 
 export default function GameCard({

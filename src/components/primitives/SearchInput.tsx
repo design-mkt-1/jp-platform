@@ -1,6 +1,7 @@
 'use client'
 
 import { useId } from 'react'
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import Icon from './Icon'
 
 /**
@@ -19,6 +20,8 @@ export interface SearchInputProps {
   label?: string
   onFocus?: () => void
   onBlur?: () => void
+  /** Enter / ArrowDown, supplied by whichever surface owns the results below the field. */
+  onKeyDown?: (event: ReactKeyboardEvent<HTMLInputElement>) => void
   /** Called by the clear control. Defaults to emptying the field. */
   onClear?: () => void
   autoFocus?: boolean
@@ -32,6 +35,7 @@ export default function SearchInput({
   label = 'Search games',
   onFocus,
   onBlur,
+  onKeyDown,
   onClear,
   autoFocus = false,
   className,
@@ -67,6 +71,7 @@ export default function SearchInput({
         value={value}
         placeholder={placeholder}
         onChange={(event) => onValueChange(event.target.value)}
+        onKeyDown={onKeyDown}
         onFocus={onFocus}
         onBlur={onBlur}
         autoFocus={autoFocus}

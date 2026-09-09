@@ -17,9 +17,13 @@ import { useAppStore } from '@/store/useAppStore'
  * of 16 — and those overrides carry `!` because two utilities of the same Tailwind family in one
  * class attribute are resolved by stylesheet order, not by the order they were written in.
  *
- * The backdrop is markedly darker than the Figma frame. That is the tokens decision
- * (`bg-overlay` = `#161625 @ 80%`, not black at 20%) recorded in docs/tokens.md §1, not a bug,
- * and it is deliberately not compensated for here.
+ * Where it lands is `Panel`'s decision too. Node 1:4118 puts the popover's left edge on the
+ * balance pill's left edge, 8px below it, and `Panel` reads that pill at open time; the 320px
+ * width is unchanged on a phone, where it becomes a centred dialog rather than a drop-down.
+ *
+ * The backdrop is `bg-overlay` and nothing else — the token is viewport-scoped in globals.css and
+ * is not restated here, because a value copied into a comment is a value that goes stale the first
+ * time the token moves.
  */
 
 /** Roboto at 14/16 — the `Footnote_m` style the design reports for every row of the stack. */
