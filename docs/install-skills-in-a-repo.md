@@ -41,17 +41,19 @@ In .claude/settings.json, under "enabledPlugins":
 
   "ui-ux-pro-max@ui-ux-pro-max-skill": true
   "ponytail@ponytail": true
-  "caveman@caveman": false
+  "caveman@caveman": true
 
 These three are plugins, not loose skills: each ships a .claude-plugin/plugin.json
 and activates through SessionStart hooks that run Node scripts. Do NOT copy their
 skills/ folders into the repo. You would get the slash commands, silently lose the
 automatic activation that is the whole point, and add roughly 45 MB.
 
-caveman stays false on purpose. It advertises "cuts 65% of output tokens by speaking
-like a caveman", which directly fights the rule below about explaining things in
-plain words. Record that reason as a note in CLAUDE.md so nobody flips it back
-without knowing the trade.
+Also create .caveman/config.json containing {"defaultMode": "lite"} and commit it.
+caveman resolves its level as: CAVEMAN_DEFAULT_MODE env var, then repo-local
+.caveman/config.json or .caveman.json walking up to the filesystem root, then the
+user config, then "full". Pinning lite in the repo is what lets caveman and the
+explain-in-plain-words rule coexist: lite drops filler and hedging but keeps articles
+and full sentences, so it tightens explanations instead of truncating them.
 
 3. CLAUDE.md
 
@@ -83,6 +85,11 @@ Cover:
 
   - Language: conversation with the owner is Romanian; everything landing in a file
     is English.
+
+  - caveman and explica together: explica decides what must be present, caveman decides
+    how tightly it is written, and explica wins any conflict. The concrete example, the
+    measured-versus-reasoning line, and naming what is unknown are all content and are
+    never cut. Filler, hedging, tool-call narration and restating the question are.
 
 Adapt the examples to THIS repo. Read its README, its git log and its src/ layout,
 and cite a real incident from its own history. Do not copy jp-platform's examples.

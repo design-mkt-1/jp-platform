@@ -56,8 +56,29 @@ the class, not the instance.
 Conversation with the owner is in Romanian. Everything that lands in a file — code,
 comments, commit messages, docs, this file — is English.
 
-## Notes
+## caveman and explica run together
 
-- `caveman` is installed but disabled in `.claude/settings.json`. It compresses output ~65%
-  and would directly undercut the `explica` rule above. Flip it to `true` only if you want
-  terse output more than you want explanations.
+Both are on. They govern different things, and the order between them is fixed.
+
+`caveman` is pinned to **lite** in `.caveman/config.json` — committed, so it applies to
+everyone who clones. At lite it drops filler and hedging but keeps articles and full
+sentences. It does not shorten explanations; it removes the padding around them.
+
+`explica` decides *what must be present*. `caveman` decides *how tightly it is written*.
+On any conflict, `explica` wins:
+
+- The concrete named example from this project is content, not filler. It is never cut.
+- The line between what was measured and what is reasoning is content. Never cut.
+- Naming what is unknown, instead of guessing, is content. Never cut.
+- Cut instead: pleasantries, hedging, tool-call narration, restating the question,
+  decorative tables, summaries of what was just said.
+
+caveman's own rules already agree with this — its Auto-Clarity section drops compression
+for security warnings, irreversible actions, multi-step sequences where order could be
+misread, and any point where compressing creates ambiguity. Its Boundaries section keeps
+normal prose in everything that outlives the chat: code, comments, commits, docs, PR text
+and memory files. So this file, the commit messages and `docs/` stay in full English no
+matter what mode the session is in.
+
+Per-session override when you want something different: `/caveman full`, `/caveman ultra`,
+`/caveman off`. The level resets to lite next session.
