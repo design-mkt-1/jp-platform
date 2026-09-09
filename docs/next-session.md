@@ -39,6 +39,41 @@ Verified on the live site: zero failing requests, `noindex` header served, `/dev
 | `?q=swe`                       | the search suggestions state, node 1:4479          |
 | `?pq=xyzgame`                  | the provider filter with no match, 1:2218 / 1:4321 |
 
+## Open items — the short list
+
+Everything still outstanding, in one place. The sections below hold the reasoning; this table is
+only the index, so nothing has to be reconstructed by reading the whole history. Nothing here blocks
+the deploy: `main` is green and every item is a decision or a piece of polish, not a defect in
+flight.
+
+**Waiting on an owner decision — nobody should guess these:**
+
+| # | What                            | The two readings                                                                                      | Where |
+| - | ------------------------------- | ----------------------------------------------------------------------------------------------------- | ----- |
+| 1 | The jackpot menu's panel colour | Figma samples `#0D1420` for the menu surface, the strip under it and the tab bar. Ours is `--bg-card #151624` on `--bg-page #0F121D`. A few units apart, and the screen reads as uniform either way. | §9 |
+| 2 | The identity line in that menu  | The rebuilt frames print `luckytest1234567` as the name and `23885` in the ID field. We print the email above the name and `user-luckytest`. That difference was recorded back when the design had no username to show — it now has one. | §9 |
+| 3 | The header balance chip         | Node `13:2325` puts `$ 140.00` in a 40px pill with a 4% `rgba(0,92,64)` fill and a gold text-shadow. Ours is plain gold text, same size and colour, no pill. | §9 |
+| 4 | The countdown period            | `PERIOD_MS` in `src/lib/format.ts` rolls a past deadline forward in 7-day steps, which makes the hours field three digits (`164h : 06m : 33s`) where the design draws `08h : 12m : 36s`. A 24-hour period keeps two digits — one constant plus the roll-forward assert. | §7 |
+| 5 | 768–1279 px                     | The nav works but is a narrow scrollable sliver. Figma draws 390 and 1440 and nothing between, so widening it means designing it. | §8 |
+
+**Agreed, just not done yet:**
+
+| # | What                                   | Size                                                                                             | Where |
+| - | -------------------------------------- | -------------------------------------------------------------------------------------------------- | ----- |
+| 6 | Romanian docs become English           | Three files: `docs/tokens.md` (~360 lines), `docs/start-here.txt` (182), `public/review/index.html` (2343). One pass, not piecemeal. | §10 |
+| 7 | Ten icon SVGs carry the Figma artboard | `bonus-buy`, `crash`, `instant`, `lottery`, `megaways`, `new`, `recommended`, `slots`, `tournaments`, `wheel` each open with a `1440x7453` page-coloured rect. Invisible today only because that fill equals the page background. | §8 |
+| 8 | Backdrop click loses the focus origin  | Dismissing a sheet by its backdrop leaves focus on `body` instead of returning it to the trigger. Escape does return it correctly. Lives in `useOverlayBehavior`. | §7 |
+
+**Known, accepted, and not to be re-opened without a reason:**
+
+| #  | What                                    | Why it stands                                                                                   | Where |
+| -- | --------------------------------------- | ------------------------------------------------------------------------------------------------- | ----- |
+| 9  | The tab bar is live to touch, not to AT | The jackpot menu is `aria-modal` with a focus trap, so a screen reader stays inside it while the bar is visibly lit. Nobody is stranded — Escape closes it, and Sport, Casino and Promotions are rows in the menu — but Live Casino is reachable only after closing. Undoing this means giving up `aria-modal`, the trap and backdrop dismissal together. | §9 |
+| 10 | Game cards are `article`, not links     | `GameCard` and `ProviderCard` both render an `<a>` when given an `href`; no caller passes one, because the demo has no game pages. A link to nowhere is worse than no link. Resolves itself if game pages arrive. | §4 |
+| 11 | `bonus-buy` draws stars, Figma a crown  | Node `1:3367`'s crown is fifteen masked fragments with no clean vector to export, and at 20px the difference is hard to see. | §1 |
+| 12 | A dead Figma node id cannot be detected | `screens.test.ts` checks that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing in the repo can do better without calling Figma. | §9 |
+| 13 | Thirteen deliberate differences         | Currency, fallback artwork, the mobile hero showing one offer, and ten more — each listed with its node and its reason. To be re-confirmed at sign-off, not fixed. | §5 |
+
 ## Local commands
 
 ```bash
