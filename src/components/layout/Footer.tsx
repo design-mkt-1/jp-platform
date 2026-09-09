@@ -50,7 +50,8 @@ const PARTNER_ART: Record<string, { slotClass: string; width: number; height: nu
   zamsino: { slotClass: 'w-[150px]', width: 150, height: 48 },
   // Node 1:3993 was an empty frame in wave 1; the export is a 108x48 raster that fills the slot
   // exactly, so it is measured rather than scaled.
-  'deutschland-casinos': { slotClass: 'w-[150px]', width: 108, height: 48 },
+  // The seventh slot (node 21:4020) is the one Figma draws 40 tall on the phone, not 32.
+  'deutschland-casinos': { slotClass: 'w-[150px] mobile:h-10', width: 108, height: 48 },
 }
 
 const DEFAULT_PARTNER_ART = { slotClass: 'w-[150px]', width: 100, height: 32 }
@@ -122,7 +123,8 @@ function PartnerSlot({ logo }: { logo: FooterLogo }) {
 
   return (
     <li
-      className={`flex h-12 ${art.slotClass} shrink-0 items-center justify-center overflow-hidden mobile:w-[calc(33.333%-11px)]`}
+      // 32 tall on the phone: node 21:3785 lays the slots out 32 high in rows 16 apart.
+      className={`flex h-12 ${art.slotClass} shrink-0 items-center justify-center overflow-hidden mobile:h-8 mobile:w-[calc(33.333%-11px)]`}
     >
       {logo.href ? (
         <a

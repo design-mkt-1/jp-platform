@@ -43,7 +43,7 @@ export interface ProviderCardProps {
 }
 
 const CIRCLE_CLASSES = [
-  'flex size-28 items-center justify-center rounded-full',
+  'flex size-28 items-center justify-center rounded-full mobile:size-[72px]',
   'border-[1.167px] border-solid border-separator bg-card',
 ].join(' ')
 
@@ -61,7 +61,7 @@ export default function ProviderCard({ provider, href, className }: ProviderCard
           width={69}
           height={69}
           unoptimized
-          className="size-[69px] object-contain"
+          className="size-[69px] object-contain mobile:size-11"
         />
       ) : (
         // Hidden from assistive tech: "RG" is not the name of anything. The full name reaches a
@@ -77,7 +77,9 @@ export default function ProviderCard({ provider, href, className }: ProviderCard
   )
 
   const classes = [
-    'inline-flex size-[140px] shrink-0 items-center justify-center p-[14px]',
+    // Node 21:3118 draws the phone badge 80x96 with a 72px circle 4px in from the sides; the
+    // desktop sizes never had a mobile variant, and the two bands cost 280px against Figma's 192.
+    'inline-flex size-[140px] shrink-0 items-center justify-center p-[14px] mobile:h-24 mobile:w-20 mobile:p-1',
     className,
   ]
     .filter(Boolean)

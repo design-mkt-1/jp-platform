@@ -92,7 +92,9 @@ export default function ProviderRow({
   return (
     <section
       aria-label={section.title}
-      className={['flex flex-col gap-5', className].filter(Boolean).join(' ')}
+      // 16 on the phone, as in `ContentRow`: node 21:3095 ends its header at 56 and starts the
+      // bands at 72.
+      className={['flex flex-col gap-5 mobile:gap-4', className].filter(Boolean).join(' ')}
     >
       <div className="flex flex-col gap-4">
         {/* Node 1:2650 fixes its rule at 160px and pushes the search button to the margin, unlike
