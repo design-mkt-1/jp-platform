@@ -87,11 +87,12 @@ are closed across the app. All in §11.
 | 7  | A dead Figma node id cannot be detected | `screens.test.ts` checks that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing in the repo can do better without calling Figma. | §9 |
 | 8  | Thirteen deliberate differences         | Currency, fallback artwork, the mobile hero showing one offer, and ten more — each listed with its node and its reason. To be re-confirmed at sign-off, not fixed. | §5 |
 
-## Start here → [`docs/session-9-plan.md`](session-9-plan.md)
+## Start here → §13, then [`docs/session-9-plan.md`](session-9-plan.md) §0 on a new machine
 
-The next session's plan lives in the repo, not in `~/.claude/plans/`, because the machine changes.
-It opens with a ten-minute checklist of what does **not** travel with a clone — the plugins, the
-owner's two global hooks, and Orca — and then the mobile work in waves.
+Session 9 executed that plan on 2026-09-10; §13 below has the measurements and the five decisions
+that now wait on the owner. The plan's §0 — what does **not** travel with a clone: the plugins,
+the owner's two global hooks, Orca — is still the checklist for any machine that has not run this
+repo before. Pull before anything else: the repo's skill hook fires only from the files on disk.
 
 ## How this repo is worked on — read before touching anything
 
@@ -772,6 +773,86 @@ instead, the provider filter's results riding a 40-second marquee, the no-result
 categories that are not in the panel, the four labels for two auth buttons, and six SVGs that still
 carry the Figma artboard because `clean-svg.mjs`'s rule 2 only catches paths starting more than
 1000 units outside the viewBox and these start at -149 to -961.
+
+### 13. Session 9 — measured first, then four parallel fixes and two blocks sized to Figma
+
+Run on a different machine from sessions 1–8, which is what [`session-9-plan.md`](session-9-plan.md)
+was written for. What §0 of that plan predicted held, with two surprises worth recording: the
+local checkout was **22 commits behind** `origin/main` (the plan, the skills and the hook were all
+on the remote and not on disk), and the repo's `skill-triggers.mjs` hook only fired from the
+prompt *after* the pull — a session that starts before pulling gets no `PROJECT SKILLS` line and
+should not trust it until it appears. The plugins were installed and Orca was running; the owner's
+global `~/.claude/CLAUDE.md` was absent and was recreated with the two rules.
+
+**Wave 0 — the 231px closed, block by block.** The mobile page measured 7360 against Figma
+`21:2896`'s 7129.4 at 390×844 (Playwright, `isMobile`, reduced motion). The plan's "74px
+unexplained" was three things nobody had attributed:
+
+| Block | Figma | DOM | Diff |
+| --- | --- | --- | --- |
+| Spacer under the footer for the fixed tab bar | not in the frame | 84 | **+84** |
+| Providers row, header-to-next-header (`21:3095`) | 288 | 384 | **+100.5** — bands 2×96 vs 2×140 (+88), header 36 vs 40, gap 16 vs 20 |
+| Footer (`21:3693`) | 1140.4 | 1221.4 | **+81** — legal paragraph +80 (+32 gap; absent from the Figma mobile footer), partners +40, link rows −72 (32 vs 44 each), dividers +2, padding −3 |
+| Last row → footer | 54 (`21:3675` carries 34 extra) | 20 | −34 |
+| Promo rows (Tournaments, Lottery, Wheel) | 304 pitch | 300 | −12 |
+| Above the first row, and 0.5 per games row | 427 | 433 | +6, +5 |
+
+Sum 230.5. The spacer is by design: the tab bar is `position: fixed` and the page needs the room
+under the footer; the Figma frame simply does not include the bar.
+
+**Wave 1 — four workers, four files, four commits** (`a674ab5`, `8809c1a`, `ef4fd67`, `bff103a`).
+
+- **Menu chevrons removed** (`JackpotMenu.tsx`): Sport, Casino and Payments no longer draw the
+  `chevron-down` they never honoured — 3 → 0 glyphs in the eight rows, rows still 44×350, the
+  `More` button keeps its own chevron, Escape from the More panel still returns focus to the tab
+  bar's Menu button.
+- **The balance label fills its 40px shell** (`HeaderPostlogin.tsx`, `py-2.5 -my-2.5`): the
+  button went from 81×20 at y=20 to 77.59×40 at y=10, so `elementFromPoint` at the shell's
+  top+2 and bottom−2 now returns the button instead of the shell `div`, and a real mouse press at
+  top+2 opens the balance panel (a touch tap already did, through Chrome's touch adjustment). The
+  shell's y/height/right stay 10/40/332; the gap to `+` stays 12px. One side effect to know:
+  `tabular-nums` renders the figure 3.41px narrower, so the shrink-to-fit shell is 139.59 wide
+  instead of 143 — its left edge moved from 189 to 192.41. Figma's shell width was not compared.
+- **Desktop countdown holds still** (`PromoBanner.tsx`, `tabular-nums`): the two visible `<time>`
+  elements at 1440 swung 179.13→173.20 and 119.42→115.47 over four seconds; after, 182.89 and
+  121.92 with a swing of 0.00. The mobile banner already had it (48.52, swing 0.00).
+- **The mobile Figma ids are live again** (`sections.ts`): all fifteen `MOBILE_NODE_IDS` moved
+  from the dead `1:5882…1:6499` band to `21:3058…21:3675`, each verified in Figma by reading the
+  section-header title of the frame; every title matched the row at its position. **Correction to
+  the plan's premise:** `MOBILE_NODE_IDS` does not drive the `/dev/screens` deep links —
+  `page.tsx` builds those from `screens.figmaNodeId` in `screens.ts`, which had no dead id left.
+  The change is source-of-truth only; nothing user-facing moved.
+
+**Wave 2 — the two blocks Wave 0 named** (`e94696e`). `ProviderCard` had no mobile variant at
+all; node `21:3118` draws the badge 80×96 with a 72px circle, so `mobile:h-24 mobile:w-20`,
+`mobile:size-[72px]`, the logo at 44, and the row gap follows `ContentRow`'s `mobile:gap-4`.
+Providers row 340 → 248 (Figma 244; the 4 is the 40px search button against Figma's 36). Partner
+slots `mobile:h-8`, the seventh (`21:4020`) `mobile:h-10`: the list is 136, Figma's number
+exactly. Casinostest and Casino Bonus Now overflow their 32px slot the same way Figma clips them
+(`cbn.svg` sits at y=−9, h=50, in a 32 frame). **Page 7360 → 7228.**
+
+**Gate at fan-in:** 64 tests, `tsc` 0, `eslint` 0, `build:check` 0, axe over the nine states
+0/0/0/0 on the Pages export (served under `/jp-platform/`, `served 200` confirmed first — the
+first attempt served a 404 and reported five identical "moderate" findings per state, which is
+what the 404 page scores; a run that does not confirm the server is up proves nothing).
+
+**Skills that fired:** `ui-ux-pro-max:ui-ux-pro-max` and `:ui-styling` (its database confirmed
+the web touch-target bar is WCAG's 24px with exceptions, and that auto-rotating content wants a
+pause control — see below), `make-interfaces-feel-better`, `browser-qa`, `click-path-audit`,
+`verification-loop`, `ponytail`; the workers read the same `.claude/skills/` files and reported it.
+
+**Left for the owner, not edited, all measured:**
+
+1. The **legal paragraph** in the mobile footer (80px + its 32px gap) is not in Figma `21:3693`.
+   Compliance copy probably stays; the decision is not the code's to make.
+2. The **footer link rows** are 32 tall where Figma draws 44 (`21:4026`… text at y=14 in a 44
+   frame) — −72 over six rows. Session 8's "leave them" was about the 16px links, not the rows.
+3. Figma puts the **second divider between the links and the flags**; the code stacks both
+   dividers above the links. Same height, different picture.
+4. The **34px** Figma keeps under its last row before the footer (frame `21:3675` is 410 for 376
+   of content). Design intent or a stray frame size — unknown.
+5. The **provider marquee has no pause control**; `ui-ux-pro-max`'s "Auto-Rotating Content
+   Controls" rule (severity High) asks for one. It is already open as audit §2.7.
 
 ## Things worth remembering about this codebase
 

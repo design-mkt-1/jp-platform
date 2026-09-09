@@ -49,9 +49,9 @@ THE FIRST PROMPT FOR CLAUDE
 
 Open Claude Code in the jp-platform folder and give it this:
 
-    Read docs/session-9-plan.md first — it is written for a fresh machine and
-    starts with a checklist of what does not travel with a clone.
-    Then CLAUDE.md, docs/next-session.md and docs/audit-session-8.md.
+    git pull first. Then read docs/session-9-plan.md §0 — the checklist of what
+    does not travel with a clone — and docs/next-session.md §13, which is where
+    session 9 left things. Then CLAUDE.md and docs/audit-session-8.md.
     Mobile at 390px is the only priority; 95% of traffic is a phone.
     Verify before you assume.
 
@@ -159,8 +159,10 @@ docs/audit-session-8.md, which is the newest and the longest list.
 
 What is genuinely open right now:
 
-1. Everything in docs/session-9-plan.md — the mobile work, in waves, written
-   for a fresh machine.
+1. The five owner decisions at the end of docs/next-session.md §13 — the legal
+   paragraph, the footer link rows, the divider placement, the 34px under the
+   last row, a pause control for the provider marquee. Session 9 (2026-09-10)
+   executed docs/session-9-plan.md; the page is 7228px against Figma's 7129.
 2. Game cards stay <article> with no link, by your decision of 2026-08-08: a
    link to nowhere is worse than no link. It resolves itself when game pages
    arrive.

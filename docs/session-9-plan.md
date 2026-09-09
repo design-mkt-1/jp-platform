@@ -1,5 +1,9 @@
 # Session 9 — mobile polish, measured before edited
 
+> **Executed on 2026-09-10.** The outcome, the ledger and what is left for the owner are in
+> [`next-session.md` §13](next-session.md#13-session-9--measured-first-then-four-parallel-fixes-and-two-blocks-sized-to-figma).
+> Kept as the record of how the session was planned; §0 is still the right checklist for any new machine.
+
 **This file is in the repo on purpose.** The next session runs on a different machine, and a plan
 in `~/.claude/plans/` does not travel. Everything needed to execute is here.
 
