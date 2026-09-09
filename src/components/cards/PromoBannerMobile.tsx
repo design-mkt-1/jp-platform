@@ -199,7 +199,12 @@ function TournamentBody({ data }: { data: PromoBannerData }) {
               <time
                 dateTime={data.endsAt ? countdownEndIso(data.endsAt) : undefined}
                 suppressHydrationWarning
-                className="text-[11px] font-extrabold leading-[normal] text-ink"
+                // `tabular-nums` because this clock re-formats once a second. Measured on the
+                // deployed build at 390: the text swung between 44.48px and 47.81px wide from one
+                // tick to the next — Inter's proportional `1` is narrower than its `8` — and this
+                // card is the tightest box on the phone, with the label and the clock on one line,
+                // so every second it nudged its neighbour.
+                className="text-[11px] font-extrabold leading-[normal] tabular-nums text-ink"
               >
                 {clock}
               </time>
