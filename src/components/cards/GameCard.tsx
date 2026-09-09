@@ -75,7 +75,12 @@ export default function GameCard({
         rather than pushing the card taller. It showed on the 114px mobile card, where "Golden Koi
         Rising" and "Frost Fangs" both lost their first line.
       */}
-      <p className="line-clamp-2 font-display text-base font-extrabold leading-tight text-page mobile:text-[13px]">
+      {/* `break-words` for the tablet range the Figma file has no frame for: at 1024 the desktop
+          six-column grid squeezes a 203px card down to about 120px, and a single long word — the
+          catalogue's worst case is "Starburst" — is wider than that. Without it the word is cut
+          mid-letter with no ellipsis, because a clamp has nothing to ellipsise when there is no
+          second word. Nothing changes at 1440, where every title fits. */}
+      <p className="line-clamp-2 break-words font-display text-base font-extrabold leading-tight text-page mobile:text-[13px]">
         {game.title}
       </p>
       <p className="mt-1 line-clamp-1 text-[11px] font-bold uppercase tracking-[0.6px] text-page opacity-70 mobile:text-[10px]">

@@ -51,7 +51,8 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Cashback', href: '/cashback' },
 ]
 
-const NAV_ITEM_BASE = 'rounded-md px-2.5 py-2 text-[13px] uppercase transition-colors'
+const NAV_ITEM_BASE =
+  'block whitespace-nowrap rounded-md px-2.5 py-2 text-[13px] uppercase transition-colors'
 const NAV_ITEM_ACTIVE = 'font-bold text-gold'
 const NAV_ITEM_IDLE = 'font-semibold text-nav hover:text-primary'
 
@@ -119,11 +120,27 @@ export default function Header() {
     // Node 1:4245: the bar is painted darker than the page behind it and closed with its own rule,
     // both of which now have tokens of their own.
     <header className="w-full border-b border-solid border-header bg-header">
-      <div className="mx-auto flex h-20 max-w-shell items-center justify-between px-page-x mobile:h-[60px] mobile:px-4">
-        <div className="flex items-center gap-10">
+      <div className="mx-auto flex h-20 max-w-shell items-center justify-between gap-4 px-page-x mobile:h-[60px] mobile:gap-0 mobile:px-4">
+        {/*
+          `min-w-0` so this group is allowed to shrink. Between 768 and 1279 px — a range the Figma
+          file has no frame for, since it draws only 390 and 1440 — the bar needed 1191 px and
+          neither side gave way, so the whole document grew a horizontal scrollbar and the account
+          controls sat off the right edge: at 768 the balance, Deposit and the account menu were
+          simply unreachable. Nothing here changes at 1440; the design's own width still fits.
+        */}
+        <div className="flex min-w-0 items-center gap-4 xl:gap-10">
           <Brand />
 
-          <nav aria-label="Primary" className="mobile:hidden">
+          {/*
+            The nav is what yields. It scrolls sideways inside the header rather than pushing the
+            money controls out of the viewport — the links are all reachable either way, the
+            balance and Deposit are not. `scrollbar-width: none` keeps the strip looking the same
+            at widths where it does not scroll at all.
+          */}
+          <nav
+            aria-label="Primary"
+            className="min-w-0 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mobile:hidden"
+          >
             <ul className="flex items-center gap-2">
               {NAV_ITEMS.map((item) => {
                 const active = pathname === item.href
@@ -149,7 +166,8 @@ export default function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3.5 mobile:gap-0.5">
+        {/* `shrink-0`: the balance, Deposit and account menu keep their full size at every width. */}
+        <div className="flex shrink-0 items-center gap-3.5 mobile:gap-0.5">
           <Variant />
           <MobileSearchButton />
         </div>
