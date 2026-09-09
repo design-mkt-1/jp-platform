@@ -25,7 +25,7 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'reac
  * order rather than by the order they were written in.
  */
 
-export type ButtonVariant = 'primaryGold' | 'primaryBlue' | 'seeAll' | 'outline'
+export type ButtonVariant = 'primaryGold' | 'primaryBlue' | 'seeAll' | 'outline' | 'deposit'
 
 /** Named after the design's own scale, not after t-shirt sizes: each maps to one Figma spec. */
 export type ButtonSize = 'cta' | 'pill' | 'tinted' | 'header'
@@ -82,6 +82,24 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
     'rounded-[20px] border border-solid border-white/30 bg-transparent text-primary',
     'transition-colors hover:border-white/50 hover:bg-elevated active:bg-subtle',
   ].join(' '),
+
+  /*
+   * Node 13:2340, the deposit button of the rebuilt jackpot-menu frames: a flat #00B579 in the same
+   * 20px radius as the gold CTA, and carrying the gold CTA's own drop shadow — `rgba(198,144,61,
+   * 0.25)` at 0 4px 6px, which is `--gold-dark` at 25%. The design really does tint a green button
+   * with a gold glow; it is transcribed rather than corrected.
+   *
+   * The label is where this variant deviates. Figma writes DEPOSIT in white, and white on #00B579
+   * measures 2.66:1 — under the 4.5 that `scripts/a11y.mjs` gates CI on, and two of its nine states
+   * are this menu. Owner's decision of 2026-09-09: keep the design's green, write the label in
+   * `text-page`, which measures 7.01:1. `JackpotMenu` already makes the same trade for its emerald
+   * buttons. See docs/tokens.md §2b.
+   */
+  deposit: [
+    'bg-deposit-green rounded-[20px] text-page',
+    'shadow-[0_4px_6px_color-mix(in_srgb,var(--gold-dark)_25%,transparent)]',
+    'hover:brightness-110 active:brightness-90',
+  ].join(' '),
 }
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
@@ -101,6 +119,9 @@ const DEFAULT_SIZE: Record<ButtonVariant, ButtonSize> = {
   primaryBlue: 'pill',
   seeAll: 'tinted',
   outline: 'header',
+  // Node 13:2340 is padded 10/24, which is `cta` exactly; only its 12px type differs, and the one
+  // call site already overrides that alongside the 113x38 the node fixes.
+  deposit: 'cta',
 }
 
 const BASE_CLASSES = [

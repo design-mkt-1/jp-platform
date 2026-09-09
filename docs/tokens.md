@@ -199,8 +199,19 @@ lista devine un depozit de culori ad-hoc și ne întoarcem exact la problema pe 
 | `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | textul scris **pe** pastila aceea: eticheta butonului, „Time left" și ceasul |
 | `#36BCFF` ²     | — (doar SVG)      | —                   | `1:2239`, `1:4323`                    | lupa din câmpul de căutare de furnizori (`public/images/icons/search-blue.svg`) |
 | `rgba(8,8,20,0.75)` ³ | — (inline)  | —                   | `1:6179`                              | umbra cardului de joc pe mobil: `-2px 2px 12px`                              |
+| `#00B579` ⁴     | `deposit-green`   | `--deposit-green`   | `13:2340`                             | umplerea butonului `Deposit` din meniul de jackpot                           |
+| `#FF787A`       | `signout`         | `--text-signout`    | `13:2491`                             | eticheta „Sign out" din meniul de jackpot                                    |
 
 ¹ Figma scrie `#65616A`. Ridicat la `#7F7A85` pentru AA — vezi „Abateri de contrast" mai jos.
+
+⁴ Eticheta scrisă **pe** el e albă în Figma. Alb pe `#00B579` măsoară 2,66:1, deci eticheta e
+`text-page` — vezi „Abateri de contrast" mai jos. Verdele în sine rămâne cel din design.
+
+Ultimele două valori vin din cadrele de meniu reconstruite în Figma pe 2026-09-09 (`13:2307`
+post-login, `13:2519` VIP; vechile `1:8260` / `1:8503` / `1:8504` nu se mai rezolvă). `#00B579` nu e
+din familia `emerald` — acela e `#00F299`, mult mai deschis, și rămâne pe butonul `Support`.
+`#FF787A` e singurul roșu din tot fișierul și nu are rudă în niciunul dintre UI Kit-uri; măsoară
+7,01:1 pe `--bg-card`, deci nu cere nicio abatere.
 
 ³ Singura culoare de umbră din tot designul. Nu primește variabilă pentru că tema nu are culori de
 umbră deloc: cealaltă umbră a cardului, cea de desktop, e scrisă tot inline în `GameCard.tsx`, ca
@@ -274,6 +285,24 @@ numere în `passes`:
 | `--blue-text` pe `--blue-tint` peste `--bg-field`                   | `#162B4D`     | 5,15:1 |
 | `--blue-text` pe `--blue-tint` peste `--bg-section`                 | `#0F254B`     | 5,53:1 |
 | `--text-legal` pe `--bg-footer`                                     | `#070F1D`     | 4,58:1 |
+
+#### Adăugire, 2026-09-09: eticheta butonului `Deposit`
+
+Cadrele de meniu reconstruite scot butonul `Deposit` de pe rampa aurie și îl fac verde plin,
+`#00B579` (nod `13:2340`), cu eticheta `DEPOSIT` scrisă alb. Alb pe verdele acela măsoară **2,66:1**
+— sub 4,5 — iar două dintre cele nouă stări pe care `scripts/a11y.mjs` le verifică sunt chiar acest
+meniu (`mob-menu`, `mob-menu-prelogin`), deci desenat ca în Figma ar fi înroșit workflow-ul Pages.
+
+Aici decizia proprietarului merge pe **cealaltă** parte a perechii față de cele trei de mai sus: se
+păstrează verdele din design neatins și se schimbă eticheta, în `text-page` (`#0F121D`), care
+măsoară **7,01:1**. Motivul e că fondul e o suprafață mare și colorată — mutarea lui s-ar vedea, pe
+când eticheta are 12px și doar șapte litere. Aceeași alegere e deja făcută în `JackpotMenu` pentru
+butoanele verzi. Varianta trăiește în `Button.tsx` ca `deposit`, cu nodul citat lângă ea.
+
+| Perechea                        | Fundal    | Raport |
+| ------------------------------- | --------- | ------ |
+| `#FFFFFF` pe `--deposit-green`  | `#00B579` | 2,66:1 |
+| `--bg-page` pe `--deposit-green` | `#00B579` | 7,01:1 |
 
 Cele două stări ale pastilei `See All` sunt în tabel pentru că axe măsoară numai starea de repaus:
 hover și apăsat au fost calculate separat, ca schimbarea să nu treacă AA doar cât timp nu atinge

@@ -32,7 +32,7 @@ clicked to.
 | `?auth=prelogin` · `?auth=vip` | header and menu in that account state        |
 | `?panel=balance`               | balance popover — Figma node 1:4116          |
 | `?panel=personalInfo`          | account dropdown — node 1:4153               |
-| `?panel=jackpotMenu`           | mobile menu — nodes 1:8751 / 1:8260 / 1:8503 |
+| `?panel=jackpotMenu`           | mobile menu — nodes 1:8751 / 13:2307 / 13:2519 |
 | `?q=swe`                       | search suggestions — node 1:4479             |
 | `?pq=xyzgame`                  | provider search — nodes 1:2218 / 1:4321      |
 

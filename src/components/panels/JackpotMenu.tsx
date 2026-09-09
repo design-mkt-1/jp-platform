@@ -17,13 +17,17 @@ import { useAppStore } from '@/store/useAppStore'
 
 /**
  * The account menu behind the centre action of the mobile tab bar: Figma nodes 1:8751 (pre-login),
- * 1:8260 (post-login) and 1:8503 (VIP).
+ * 13:2307 (post-login) and 13:2519 (VIP).
  *
- * One component, not three. The three frames share every menu row, the legal strip, the two
- * support buttons and the chrome; they differ only in the block under the header — two auth
- * buttons versus a profile card — in whether the header shows a balance, and in whether a sign-out
- * row is drawn. Splitting that into three files would triplicate the eight menu rows, and the copy
- * that drifts is always the one nobody opens.
+ * The post-login and VIP frames were rebuilt in Figma on 2026-09-09 and carry new ids; the two they
+ * replace, 1:8260 and 1:8503, no longer resolve. Nothing in the repo can notice that on its own —
+ * `screens.test.ts` checks the shape of a node id, not whether Figma still has it.
+ *
+ * One component, not three. The three frames share every menu row, the legal strip, the support
+ * button and the chrome; they differ only in the block under the header — two auth buttons versus
+ * a profile card — in whether the header shows a balance, and in whether Sign out is drawn beside
+ * Support. Splitting that into three files would triplicate the eight menu rows, and the copy that
+ * drifts is always the one nobody opens.
  *
  * Presented through `Sheet` so the focus trap, Escape, backdrop dismissal and focus restoration
  * come from the same implementation the desktop panels use.
@@ -157,10 +161,13 @@ function ProfileCard({ vip }: { vip: boolean }) {
           <p className="truncate text-sm font-bold text-primary">{user.displayName}</p>
         </div>
 
-        {/* The primitive's gold variant is 16px extra-bold; node 1:8295 is 12px. `!` because a
-            plain override would depend on which font-size utility Tailwind emits last — the same
-            call the header's deposit button already makes. */}
+        {/* Node 13:2340 repaints this button green — the rebuilt frames took it off the gold ramp
+            — and fixes it at 113x38. The `deposit` variant carries the fill, the radius and the
+            label colour; the size stays 12px extra-bold, where the variant's native `cta` metrics
+            are 16. `!` because a plain override would depend on which font-size utility Tailwind
+            emits last — the same call the header's deposit button already makes. */}
         <Button
+          variant="deposit"
           onClick={() => openPanel('balance')}
           className="!h-[38px] !w-[113px] !text-xs uppercase"
         >
@@ -210,7 +217,17 @@ export default function JackpotMenu() {
   const signedIn = authMode !== 'prelogin'
 
   return (
-    <Sheet open={open} onClose={closePanel} title="Jackpot menu" hideTitle anchor="top">
+    <Sheet
+      open={open}
+      onClose={closePanel}
+      title="Jackpot menu"
+      hideTitle
+      anchor="top"
+      // The three frames draw one dark screen from the top of the phone down to a lit tab bar with
+      // `Menu` active. Sized by its content the sheet left 213px of live page showing pre-login and
+      // 87px post-login, and its scrim greyed the bar out and ate the taps meant for it.
+      clearsNavBar
+    >
       {/* Node 1:8753 — the panel keeps its own header rather than borrowing the page's. */}
       <div className="mb-2 flex items-center justify-between gap-3">
         <Image
@@ -279,47 +296,54 @@ export default function JackpotMenu() {
         </p>
       </div>
 
-      {/* Nodes 1:8908 / 1:8910. The design paints these #10B981; `emerald` is the only token in
-          that family. Its label is `text-page` rather than white because the token is a far
-          brighter mint than the design's green and white on it is unreadable.
+      {/* Node 13:2486 — one row holding exactly two things, Sign out then Support, 8px apart. The
+          rebuilt frames dropped the solid green *Vip Manager* button that used to sit beside
+          Support and moved Sign out up off its own row. Pre-login draws the same row with the
+          second slot marked `hidden` (node 1:8910) and Support centred at x=95 of 358, which is
+          what `justify-center` gives once Sign out is absent — no second rule needed.
 
-          `py-2` rather than the 16 this row used to carry on each edge. At 390x844 the sheet caps
-          at 90vh = 759.6 and this menu came to 804, so Sign out fell outside it and was reachable
+          `items-stretch` rather than a height on each button, because that is how Figma arrives at
+          its own two numbers: Sign out is 22px of icon inside 10px padding, so 42, and Support is
+          18px of label inside the same padding, so 38 on its own — but stretched to 42 when Sign
+          out stands next to it. Node 13:2492 measures 168x42, node 1:8908 measures 168x38.
+
+          `py-2` rather than the 16 node 13:2486 pads by. At 390x844 the box a top-anchored sheet
+          gets is 760px and this menu came to 804, so Sign out fell outside it and was reachable
           only by scrolling. 28px came out of four paddings — this one, the header's `mb`, the
           nav's `mt` and the divider row's `mt` — and 20 more out of the sheet's own insets. The
-          row heights and the 6px account-row gaps node 1:8503 sets are untouched. */}
-      <div className="flex items-center justify-center gap-2 px-3 py-2">
+          row heights and the 6px account-row gaps Figma sets are untouched. */}
+      <div className="flex items-stretch justify-center gap-2 px-3 py-2">
+        {/* Node 13:2487. `#FF787A` is the only red in the design and has no relative — it is
+            `--text-signout`, added with this frame. 7.01:1 on the panel. */}
+        {signedIn ? (
+          <button
+            type="button"
+            onClick={() => setAuthMode('prelogin')}
+            className={`flex items-center justify-center gap-2.5 rounded-full px-5 py-2.5 font-flex text-[13px] uppercase leading-5 text-signout transition-colors hover:bg-elevated ${FOCUS_RING}`}
+          >
+            <MenuGlyph name="signout" size={22} className="shrink-0" />
+            Sign out
+          </button>
+        ) : null}
+
+        {/* Nodes 13:2492 / 1:8908. The design paints this #10B981; `emerald` is the only token in
+            that family and it is a far brighter mint. Keeping the design's green here is not part
+            of this change — see docs/tokens.md.
+
+            `py-[9px]` and not the 10 Figma pads by, because Figma leaves the 1px stroke outside the
+            38 it measures and CSS puts it inside: 18 of label + 20 of padding + 2 of border renders
+            40. Nine each side lands the pre-login pill on the design's 38 exactly, and post-login
+            the row stretches it to 42 regardless — padding does not fight `align-self: stretch` the
+            way a fixed height would. */}
         <Link
           href="/support"
           onClick={closePanel}
-          className={`flex h-[38px] w-[168px] items-center justify-center gap-1.5 rounded-full border border-solid border-emerald text-[13px] leading-[18px] text-emerald transition-colors hover:bg-elevated ${FOCUS_RING}`}
+          className={`flex w-[168px] items-center justify-center gap-1.5 rounded-full border border-solid border-emerald px-5 py-[9px] text-[13px] leading-[18px] text-emerald transition-colors hover:bg-elevated ${FOCUS_RING}`}
         >
           <MenuGlyph name="support" size={16} strokeWidth={1.8} />
           Support
         </Link>
-        <Link
-          href="/vip-manager"
-          onClick={closePanel}
-          className={`flex h-[38px] w-[168px] items-center justify-center gap-1.5 rounded-full bg-emerald text-[13px] leading-[18px] text-page transition-[filter] hover:brightness-110 ${FOCUS_RING}`}
-        >
-          <MenuGlyph name="whatsapp" size={16} strokeWidth={1.8} />
-          Vip Manager
-        </Link>
       </div>
-
-      {/* Node 1:8473. Pre-login has nothing to sign out of, so the row is absent there. */}
-      {signedIn ? (
-        <button
-          type="button"
-          onClick={() => setAuthMode('prelogin')}
-          className={`flex h-10 items-center gap-2.5 rounded px-6 ${FOCUS_RING}`}
-        >
-          <MenuGlyph name="signout" size={22} className="shrink-0 text-label" />
-          <span className="font-flex text-[13px] font-medium uppercase leading-5 text-footer-heading">
-            Sign out
-          </span>
-        </button>
-      ) : null}
     </Sheet>
   )
 }

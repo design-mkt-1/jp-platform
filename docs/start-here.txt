@@ -135,7 +135,7 @@ Se adauga la adresa demo-ului:
     ?auth=prelogin   sau  ?auth=vip     headerul si meniul in starea aceea
     ?panel=balance                      panoul de sold, nodul Figma 1:4116
     ?panel=personalInfo                 meniul de cont, nodul 1:4153
-    ?panel=jackpotMenu                  meniul mobil, nodurile 1:8751 / 1:8260 / 1:8503
+    ?panel=jackpotMenu                  meniul mobil, nodurile 1:8751 / 13:2307 / 13:2519
     ?q=swe                              starea de sugestii la cautare, nodul 1:4479
 
 Exista pentru ca o stare la care nu poti da link nu poate fi verificata. O

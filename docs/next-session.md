@@ -35,7 +35,7 @@ Verified on the live site: zero failing requests, `noindex` header served, `/dev
 | `?auth=prelogin` / `?auth=vip` | header and menu in that account state              |
 | `?panel=balance`               | the balance popover, Figma node 1:4116             |
 | `?panel=personalInfo`          | the account dropdown, node 1:4153                  |
-| `?panel=jackpotMenu`           | the mobile menu, nodes 1:8751 / 1:8260 / 1:8503    |
+| `?panel=jackpotMenu`           | the mobile menu, nodes 1:8751 / 13:2307 / 13:2519    |
 | `?q=swe`                       | the search suggestions state, node 1:4479          |
 | `?pq=xyzgame`                  | the provider filter with no match, 1:2218 / 1:4321 |
 
@@ -159,11 +159,15 @@ left `Sign out` at 740–780 and took the scroll needed from 45px to 105px. So 4
 paddings instead: the sheet's top-anchor insets go from `pt-3`/`pb-6` to `pt-2`/`pb-2`, and four
 paddings in the menu lose 28px between them — the header's `mb-3` to `mb-2`, the nav's `mt-2.5` to
 `mt-1.5`, the divider row's `mt-1` dropped, and the Support / Vip Manager row's `py-4` to `py-2`.
-The row heights and the 6px account-row gaps that node 1:8503 sets are untouched. Measured at
+The row heights and the 6px account-row gaps that the VIP frame sets are untouched. Measured at
 390x844 in both motion modes: `Sign out` now spans 708–748, the sheet is 757 tall against a
 scrollHeight of 756 and a clientHeight of 756 — nothing scrolls — and the page is still 390 wide.
 The 90vh cap stays, so the strip of tab bar the design shows beneath the sheet is still there.
 Commit f437f37.
+
+Two things here have since been overtaken by §9, and are left as written because they are what was
+measured at the time. The 90vh cap is gone — the sheet now fills the box down to the bar — and the
+VIP frame is no longer node 1:8503, which does not resolve any more; it is 13:2519.
 
 ### 3. Change requests — 3 of 3 — done
 
@@ -409,6 +413,116 @@ Five were real, and are now applied — each measured against its node before an
   (`drops-wins` and `egypt` are already clean — commit `5590575` re-exported them.)
 - **Between 768 and 1279 the nav is a scrollable sliver.** All links stay reachable, but the strip
   is narrow. Figma has no frame for that range, so widening it means designing it. Owner's call.
+
+### 9. Session 6 — the mobile menu fills the screen, and the tab bar stays switched on
+
+**What the owner saw.** Opening the mobile jackpot menu at 390px left the page showing through
+underneath it — the Sweet Bonanza and Starburst cards, dimmed — with the bottom tab bar greyed out.
+Figma draws that screen as one dark surface running from the top of the phone down to a *lit* tab
+bar with `Menu` active. Measured on the deployed build at 390x844 before any change: the dialog was
+390x631 pre-login, 390x757 post-login and 390x757.5 VIP, which is 213px, 87px and 86.5px of live
+page inside the modal.
+
+**Two causes, both in code.** `Sheet` rendered a `fixed inset-0` scrim with a top-anchored surface
+capped at `max-h-[90vh]`; nothing stretched it, so whatever the menu did not fill stayed page. And
+the scrim was full-bleed at `z-50` over a `z-40` bar, so the bar was dimmed *and* swallowing taps —
+pressing `Casino` hit the backdrop and closed the menu instead of navigating.
+
+**The fix, in four pieces.**
+
+- `Sheet` takes an opt-in `clearsNavBar`. The scrim becomes `top-0` with
+  `bottom-[calc(var(--mobile-nav-h) + env(safe-area-inset-bottom))]` and the surface fills that box
+  with `h-full` instead of a cap. Only the jackpot menu passes it: the mobile search sheet is also
+  `anchor="top"`, Figma has no mobile search frame at all, so its relationship to the bar is our own
+  decision and is deliberately unchanged. Verified — the search sheet still draws an 844px scrim
+  over a 566px dialog with the bar under it at `z-40`.
+- The clearance is scoped to the `mobile:` breakpoint, because that is where the bar exists.
+  Above 767px `MobileNavBar` renders nothing, and reserving 84px there would leave an undimmed
+  strip of page with no bar in it.
+- The 84 now lives once, as `--mobile-nav-h` in `globals.css`. Three places read it: the bar draws
+  it, `MobileShell` reserves it at the end of the document, and the sheet stops at it. It used to be
+  written out twice.
+- `NavTab` closes the panel on click. Without it, tapping `Casino` while already on `/` navigates
+  nowhere and the menu stays open on top of the page it was meant to reveal.
+
+**The bottom row.** The rebuilt frames put Sign out and Support on one row (node `13:2486`) and drop
+the solid green *Vip Manager* button that used to sit beside Support. Sign out is `#FF787A`, a new
+token — the only red in the design. The row is `items-stretch` rather than two fixed heights,
+because that is how Figma reaches its own two numbers: Support is 38 tall on its own pre-login and
+42 when Sign out stands next to it. Support's padding is `py-[9px]` and not Figma's 10, because
+Figma leaves the 1px stroke outside the 38 it measures and CSS puts it inside.
+
+**Deposit turned green** — node `13:2340`, `#00B579`, off the gold ramp it used to be on. Figma
+writes its label white, which measures 2.66:1 and would have turned the Pages workflow red;
+owner's decision is to keep the design's green and write the label in `text-page`, 7.01:1. It lives
+in `Button.tsx` as the `deposit` variant. `docs/tokens.md` §2b records both numbers.
+
+**One defect the screenshots caught that the numbers did not.** With the sheet ending exactly at
+the bar's top edge, the raised `Menu` disc — 54px of circle sitting 42px proud of the 84px strip —
+was painted over by the panel and rendered as a gold semicircle. The bar is now `z-[60]` while the
+menu is open and `z-40` otherwise, so the disc draws whole and over the panel, as Figma has it. The
+condition matters: the search sheet must keep covering this bar, and the sheet is portalled after
+the nav in the DOM, so equal z-index values would still put it on top.
+
+**Measured after, at 390x844, on the static export served the way CI serves it.** All three states:
+dialog 390x760 against an 844 viewport with the bar's top at 760, `scrollHeight` equal to
+`clientHeight` so nothing scrolls, and `document.scrollWidth` still 390.
+`elementFromPoint(195, 700)` lands inside the dialog in all three, where it used to land on a game
+card. At the bar's centre it lands in the nav, not the backdrop; the `Menu` label computes to
+`rgb(245, 158, 11)`, the amber token; tapping `Casino` closes the panel. Sign out is 130x42 at
+x=42 in `rgb(255, 120, 122)`, Support 168x42 at x=180 — which is 26 and 164 inside the 358-wide
+panel, the two numbers node `13:2486` gives. Pre-login shows Support alone, 168x38 at x=111, and
+node `1:8908` puts it at 95 of 358. No Vip Manager in any state. Deposit is 113x38,
+`rgb(0, 181, 121)` with a `rgb(15, 18, 29)` label. `scripts/a11y.mjs` over all nine states: zero
+critical, serious, moderate and minor.
+
+**The Figma frames were rebuilt** on 2026-09-09 and two of the three node ids in this repo now
+point at nothing. `1:8260` became `13:2307` (post-login) and `1:8503` / `1:8504` became `13:2519`
+(VIP); `1:8751` (pre-login) is unchanged. Replaced in `src/lib/screens.ts` — where they are the
+deep links `/dev/screens` builds, so two entries were linking into a void — plus `JackpotMenu`,
+`Sheet`, `dev/screens/page.tsx`, this file, `start-here.txt` and `README.md`.
+`public/review/index.html` still carries the old ids and is left alone on purpose: it is a dated
+report of what was reviewed at the time, not a live reference.
+
+**Left open, deliberately:**
+
+- **The panel's own colour.** Figma's menu surface, the strip under it and the tab bar all sample to
+  `#0D1420`; ours is `--bg-card #151624` on `--bg-page #0F121D`. Filling the height makes the screen
+  read as uniform either way, so this change did not need it — but the design and the tokens
+  disagree by a few units and somebody should decide whether the menu should sit on the page colour.
+- **The tab bar is live to a finger, not to a screen reader.** The sheet is `aria-modal="true"` with
+  a focus trap, so assistive tech and the Tab key stay inside the dialog while the bar is visibly
+  lit and tappable. Nobody is stranded — Escape closes the menu, and Sport, Casino and Promotions
+  are rows inside it — but Live Casino is reachable only after closing. Making the bar genuinely
+  non-modal means giving up `aria-modal`, the trap and the backdrop dismissal together, which is a
+  bigger decision than this task.
+- **The identity line.** The rebuilt frames print `luckytest1234567` as the name and `23885` in the
+  ID field; we print the email above the name and `user-luckytest` as the ID. That was a recorded
+  deliberate difference back when the design had no username to show. It now has one.
+- **The header balance chip.** Node `13:2325` puts the `$ 140.00` in a 40px pill with a 4%
+  `rgba(0,92,64)` fill and a gold text-shadow; ours is plain gold text at the same size and colour.
+- **A node id in this repo cannot be known to be stale.** `src/lib/__tests__/screens.test.ts` checks
+  that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing here can do
+  better without calling Figma.
+
+### 10. Backlog — the Romanian documentation has to become English
+
+Owner's instruction, 2026-09-09: the code is going to a team with no Romanian, so every information
+file has to be in English. Not urgent, and explicitly not to be done piecemeal — new writing goes
+in English from now on, and what already exists in Romanian gets converted in one pass at the end.
+
+What is Romanian today:
+
+| File                      | Lines | Note                                                          |
+| ------------------------- | ----- | ------------------------------------------------------------- |
+| `docs/tokens.md`          | ~360  | the Figma-to-code token mapping; the one document that must not go stale |
+| `docs/start-here.txt`     | 182   | how to open the next session                                  |
+| `public/review/index.html` | 2343 | the design-vs-implementation report, also deployed under `/review/` |
+
+`README.md`, `docs/next-session.md` and `docs/build-plan.md` are already English. Section 9 above
+and the two token rows added with it are the first writing under the new rule; the additions made
+to `docs/tokens.md` in the same change stayed Romanian on purpose, so that file is converted whole
+rather than left half and half.
 
 ## Things worth remembering about this codebase
 

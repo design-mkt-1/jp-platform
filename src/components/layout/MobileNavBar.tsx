@@ -199,10 +199,24 @@ const TABS: readonly [Tab, Tab, Tab, Tab] = [
   { label: 'Promos', href: '/promos', glyph: 'promotions' },
 ]
 
-function NavTab({ tab, active }: { tab: Tab; active: boolean }) {
+function NavTab({
+  tab,
+  active,
+  onNavigate,
+}: {
+  tab: Tab
+  active: boolean
+  onNavigate: () => void
+}) {
   return (
     <Link
       href={tab.href}
+      // The bar stays live while the jackpot menu is open — Figma draws it lit, with `Menu`
+      // active — so a tab has to close the menu itself. Without this, tapping `Casino` while
+      // already on `/` navigates nowhere and the menu stays open on top of the page it was meant
+      // to reveal. `closePanel` is passed down rather than read from the store again here: the bar
+      // above already holds it, and two subscriptions to the same slice is one more than needed.
+      onClick={onNavigate}
       // Three of the four tabs point at routes this demo does not have, so Next's default prefetch
       // fires three 404s into the console on every load of the mobile layout — one
       // `<route>/index.txt?_rsc=` per tab. Tapping one still lands on `not-found.tsx`, which is
@@ -241,13 +255,27 @@ export default function MobileNavBar() {
   return (
     <nav
       aria-label="Mobile"
-      className="fixed inset-x-0 bottom-0 z-40 hidden pb-[env(safe-area-inset-bottom)] mobile:block"
+      className={[
+        'fixed inset-x-0 bottom-0 hidden pb-[env(safe-area-inset-bottom)] mobile:block',
+        // Normally under the z-50 scrims, which is what dims the bar behind the search sheet.
+        //
+        // Above them while the jackpot menu is open, because that sheet stops at the bar's top edge
+        // and the raised Menu disc is the one part of the bar that reaches past it — 54px of circle
+        // sitting 42px proud of the 84px strip. At z-40 the sheet painted over its top half and the
+        // disc rendered as a gold semicircle; the design draws it whole, over the panel. A number
+        // and not a swap of the scrim's own z-index: the search sheet must keep covering this bar,
+        // and it is portalled after the nav in the DOM, so equal values would still put it on top.
+        menuOpen ? 'z-[60]' : 'z-40',
+      ].join(' ')}
     >
       {/* `bg-quaternary` is the design's own value here — node 1:8235 resolves to BG/Quaternary,
           the one Figma variable in the file. */}
-      <div className="relative flex h-[84px] w-full items-center justify-between rounded-t-3xl bg-quaternary px-4">
+      {/* The 84 of node 1:8235 is declared once as `--mobile-nav-h` in globals.css, because two
+          other places measure this bar: MobileShell's end-of-document spacer and the jackpot
+          menu's sheet, which stops its scrim exactly here. */}
+      <div className="relative flex h-[var(--mobile-nav-h)] w-full items-center justify-between rounded-t-3xl bg-quaternary px-4">
         {TABS.slice(0, 2).map((tab) => (
-          <NavTab key={tab.href} tab={tab} active={pathname === tab.href} />
+          <NavTab key={tab.href} tab={tab} active={pathname === tab.href} onNavigate={closePanel} />
         ))}
 
         {/* Node 1:8236. The raised disc is a child of this column rather than a sibling of the
@@ -285,7 +313,7 @@ export default function MobileNavBar() {
         </button>
 
         {TABS.slice(2).map((tab) => (
-          <NavTab key={tab.href} tab={tab} active={pathname === tab.href} />
+          <NavTab key={tab.href} tab={tab} active={pathname === tab.href} onNavigate={closePanel} />
         ))}
       </div>
     </nav>

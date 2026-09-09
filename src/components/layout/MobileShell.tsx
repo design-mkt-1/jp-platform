@@ -29,8 +29,12 @@ export default function MobileShell({ children }: MobileShellProps) {
       {/* The bar is fixed, so it is outside the flow and would otherwise sit on top of the last
           section. This reserves its 84px — plus the home indicator inset — at the end of the
           document instead of putting padding on a wrapper the page does not control. */}
-      {/* Underscores are Tailwind's escape for the spaces `calc` requires around its operator. */}
-      <div aria-hidden className="hidden h-[calc(84px_+_env(safe-area-inset-bottom))] mobile:block" />
+      {/* Underscores are Tailwind's escape for the spaces `calc` requires around its operator, and
+          `--mobile-nav-h` is the bar's 84 declared once in globals.css — see the note there. */}
+      <div
+        aria-hidden
+        className="hidden h-[calc(var(--mobile-nav-h)_+_env(safe-area-inset-bottom))] mobile:block"
+      />
 
       <MobileNavBar />
       <JackpotMenu />

@@ -48,7 +48,7 @@ import type { PanelId } from '@/store/useAppStore'
  *
  * The consequence, stated plainly: `?auth` and `?panel` apply to *this* document, not to the
  * document inside the iframe. For the panels that is exactly right — they are portalled modals
- * that cover the viewport, which is what frames 1:4116, 1:4153 and 1:8260 show — but the page
+ * that cover the viewport, which is what frames 1:4116, 1:4153 and 13:2307 show — but the page
  * visible behind a panel is this index, not the homepage.
  */
 

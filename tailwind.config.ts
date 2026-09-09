@@ -53,6 +53,9 @@ export default {
         gold: 'var(--gold)',
         green: 'var(--green)',
         emerald: 'var(--emerald)',
+        // The jackpot menu's deposit fill (node 13:2340) and its sign-out label (node 13:2491).
+        'deposit-green': 'var(--deposit-green)',
+        signout: 'var(--text-signout)',
         cyan: 'var(--cyan)',
 
         // Gradient stops

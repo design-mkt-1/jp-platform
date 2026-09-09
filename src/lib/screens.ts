@@ -99,14 +99,16 @@ export const screens: ScreenSpec[] = [
     id: 'jackpot-menu-postlogin',
     label: 'Jackpot menu — post-login',
     viewport: 390,
-    figmaNodeId: '1:8260',
+    // Rebuilt in Figma on 2026-09-09; the id this entry used to carry, 1:8260, no longer resolves.
+    figmaNodeId: '13:2307',
     description: 'Account menu for a signed-in standard player.',
   },
   {
     id: 'jackpot-menu-vip',
     label: 'Jackpot menu — VIP',
     viewport: 390,
-    figmaNodeId: '1:8503',
+    // Rebuilt alongside the post-login frame; 1:8503 and 1:8504 are both gone.
+    figmaNodeId: '13:2519',
     description: 'Account menu for a VIP player.',
   },
 ]
