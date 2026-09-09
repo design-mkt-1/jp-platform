@@ -18,10 +18,36 @@ fixed, and it is left as written — the measurements below are the *before*.
 | 3.3 | 768–1279 nav is a sliver | **fixed** | the six links collapse into a burger below 1280. All six reachable at 768, 1024 and 1279; header stays 81px |
 | — | countdown period | **changed to 24h** | owner's decision. The editorial cost stands: the copy still reads "Weekly tournament active" |
 
-**Still open, not picked:** 1.3 (thirteen inert `See All (206)` pills), 2.5 ("More" opens a corner
-popover on a phone), 2.6 (Sport / Casino / Payments draw a chevron and navigate), 2.7 (the provider
-filter's results ride a 40s marquee), 2.9 (the no-results copy points at categories that are not in
-the panel), 3.4 (four labels for two auth buttons), 3.5 (six SVGs still carry the Figma artboard).
+Session 9 (2026-09-10) took five more. Measured on the Pages export, not on dev:
+
+| # | finding | state | measured after |
+| - | ------- | ----- | -------------- |
+| 2.5 | "More" opens a corner popover on a phone | **fixed** | the account menu is a `Sheet` below 768: **390 wide, 0/0/0 to left, right and bottom, 345 tall**, all six rows on screen, one `role=dialog`, focus lands on Wallet and Tab wraps. At 1440 the popover is untouched — 171 wide, left-edge delta **0**, **8px** below its trigger |
+| 2.6 | Sport / Casino / Payments draw a chevron and navigate | **fixed** | chevron glyphs in the eight menu rows **3 → 0**; rows still 44×350; the `More` button keeps its own |
+| 2.7 | the provider filter's result rides a 40s marquee | **fixed** | with `net` typed, the badge x is **constant at 16** over four 1s samples (before: −49, −57, 76, 69, 62) and sits **16→96 inside a 16→374 row** — the 25px that were cut off are back. Both bands also pause on hover and on focus-within |
+| 2.9 | the no-results copy points at nothing | **fixed** | reads "No games found / Try a different search term" at 390 and 1440. The half that named categories below is gone; there are none below |
+| 3.5 | six SVGs still carry the Figma artboard | **fixed** | `clean-svg --dry` **0 → 12 files**, 302506 → 300284 bytes, the other 38 byte-identical. It also turned out not to be purely dead bytes: the panel was covering a hairline of the first flag's gold selection ring |
+
+**Still open:** 1.3 (thirteen inert `See All (206)` pills — the owner decided to **leave them**,
+Figma draws the pill on every row) and 3.4 (four labels for two auth buttons — the copy is Figma's
+own, nodes `1:4309` and `1:6994`, so it is a question for whoever owns the design).
+
+**Two found while fixing the above, both real, neither picked up yet:**
+
+- **Escape on the phone account sheet returns focus to `<body>`, not to `More`.** Verified as
+  pre-existing by re-running the same script against the code before the sheet change. It cannot be
+  fixed from `PersonalInfoPanel` alone: the `More` button is unmounted by the same commit that opens
+  the panel, and the opener is captured inside `useOverlayBehavior`.
+- **The provider marquee has no visible play/pause control.** `ui-ux-pro-max`'s "Auto-Rotating
+  Content Controls" rule (Animation, severity **High**) asks for one. Hover, focus-within and
+  reduced-motion pausing are now in; a button is new furniture Figma does not draw, so it is a
+  design decision rather than a defect to fix quietly.
+
+**Checked in session 9 and deliberately not reported as a defect:** on desktop, `elementFromPoint`
+over a filtered provider badge returns `ProviderSearch`'s dismiss backdrop rather than the badge.
+That is correct popover behaviour, and the homepage renders provider badges as `<div>` with no
+`href` at all — there is nothing to press. Measured: the badge is a `DIV`, pressing it closes the
+popover and the row returns to 48 badges.
 
 **How it was driven.** `resize_window` was confirmed lying again: it reported success on a maximised
 Chrome while `innerWidth` stayed 2552. So the rig is a same-origin host page holding one `<iframe>`

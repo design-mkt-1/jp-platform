@@ -848,6 +848,21 @@ the web touch-target bar is WCAG's 24px with exceptions, and that auto-rotating 
 pause control — see below), `make-interfaces-feel-better`, `browser-qa`, `click-path-audit`,
 `verification-loop`, `ponytail`; the workers read the same `.claude/skills/` files and reported it.
 
+**Wave 3 — the audit's remaining actionable items**, three workers plus one copy fix
+(`5a7ddc9`, `b061207`, `eb99091`, `08594a7`). Each is measured in the table in
+[`audit-session-8.md`](audit-session-8.md); what is worth carrying forward is why two of them were
+not what they looked like:
+
+- **The SVG cleaner was fixed as a class, not as six files.** Rule 2 asked how *far* a path started
+  from the viewBox (`OUTSIDE = 1000`); the six survivors began at −803, −961, −908, −856, −149 and
+  −331, all inside that window, so whether a file got cleaned depended on where its artboard
+  happened to sit. It now asks about *shape* — a path whose own bounding box misses the viewBox
+  entirely, or spans it three times over. `--dry` went 0 → 12 files. And `assets.test.ts`, which
+  only ever called `existsSync`, now runs the cleaner and fails unless it reports nothing to do.
+- **The audit's own "before" for 2.5 was stale.** It described a 171px corner box; commit `b1665c4`
+  had already made it a 280px centred card. The worker re-measured against `HEAD` instead of
+  trusting the document. A recorded measurement ages; re-take it before you fix against it.
+
 **Left for the owner, not edited, all measured:**
 
 1. The **legal paragraph** in the mobile footer (80px + its 32px gap) is not in Figma `21:3693`.
@@ -858,8 +873,16 @@ pause control — see below), `make-interfaces-feel-better`, `browser-qa`, `clic
    dividers above the links. Same height, different picture.
 4. The **34px** Figma keeps under its last row before the footer (frame `21:3675` is 410 for 376
    of content). Design intent or a stray frame size — unknown.
-5. The **provider marquee has no pause control**; `ui-ux-pro-max`'s "Auto-Rotating Content
-   Controls" rule (severity High) asks for one. It is already open as audit §2.7.
+5. The **provider marquee has no visible play/pause button**. Hover, focus-within and
+   reduced-motion pausing landed in `b061207`; `ui-ux-pro-max`'s "Auto-Rotating Content Controls"
+   rule (severity High) also asks for a button, which is furniture Figma does not draw.
+6. **Escape on the phone account sheet returns focus to `<body>`, not to `More`.** Pre-existing,
+   confirmed against the code before the sheet change. It needs `Sheet`/`Panel`'s
+   `useOverlayBehavior` or `JackpotMenu`, because `More` is unmounted by the commit that opens the
+   panel — so it is a real fix in shared code, not a one-file tweak.
+7. **The four labels for two auth buttons** (audit §3.4): desktop says `Login` / `Register`, mobile
+   says `Log In` / `Sign In`, and the mobile *register* button reads as log-in. The copy is Figma's
+   own — nodes `1:4309` and `1:6994` — so it is a design question, not a coding defect.
 
 ## Things worth remembering about this codebase
 

@@ -159,10 +159,12 @@ docs/audit-session-8.md, which is the newest and the longest list.
 
 What is genuinely open right now:
 
-1. The five owner decisions at the end of docs/next-session.md §13 — the legal
-   paragraph, the footer link rows, the divider placement, the 34px under the
-   last row, a pause control for the provider marquee. Session 9 (2026-09-10)
-   executed docs/session-9-plan.md; the page is 7228px against Figma's 7129.
+1. The seven items at the end of docs/next-session.md §13 — the legal paragraph,
+   the footer link rows, the divider placement, the 34px under the last row, a
+   play/pause button for the provider marquee, focus restoration from the phone
+   account sheet, and the four auth labels. Session 9 (2026-09-10) executed
+   docs/session-9-plan.md and then took five more items off
+   docs/audit-session-8.md; the page is 7228px against Figma's 7129.
 2. Game cards stay <article> with no link, by your decision of 2026-08-08: a
    link to nowhere is worse than no link. It resolves itself when game pages
    arrive.
@@ -183,12 +185,15 @@ Two items that used to be on this list are closed and are recorded here so
 nobody re-opens them:
 
   - The ten icons carrying the whole Figma artboard were cleaned in dd2886e.
-    Six SVGs still carry a smaller one — see audit-session-8.md §3.5 — and that
-    is a different, invisible case.
+    The last six were cleaned in eb99091, and the cleaner now judges the shape
+    of the geometry instead of how far the artboard happened to sit, so the
+    class is closed rather than the instances. npm test fails if it comes back.
   - Clicking a sheet's backdrop now returns focus to its trigger. Re-verified
     on 2026-09-09 with real mouse presses, which is the only way to test it:
     a scripted element.click() does not move focus and makes a working
-    restoration look broken.
+    restoration look broken. One gap is still open: Escape on the phone
+    account sheet lands focus on <body>, because More is unmounted by the
+    same commit that opens the panel — item 6 of next-session.md §13.
 
 
 DOCUMENTS IN THE REPO
