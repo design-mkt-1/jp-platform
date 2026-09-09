@@ -165,6 +165,15 @@ The owner's own two rules — "do not assume, verify" and "explain, do not just 
 On a fresh machine they are simply absent, which is why the important half of them is written out
 above. See `docs/start-here.txt`.
 
-That hook is also the mechanism worth copying: it fires on every turn, where a file on disk waits to
-be read. If a rule in this document keeps getting skipped, move it into a hook rather than making
-the document longer.
+That hook is also the mechanism this repo now copies. `.claude/hooks/skill-triggers.mjs` is a
+`UserPromptSubmit` hook, wired in `.claude/settings.json`, that injects the skill triggers on every
+turn — because this document alone already failed once. It is deliberately 551 characters: a long
+reminder on every turn becomes noise and gets skimmed, which is the failure it exists to fix.
+
+Measured when it was added, not assumed: hooks from this file execute with no restart, the hook's
+cwd is the repo root, and `CLAUDE_PROJECT_DIR` is set — so the command tries the relative path and
+falls back to the env var. It ends in `|| true`, because a broken reminder must never block a
+prompt.
+
+If a rule in this document keeps getting skipped, move it into that hook rather than making the
+document longer.
