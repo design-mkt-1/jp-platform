@@ -79,7 +79,7 @@ export function AccountCluster({ tier }: AccountClusterProps) {
           aria-label={`Balance ${total} — open balance details`}
           className={`flex h-10 items-center gap-2 rounded-[20px] bg-card px-2 transition-colors hover:brightness-125 ${FOCUS_RING}`}
         >
-          <span className="text-[13px] font-semibold text-primary">{total}</span>
+          <span className="text-[13px] font-semibold tabular-nums text-primary">{total}</span>
           <PillAffordance />
         </button>
 
@@ -118,7 +118,10 @@ export function AccountCluster({ tier }: AccountClusterProps) {
           type="button"
           onClick={openBalance}
           aria-label={`Balance ${total} — open balance details`}
-          className={`rounded-full px-1 text-sm font-extrabold tracking-[-0.14px] text-emerald ${FOCUS_RING}`}
+          // The label's own box is only the 20px line box; the padding gives it the shell's full
+          // 40px height as hit area and the negative margin hands the 10px back to the flex row,
+          // so the painted shell does not move. Same idiom as the search field's clear button.
+          className={`-my-2.5 rounded-full px-1 py-2.5 text-sm font-extrabold tabular-nums tracking-[-0.14px] text-emerald ${FOCUS_RING}`}
         >
           {total}
         </button>
