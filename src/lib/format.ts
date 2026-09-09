@@ -53,12 +53,19 @@ function trimZeros(value: number): string {
   return value.toFixed(2).replace(/\.?0+$/, '')
 }
 
-/** The promos are weekly, so a deadline that has passed is next due seven days later. */
-const PERIOD_MS = 7 * 24 * 60 * 60 * 1000
+/**
+ * The promos run daily, so a deadline that has passed is next due 24 hours later.
+ *
+ * A day and not a week by owner decision, and the reason is the clock itself: nodes 1:3453 and
+ * 1:3545 draw a two-digit hours field, and a deadline rolled forward by whole weeks spends most of
+ * its period in three digits — measured on the deployed build, "149h : 43m : 12s". A 24-hour period
+ * caps a rolled deadline at 23h, which is the field the design drew.
+ */
+const PERIOD_MS = 24 * 60 * 60 * 1000
 
 /**
- * The next time `endsAt` comes round, as a timestamp strictly after `from` and at most a week
- * later.
+ * The next time `endsAt` comes round, as a timestamp strictly after `from` and at most one period
+ * — 24 hours — later.
  *
  * `tournaments.json` carries the Figma clock (nodes 1:3453 / 1:3545) and that date is now in the
  * past, which is why every banner read "00:00:00". The date stays as written — it is content — and
@@ -70,6 +77,26 @@ export function nextCountdownEnd(endsAt: string, from: number = Date.now()): num
   if (end > from) return end
   // `+ 1` so a deadline exactly on `from` rolls to the next period rather than staying at zero.
   return end + Math.ceil((from - end + 1) / PERIOD_MS) * PERIOD_MS
+}
+
+/**
+ * The instant `formatCountdown` counts down to, as the ISO 8601 string a `<time dateTime>` wants.
+ *
+ * Both banners used to publish the raw `endsAt` in that attribute — the date Figma drew, which is
+ * in the past. Measured on the deployed build: every `<time>` carried `2026-09-08T18:12:36Z`, a
+ * deadline that had already expired, while the text beside it counted forward to the rolled
+ * instant. A screen reader and a scraper read the attribute, so the two have to agree.
+ *
+ * Pure in `from` like the formatters, and constant across a whole period: every tick of
+ * `useCountdown` within one period recomputes the identical string, so the attribute is written
+ * once rather than once a second.
+ */
+export function countdownEndIso(endsAt: string, from: number = Date.now()): string {
+  const end = nextCountdownEnd(endsAt, from)
+  // An unparseable date arrives here as `NaN`, and `toISOString` throws on it — which would take
+  // the banner down rather than mislabel it. Publishing the string as written is what the attribute
+  // already did in that case.
+  return Number.isFinite(end) ? new Date(end).toISOString() : endsAt
 }
 
 /**

@@ -44,6 +44,12 @@ export interface CategoryPillProps {
   icon?: IconName
   active?: boolean
   href?: string
+  /**
+   * What the button form does when pressed. A pill with neither `href` nor `onClick` renders as
+   * `aria-pressed` and swallows the press, which is what the category bar shipped until
+   * 2026-09-09 — so this is not optional in practice, only in the type.
+   */
+  onClick?: () => void
   /** Rendered after the label — the design shows no count, but the search chips reuse this slot. */
   trailing?: ReactNode
   className?: string
@@ -54,6 +60,7 @@ export default function CategoryPill({
   icon,
   active = false,
   href,
+  onClick,
   trailing,
   className,
 }: CategoryPillProps) {
@@ -80,7 +87,7 @@ export default function CategoryPill({
   }
 
   return (
-    <button type="button" className={classes} aria-pressed={active}>
+    <button type="button" onClick={onClick} className={classes} aria-pressed={active}>
       {content}
     </button>
   )

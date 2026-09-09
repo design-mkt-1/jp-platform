@@ -46,18 +46,24 @@ only the index, so nothing has to be reconstructed by reading the whole history.
 the deploy: `main` is green and every item is a decision or a piece of polish, not a defect in
 flight.
 
-**Waiting on an owner decision — nobody should guess these:**
+**Decided and done in session 8 — kept here only so the trail is findable:**
 
-| # | What                            | The two readings                                                                                      | Where |
-| - | ------------------------------- | ----------------------------------------------------------------------------------------------------- | ----- |
-| 1 | The countdown period            | `PERIOD_MS` in `src/lib/format.ts` rolls a past deadline forward in 7-day steps, which makes the hours field three digits (`164h : 06m : 33s`) where the design draws `08h : 12m : 36s`. A 24-hour period keeps two digits — one constant plus the roll-forward assert. | §7 |
-| 2 | 768–1279 px                     | The nav works but is a narrow scrollable sliver — measured at 1024, a 272px window onto 569px of content. The page does not overflow. Figma draws 390 and 1440 and nothing between, so widening it means designing it. | §8 |
+| # | What                 | The owner's decision, 2026-09-09                                                                     | Where |
+| - | -------------------- | ------------------------------------------------------------------------------------------------------ | ----- |
+| ~~1~~ | The countdown period | **24 hours.** `PERIOD_MS` is a day, so the hours field keeps the two digits the design draws. The editorial cost was stated and accepted: the copy beside the clock still reads "Weekly tournament active" and "Bi-Weekly Lottery draw is now open", and a timer that never exceeds 24 hours disagrees with both. Changing that copy is not done. | §12 |
+| ~~2~~ | 768–1279 px          | **A burger.** Four treatments were rendered at 768, 1024 and 1279 and put side by side — accept it, thin the 80px gutter, drop two links, wrap onto a second row — and the owner picked the one none of them were. All six links now collapse behind a burger below 1280px, which costs no header height where wrapping cost 91px. | §12 |
 
-**Waiting on an owner decision — the session 8 audit:**
+**Still open from the session 8 audit — the owner has seen the list and picked from it:**
 
-| # | What | The short version | Where |
-| - | ---- | ----------------- | ----- |
-| 3 | Which audit findings get fixed | Of the **49 controls on the desktop homepage, 8 do what they say**: the four category tabs are dead, so is every `See All (206)` pill, so is picking a search suggestion. Both header popovers open in a fixed viewport corner instead of under their trigger. The four mobile tab-bar marks are drawn at 62–82% of their box where Figma fills it. Ranked, with evidence and causes. | [`docs/audit-session-8.md`](audit-session-8.md) |
+| # | What | Why it is still here | Where |
+| - | ---- | -------------------- | ----- |
+| 3 | Thirteen inert `See All (206)` pills | Every row header carries one; none has an `href` or an `onClick`, and the 206 is a Figma placeholder over a 60-game catalogue. Making them work means deciding what "see all" means for a row, which is a product question, not a wiring one. | audit §1.3 |
+| 4 | "More" in the mobile menu opens a corner popover | It closes the full-screen sheet and raises a 171px desktop panel in the top-right of the phone. The decision behind it is recorded and defensible; the result on a phone is not. | audit §2.5 |
+| 5 | Three menu rows promise a submenu | `Sport`, `Casino` and `Payments` draw a disclosure chevron and navigate instead. `Casino` goes to `/`, the page you are already on. | audit §2.6 |
+| 6 | The provider filter's results ride a 40s marquee | Filter to `net` and the only match slides across the row, clipped 25px by its own container, off-screen for part of every cycle. | audit §2.7 |
+| 7 | The no-results copy points at nothing | "browse our categories below" — the panel below it holds one button and no categories. | audit §2.9 |
+| 8 | Four labels for two auth buttons | Desktop `Login`/`Register`, mobile `Log In`/`Sign In`; the mobile *register* button reads as log-in. The copy is Figma's own, so it is a question for whoever owns the design. | audit §3.4 |
+| 9 | Six SVGs still carry the Figma artboard | `clean-svg.mjs --dry` reports nothing to do. The furniture is a `<path>`, and rule 2 only catches paths starting more than 1000 units outside the viewBox — these start at −149 to −961. Invisible today; the same class of bug as `slots.svg`. | audit §3.5 |
 
 **Agreed and done:**
 
@@ -85,7 +91,7 @@ are closed across the app. All in §11.
 
 ```bash
 npm run dev          # review server on :3000
-npm test             # vitest, 58 tests; also runs in CI, before the build
+npm test             # vitest, 64 tests; also runs in CI, before the build
 npm run build:check  # production build into .next-build, safe while dev is running
 npx tsc --noEmit
 npx eslint src --max-warnings=0
@@ -678,6 +684,58 @@ files now has transparent corners. And drawn side by side on the page colour, th
 Still open and unchanged: the tab bar's modality, the 768–1279 nav, the countdown period, the
 Romanian docs (§10) and `public/review/index.html`'s dead node ids. See the table at the top.
 
+### 12. Session 8 — pressing every button, and what the owner picked
+
+The centre of gravity was a hands-on walk of the deployed build rather than another measuring pass.
+The full ranked list is [`docs/audit-session-8.md`](audit-session-8.md); this section is only what
+changed afterwards.
+
+**The one number.** Of the **49 visible controls on the desktop homepage, 8 did what they said.**
+19 navigated to routes that do not exist, 15 had no handler at all, 7 pointed at `example.com`.
+
+**What was fixed, with the after-measurement.**
+
+- **The four category tabs now filter.** They were `<button aria-pressed>` with no handler — a
+  toggle group that announced itself as one and swallowed the press. `activeCategory` is now store
+  state and `CategoryView` switches on it: Popular 90 cards -> Slots 40 -> Live Casino 6 -> Popular
+  90. Popular is not a special case bolted on; the fifteen rows *are* the house curation, so that
+  tab renders the server-rendered rows untouched and every existing Figma comparison stays valid.
+- **The search funnel ends somewhere.** Enter commits, ArrowDown moves focus into the first
+  suggestion, and picking a game puts its matches on the page instead of just closing the panel.
+  `search.committed` is the new slice — distinct from `search.query`, which is only what is in the
+  field right now.
+- **Both header popovers hang off their trigger.** One cause, two symptoms: `Panel`'s
+  `ALIGN_CLASSES.right` pinned every header popover to the viewport's top-right corner and never
+  read the trigger. Measured after, at 1440 and 1024, both panels: left-edge delta **0px**,
+  top-to-trigger-bottom **8px**, which is exactly what nodes `1:4118` and `1:4155` draw.
+- **The tab-bar marks fill their box.** The owner reported them as "smaller than in Figma" and was
+  right, more directly than the session plan assumed — the 22px box matched, the drawing inside it
+  did not. Casino, Sport and Promos are now 22x22 = 100%; Live Casino is 17.77x22 because node
+  `1:8249` genuinely is that shape. Three were also the wrong drawing: Live Casino was missing its
+  chip stack, Sport was not a football, Promos was not a scalloped seal. The path data is now
+  byte-identical to the Figma exports rather than hand-redrawn.
+- **768-1279 gets a burger.** Four treatments were rendered at all three widths and compared before
+  anything was chosen. Only wrapping showed all six links at 768, and it cost 91px of header
+  height. The owner picked the fifth option — a burger — which keeps all six and costs no height.
+- **The countdown is 24h**, and `<time dateTime>` no longer publishes a date in the past.
+
+**Two things this session cost time on, worth not repeating.**
+
+- **`element.click()` does not move focus.** It made a working focus restoration look broken and it
+  sets `:focus-visible` where a real mouse press does not. Two candidate findings died to this, and
+  six in total died to control runs — they are listed in the audit so nobody re-finds them. Drive
+  anything about focus or hover with real mouse events.
+- **`resize_window` still lies on a maximised Chrome.** It reported success while `innerWidth`
+  stayed 2552. The rig that works is a same-origin host page holding one `<iframe>` sized to the
+  viewport under test.
+
+**Still open from the audit, not picked:** the thirteen inert `See All (206)` pills, "More" opening
+a corner popover on a phone, the three mobile-menu rows that draw a disclosure chevron and navigate
+instead, the provider filter's results riding a 40-second marquee, the no-results copy pointing at
+categories that are not in the panel, the four labels for two auth buttons, and six SVGs that still
+carry the Figma artboard because `clean-svg.mjs`'s rule 2 only catches paths starting more than
+1000 units outside the viewBox and these start at -149 to -961.
+
 ## Things worth remembering about this codebase
 
 - **This demo has three routes.** `/`, `/dev/screens` and `not-found`. Every other href in the app
@@ -707,3 +765,8 @@ Romanian docs (§10) and `public/review/index.html`'s dead node ids. See the tab
 - **A sub-path deployment breaks image `src`.** Next's `basePath` rewrites links and its own
   bundles but not images. `withBase()` in `src/lib/assets.ts` handles it; paths coming from
   `src/data/*.json` must be wrapped at the call site.
+- **A control that cannot do anything must not look pressable.** The audit's largest single class
+  of finding was affordance without behaviour: pills with `aria-pressed` and no handler, buttons
+  with hover and active states and no `onClick`. It is worse than a missing control, because the
+  player blames themselves. When a demo genuinely has nowhere to go, say so in the markup —
+  `aria-disabled` and a muted treatment — rather than drawing a live-looking button.

@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Button from '../primitives/Button'
 import { PROMO_BANNERS } from '@/lib/assets'
-import { formatCountdownClock } from '@/lib/format'
+import { countdownEndIso, formatCountdownClock } from '@/lib/format'
 import { useCountdown } from '@/lib/useCountdown'
 import type { PromoBannerData, PromoVariant } from '@/lib/types'
 
@@ -192,8 +192,12 @@ function TournamentBody({ data }: { data: PromoBannerData }) {
               <span className="text-[10px] leading-[normal] text-ink opacity-80">Time left</span>
               {/* Figma writes four groups, "08:12:36:35"; `formatCountdownClock` gives the three
                   the rest of the site counts in — hours, minutes, seconds. */}
+              {/* The rolled instant, not the seeded one: `data.endsAt` is the date Figma drew and
+                  it has passed, so the machine-readable half of this element used to contradict
+                  the counting text next to it. Constant for a whole period, so the tick does not
+                  rewrite it; see `countdownEndIso`. */}
               <time
-                dateTime={data.endsAt}
+                dateTime={data.endsAt ? countdownEndIso(data.endsAt) : undefined}
                 suppressHydrationWarning
                 className="text-[11px] font-extrabold leading-[normal] text-ink"
               >

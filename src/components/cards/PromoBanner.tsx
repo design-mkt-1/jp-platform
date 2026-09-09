@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Badge from '../primitives/Badge'
 import Button from '../primitives/Button'
 import { PROMO_BANNERS } from '@/lib/assets'
-import { formatCountdown } from '@/lib/format'
+import { countdownEndIso, formatCountdown } from '@/lib/format'
 import { useCountdown } from '@/lib/useCountdown'
 import type { PromoBannerData, PromoPill, PromoVariant } from '@/lib/types'
 
@@ -208,8 +208,15 @@ export default function PromoBanner({
             {/* Still suppressed, and measured: the server snapshot and the client's first frame
                 are a second apart on about one load in three, which React reports as a hydration
                 error. `useCountdown` overwrites the text on mount either way. */}
+            {/* `countdownEndIso` and not `data.endsAt`: the seeded date is the one Figma drew and
+                it has passed, so publishing it raw handed a screen reader and a scraper an expired
+                deadline while the text beside it counted forward. This is the instant the text
+                counts down to. It is constant for a whole period, so the per-second re-render
+                recomputes the same string and React writes the attribute once — and the only
+                render pair that can disagree is one straddling a period boundary, which is what
+                the suppression above already covers. */}
             <time
-              {...(data.endsAt ? { dateTime: data.endsAt } : {})}
+              {...(data.endsAt ? { dateTime: countdownEndIso(data.endsAt) } : {})}
               suppressHydrationWarning
               className={`font-extrabold text-primary ${
                 data.variant === 'lottery' ? 'text-base' : 'text-2xl'

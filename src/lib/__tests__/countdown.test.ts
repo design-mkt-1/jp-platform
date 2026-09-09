@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { formatCountdown, formatCountdownClock, nextCountdownEnd } from '@/lib/format'
+import {
+  countdownEndIso,
+  formatCountdown,
+  formatCountdownClock,
+  nextCountdownEnd,
+} from '@/lib/format'
 
 /**
  * The clock of nodes 1:3453 and 1:3545, "08h : 12m : 36s", and the bare "08:12:36" the mobile card
@@ -11,7 +16,8 @@ import { formatCountdown, formatCountdownClock, nextCountdownEnd } from '@/lib/f
  */
 
 const NOON = Date.parse('2026-09-09T12:00:00Z')
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000
+/** One recurrence of `PERIOD_MS`: the promos roll forward a day at a time, not a week. */
+const DAY_MS = 24 * 60 * 60 * 1000
 
 describe('formatCountdown', () => {
   it('writes the Figma format', () => {
@@ -22,9 +28,18 @@ describe('formatCountdown', () => {
     expect(formatCountdown('2026-09-09T13:02:05Z', NOON)).toBe('01h : 02m : 05s')
   })
 
+  it('pads the hours at the top of a period, which is where the design draws two digits', () => {
+    // The largest a *rolled* deadline can read under the 24-hour period, and the case the period
+    // was shortened for: a day and a second stale, so it rolls twice and lands one second short of
+    // a full period out. Two digits, which is the field nodes 1:3453 and 1:3545 draw.
+    expect(formatCountdown('2026-09-08T11:59:59Z', NOON)).toBe('23h : 59m : 59s')
+  })
+
   it('counts hours past a day rather than rolling over to days', () => {
-    // Six days out reads as 144h — three digits where the design draws two. Nothing in the demo
-    // data reaches that, but the format is what it is.
+    // Kept, and still reachable after the period was shortened: `nextCountdownEnd` only rolls a
+    // deadline that has *passed*, so one seeded six days out is left where it is and reads 144h —
+    // three digits where the design draws two. Nothing rolled can reach it any more (see the test
+    // above, which caps at 23h), but the formatter still has to carry it.
     expect(formatCountdown('2026-09-15T12:00:00Z', NOON)).toBe('144h : 00m : 00s')
   })
 
@@ -50,31 +65,69 @@ describe('nextCountdownEnd', () => {
     expect(nextCountdownEnd(future, NOON)).toBe(Date.parse(future))
   })
 
-  it('rolls a past deadline forward by whole weeks, keeping the minute and second', () => {
-    // The seeded value: one day before `from`, so it lands six days after it.
+  it('rolls a past deadline forward by whole periods, keeping the minute and second', () => {
+    // The seeded value: just under a day before `from`, so one period puts it six hours after it,
+    // on the 18:12:36 the design drew.
     const rolled = nextCountdownEnd('2026-09-08T18:12:36Z', NOON)
 
-    expect(new Date(rolled).toISOString()).toBe('2026-09-15T18:12:36.000Z')
-    expect(rolled - Date.parse('2026-09-08T18:12:36Z')).toBe(WEEK_MS)
+    expect(new Date(rolled).toISOString()).toBe('2026-09-09T18:12:36.000Z')
+    expect(rolled - Date.parse('2026-09-08T18:12:36Z')).toBe(DAY_MS)
   })
 
-  it('rolls forward as many weeks as it takes, not just one', () => {
-    // Three weeks stale: one period would still leave it in the past.
+  it('rolls forward as many periods as it takes, not just one', () => {
+    // Three weeks stale, which is twenty-one periods: one would still leave it in the past.
     const rolled = nextCountdownEnd('2026-08-19T18:12:36Z', NOON)
 
+    expect(new Date(rolled).toISOString()).toBe('2026-09-09T18:12:36.000Z')
+    expect(rolled - Date.parse('2026-08-19T18:12:36Z')).toBe(21 * DAY_MS)
     expect(rolled).toBeGreaterThan(NOON)
-    expect(rolled - NOON).toBeLessThanOrEqual(WEEK_MS)
+    expect(rolled - NOON).toBeLessThanOrEqual(DAY_MS)
   })
 
   it('moves a deadline landing exactly on `from` to the next period rather than to zero', () => {
     const onTheDot = new Date(NOON).toISOString()
 
-    expect(nextCountdownEnd(onTheDot, NOON)).toBe(NOON + WEEK_MS)
+    expect(nextCountdownEnd(onTheDot, NOON)).toBe(NOON + DAY_MS)
   })
 
   it('never returns the past, so the clock cannot count backwards', () => {
     for (const seeded of ['2026-09-08T18:12:36Z', '2025-01-01T00:00:00Z', '2026-09-09T11:59:59Z']) {
       expect(nextCountdownEnd(seeded, NOON)).toBeGreaterThan(NOON)
     }
+  })
+})
+
+/**
+ * What the banners put in `<time dateTime>`. It used to be the raw seeded date, which is in the
+ * past: the attribute a screen reader and a scraper read disagreed with the text beside it.
+ */
+describe('countdownEndIso', () => {
+  it('publishes the rolled instant, not the date as seeded', () => {
+    expect(countdownEndIso('2026-09-08T18:12:36Z', NOON)).toBe('2026-09-09T18:12:36.000Z')
+  })
+
+  it('agrees with the clock the banner draws beside it', () => {
+    const seeded = '2026-09-08T18:12:36Z'
+
+    // The gap between `from` and the published instant is the gap the visible text counts down.
+    expect(Date.parse(countdownEndIso(seeded, NOON)) - NOON).toBe((6 * 3600 + 12 * 60 + 36) * 1000)
+    expect(formatCountdown(seeded, NOON)).toBe('06h : 12m : 36s')
+  })
+
+  it('is constant across a period, so a per-second tick does not rewrite the attribute', () => {
+    const seeded = '2026-09-08T18:12:36Z'
+
+    expect(countdownEndIso(seeded, NOON + 1000)).toBe(countdownEndIso(seeded, NOON))
+    expect(countdownEndIso(seeded, NOON + 6 * 3600_000)).toBe(countdownEndIso(seeded, NOON))
+  })
+
+  it('never publishes a deadline in the past', () => {
+    for (const seeded of ['2026-09-08T18:12:36Z', '2025-01-01T00:00:00Z', '2026-09-09T11:59:59Z']) {
+      expect(Date.parse(countdownEndIso(seeded, NOON))).toBeGreaterThan(NOON)
+    }
+  })
+
+  it('falls back to the string as written rather than throwing on an unparseable date', () => {
+    expect(countdownEndIso('not a date', NOON)).toBe('not a date')
   })
 })

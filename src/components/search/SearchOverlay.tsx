@@ -1,7 +1,8 @@
 'use client'
 
 import { createPortal } from 'react-dom'
-import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
+import type { KeyboardEvent as ReactKeyboardEvent, RefObject } from 'react'
 import SearchInput from '../primitives/SearchInput'
 import { useOverlayBehavior } from '../primitives/Panel'
 import Sheet from '../primitives/Sheet'
@@ -148,6 +149,46 @@ export const SEARCH_PANEL_CLASSES = [
   'shadow-[0_16px_16px_rgb(0_0_0/0.5)]',
 ].join(' ')
 
+/**
+ * Enter and ArrowDown for whichever field is hosting the search.
+ *
+ * Both were dead until 2026-09-09. `SearchSuggestions`' own docblock describes the lit first row
+ * as "the row Enter would take you to", and Enter was wired nowhere; ArrowDown left focus in the
+ * field, so the suggestions were reachable only by Tab.
+ *
+ * ArrowDown moves real DOM focus to the first suggestion rather than tracking a virtual index.
+ * The rows are already `<button>`s inside the panel, so from there the arrow keys and Enter are
+ * the browser's, `:focus-visible` lights the row the design already lights on hover, and nothing
+ * needs `aria-activedescendant` to stay truthful.
+ *
+ * `panelRef` is the element holding the rows. Both hosts have one; the sheet passes its own.
+ */
+export function useSearchFieldKeys(panelRef: RefObject<HTMLElement | null>) {
+  const query = useAppStore((state) => state.search.query)
+  const commitSearch = useAppStore((state) => state.commitSearch)
+
+  return useCallback(
+    (event: ReactKeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'Enter') {
+        // A suggestion list with nothing in the field is the popular/recent state, and committing
+        // an empty term would put an empty result page behind a panel the player did not dismiss.
+        if (!query.trim()) return
+        event.preventDefault()
+        commitSearch(query)
+        return
+      }
+
+      if (event.key === 'ArrowDown') {
+        const first = panelRef.current?.querySelector<HTMLElement>('button, a[href]')
+        if (!first) return
+        event.preventDefault()
+        first.focus()
+      }
+    },
+    [query, commitSearch, panelRef],
+  )
+}
+
 export interface SearchDropdownBodyProps {
   /** Defaults to the full catalogue; a section can scope the dropdown to its own list. */
   games?: Game[]
@@ -169,7 +210,7 @@ export function SearchDropdownBody({
   const query = useAppStore((state) => state.search.query)
   const recent = useAppStore((state) => state.search.recent)
   const setQuery = useAppStore((state) => state.setQuery)
-  const closeSearch = useAppStore((state) => state.closeSearch)
+  const commitSearch = useAppStore((state) => state.commitSearch)
   const pushRecent = useAppStore((state) => state.pushRecent)
   const removeRecent = useAppStore((state) => state.removeRecent)
 
@@ -185,14 +226,14 @@ export function SearchDropdownBody({
     [setQuery, pushRecent],
   )
 
-  // Picking a game is the end of the search, so the panel closes — `closeSearch` empties the query
-  // too, leaving the field clean for the next time it opens.
+  // Picking a game is the end of the search: it commits the title, which closes the panel and puts
+  // the matching games on the page behind it. Until 2026-09-09 this only called `closeSearch()` —
+  // so a player typed "swe", clicked Sweet Bonanza, and the panel simply vanished.
   const selectGame = useCallback(
     (game: Game) => {
-      pushRecent(game.title)
-      closeSearch()
+      commitSearch(game.title)
     },
-    [pushRecent, closeSearch],
+    [commitSearch],
   )
 
   const clearQuery = useCallback(() => setQuery(''), [setQuery])
@@ -246,6 +287,11 @@ export default function SearchOverlay({ games: catalogue = games, className }: S
   const barHosted = useSyncExternalStore(subscribeBarHosts, readBarHosts, readBarHostsOnServer)
   const desktop = useDesktopViewport()
 
+  // The sheet and the `/dev/screens` fallback panel each own the rows under their own field, so
+  // each hands the key handler its own container to walk into on ArrowDown.
+  const sheetPanelRef = useRef<HTMLDivElement | null>(null)
+  const onFieldKeyDown = useSearchFieldKeys(sheetPanelRef)
+
   // Still called unconditionally while a bar hosts the dropdown or the sheet owns the surface — it
   // is a hook, and it does nothing when its first argument is false.
   const { surfaceRef, mounted, onBackdropMouseDown } = useOverlayBehavior(
@@ -278,12 +324,12 @@ export default function SearchOverlay({ games: catalogue = games, className }: S
         {/* The sheet's own top inset is 8px; the rest of the app's rhythm at 390 is 16, and this
             field is the first thing under the phone's status bar. */}
         <div className="pt-2">
-          <SearchInput value={query} onValueChange={setQuery} />
+          <SearchInput value={query} onValueChange={setQuery} onKeyDown={onFieldKeyDown} />
         </div>
         {/* The panel below insets every state by its own `p-4`, and that inset is what the empty
             state's `-my-4` is measured against. The sheet has no inset of its own, so the 16 is
             given here instead — without it the no-results glyph rides up under the field. */}
-        <div className={['py-4', className].filter(Boolean).join(' ')}>
+        <div ref={sheetPanelRef} className={['py-4', className].filter(Boolean).join(' ')}>
           <SearchDropdownBody games={catalogue} />
         </div>
       </Sheet>

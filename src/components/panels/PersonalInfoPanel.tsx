@@ -19,8 +19,8 @@ import { useAppStore } from '@/store/useAppStore'
  * colour. The header already redraws its chevron and plus for exactly this reason. The exported
  * assets are requested in the report.
  *
- * As in `BalancePanel`, the modal behaviour is `Panel`'s and the backdrop is the dark
- * `bg-overlay` the tokens decision settled on, not the Figma frame's black at 20%.
+ * As in `BalancePanel`, the modal behaviour is `Panel`'s and the backdrop is whatever `bg-overlay`
+ * resolves to at the current viewport — see globals.css, not a value copied to here.
  */
 
 /** Nodes 1:4161 → 1:4186: 20px box, 18px glyph, stroked rather than filled. */
@@ -101,13 +101,30 @@ function SignOutIcon() {
 
 const ITEM = [
   'flex w-full items-center gap-4 rounded-xl px-2 py-2.5 text-left',
-  'font-flex text-sm font-medium leading-4 text-primary',
-  'transition-colors hover:bg-elevated active:bg-subtle',
+  'font-flex text-sm font-medium leading-4',
+  // Every row keeps a focus ring, including the unavailable ones: they stay in the tab order (see
+  // below), and a control you can reach but cannot see you have reached is worse than either.
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue',
 ].join(' ')
 
+/** The one row that does something. */
+const ITEM_AVAILABLE = `${ITEM} text-primary transition-colors hover:bg-elevated active:bg-subtle`
+
+/**
+ * The five that do not.
+ *
+ * No hover fill, no active fill, no pointer cursor, and the label drops from `text-primary` to
+ * `text-tertiary` — every signal that says "press me" is removed, because pressing does nothing.
+ * They are still `<button aria-disabled>` rather than plain text: the frame draws six menu
+ * destinations and five of them are unavailable in this demo, which is a different statement from
+ * "these are captions". `aria-disabled` announces them as such while leaving them where a keyboard
+ * user can find them, which the `disabled` attribute would not — it drops them from the tab order
+ * entirely, and `FOCUSABLE_SELECTOR` in `Panel` would then skip them in the focus trap as well.
+ */
+const ITEM_UNAVAILABLE = `${ITEM} cursor-default text-tertiary`
+
 /** Wallet, History, Invite Friends, Bonuses and Profile lead nowhere in the demo — there are no
-    such routes — so they stay inert. Sign out is the one row with a real effect available. */
+    such routes and none are invented here. Sign out is the one row with a real effect available. */
 const NAVIGATION = [
   { id: 'wallet', label: 'Wallet', Glyph: WalletIcon },
   { id: 'history', label: 'History', Glyph: HistoryIcon },
@@ -132,13 +149,19 @@ export default function PersonalInfoPanel() {
       // dialog's accessible name — otherwise a screen reader announces an unnamed dialog.
       title={`Account menu — ${user.displayName}`}
       hideTitle
-      className="!max-w-[171px] !rounded-3xl"
+      // 171 is the width of the username pill this hangs off (node 1:4160), so it only means
+      // anything where that pill exists. Below 768 the panel is a centred dialog opened from the
+      // jackpot menu's "More" row — a 171px box floating there is a chip, not a menu — so it takes
+      // a touch-sized width instead and the Figma measurement is scoped to `md:`.
+      className="!max-w-[280px] !rounded-3xl md:!max-w-[171px]"
     >
       {/* Node 1:4160: 8px between rows. */}
       <nav className="flex flex-col gap-2">
         {NAVIGATION.map(({ id, label, Glyph }) => (
-          <button key={id} type="button" className={ITEM}>
-            <span className="flex size-5 shrink-0 items-center justify-center text-muted">
+          <button key={id} type="button" aria-disabled className={ITEM_UNAVAILABLE}>
+            {/* Inherits the row's muted colour rather than setting its own, so the glyph dims
+                with the label instead of staying brighter than the text it belongs to. */}
+            <span className="flex size-5 shrink-0 items-center justify-center">
               <Glyph />
             </span>
             {label}
@@ -146,7 +169,7 @@ export default function PersonalInfoPanel() {
         ))}
 
         {/* `setAuthMode` already clears the open panel, so this closes itself. */}
-        <button type="button" onClick={() => setAuthMode('prelogin')} className={ITEM}>
+        <button type="button" onClick={() => setAuthMode('prelogin')} className={ITEM_AVAILABLE}>
           <span className="flex size-5 shrink-0 items-center justify-center text-muted">
             <SignOutIcon />
           </span>

@@ -1,8 +1,27 @@
 # Session 8 — pressing every button on the deployed build
 
 Walked on 2026-09-09 against https://design-mkt-1.github.io/jp-platform/ (commit `dd2886e`), at 390,
-768, 1024, 1279 and 1440, in all three auth states. This is a **report only** — nothing here has
-been fixed. The owner picks what gets fixed.
+768, 1024, 1279 and 1440, in all three auth states. The report was written before anything was
+fixed, and it is left as written — the measurements below are the *before*.
+
+## Status, 2026-09-09 — what the owner picked, and what it now measures
+
+| # | finding | state | measured after |
+| - | ------- | ----- | -------------- |
+| 1.1 | the four category tabs do nothing | **fixed** | Popular 90 cards → Slots 40 → Live Casino 6 → Popular 90, `aria-pressed` following. Real mouse click |
+| 1.2 | search: Enter, ArrowDown, picking a suggestion | **fixed** | ArrowDown moves focus to the first row; Enter commits; picking a game puts its matches on the page |
+| 1.4 | five inert rows in the account menu | **fixed** | see §2.3 below |
+| 1.5 | game cards ignore the pointer | **fixed** | hover lift + ring + press, `motion-reduce` keeps the ring and drops the movement |
+| 2.1–2.4 | both header popovers pinned to a viewport corner | **fixed** | at 1440 and 1024, both panels: left edge delta **0px**, top-to-trigger-bottom **8px** — the exact relationship Figma draws |
+| 2.8 | `<time dateTime>` publishes a past date | **fixed** | the attribute now carries the rolled-forward instant and is constant across a period |
+| 3.1–3.2 | tab-bar marks small, three of them the wrong drawing | **fixed** | Casino / Sport / Promos now **22×22 = 100%** of the box; Live Casino 17.77×22, which is what node `1:8249` actually is. Path data byte-identical to the Figma exports |
+| 3.3 | 768–1279 nav is a sliver | **fixed** | the six links collapse into a burger below 1280. All six reachable at 768, 1024 and 1279; header stays 81px |
+| — | countdown period | **changed to 24h** | owner's decision. The editorial cost stands: the copy still reads "Weekly tournament active" |
+
+**Still open, not picked:** 1.3 (thirteen inert `See All (206)` pills), 2.5 ("More" opens a corner
+popover on a phone), 2.6 (Sport / Casino / Payments draw a chevron and navigate), 2.7 (the provider
+filter's results ride a 40s marquee), 2.9 (the no-results copy points at categories that are not in
+the panel), 3.4 (four labels for two auth buttons), 3.5 (six SVGs still carry the Figma artboard).
 
 **How it was driven.** `resize_window` was confirmed lying again: it reported success on a maximised
 Chrome while `innerWidth` stayed 2552. So the rig is a same-origin host page holding one `<iframe>`

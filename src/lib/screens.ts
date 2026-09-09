@@ -69,7 +69,12 @@ export const screens: ScreenSpec[] = [
     id: 'mob-main',
     label: 'Mobile — main',
     viewport: 390,
-    figmaNodeId: '1:5720',
+    // `1:5720` until 2026-09-09, when it was found to resolve to nothing. The whole mobile subtree
+    // had been rebuilt in Figma — `1:5799` (category strip) and `1:6517` (footer) are dead too —
+    // the same thing that happened to the menu frames in session 6. The rebuilt pair is `21:2896`
+    // post-login and `21:4154` pre-login, both 390x7129 and structurally identical; this entry
+    // shows the post-login header, so it takes the first.
+    figmaNodeId: '21:2896',
     description: 'The mobile homepage: bonus carousel, category tabs, wins ticker, the same 15 sections, footer.',
   },
   {

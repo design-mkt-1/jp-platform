@@ -7,6 +7,7 @@ import type { ComponentType } from 'react'
 import { LOGO } from '@/lib/assets'
 import Icon from '../primitives/Icon'
 import IconButton from '../primitives/IconButton'
+import HeaderNavMenu from './HeaderNavMenu'
 import HeaderPostlogin from './HeaderPostlogin'
 import HeaderPrelogin from './HeaderPrelogin'
 import HeaderVip from './HeaderVip'
@@ -137,9 +138,18 @@ export default function Header() {
             balance and Deposit are not. `scrollbar-width: none` keeps the strip looking the same
             at widths where it does not scroll at all.
           */}
+          {/*
+            Between 768 and 1279 the six links collapse into a burger. The scroller below stayed
+            correct — nothing overflowed — but it was unusable: measured on the deployed build at
+            768 it was a 33px window onto 569px of links, so the header rendered `CAS`, clipped
+            mid-word, and nothing signalled that the strip could be dragged. Owner's decision,
+            2026-09-09, after four treatments were rendered side by side at 768, 1024 and 1279.
+          */}
+          <HeaderNavMenu items={NAV_ITEMS} />
+
           <nav
             aria-label="Primary"
-            className="min-w-0 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mobile:hidden"
+            className="hidden min-w-0 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden xl:block"
           >
             <ul className="flex items-center gap-2">
               {NAV_ITEMS.map((item) => {
