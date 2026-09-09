@@ -42,19 +42,19 @@ const DEFAULT_PAYMENT_ART = { width: 110, height: 32 }
  * 48px-tall slot, which Figma clips top and bottom — hence `overflow-hidden` on the slot.
  */
 const PARTNER_ART: Record<string, { slotClass: string; width: number; height: number }> = {
-  casinostest: { slotClass: 'w-44', width: 110, height: 55 },
-  gamblersbet: { slotClass: 'w-[150px]', width: 100, height: 32 },
-  'casino-bonus-now': { slotClass: 'w-[150px]', width: 100, height: 50 },
-  'no-deposit': { slotClass: 'w-[150px]', width: 100, height: 24 },
-  'casino-bonus-club': { slotClass: 'w-[150px]', width: 100, height: 28 },
-  zamsino: { slotClass: 'w-[150px]', width: 150, height: 48 },
+  casinostest: { slotClass: 'w-44 mobile:h-8', width: 110, height: 55 },
+  gamblersbet: { slotClass: 'w-[150px] mobile:h-8', width: 100, height: 32 },
+  'casino-bonus-now': { slotClass: 'w-[150px] mobile:h-8', width: 100, height: 50 },
+  'no-deposit': { slotClass: 'w-[150px] mobile:h-8', width: 100, height: 24 },
+  'casino-bonus-club': { slotClass: 'w-[150px] mobile:h-8', width: 100, height: 28 },
+  zamsino: { slotClass: 'w-[150px] mobile:h-8', width: 150, height: 48 },
   // Node 1:3993 was an empty frame in wave 1; the export is a 108x48 raster that fills the slot
   // exactly, so it is measured rather than scaled.
   // The seventh slot (node 21:4020) is the one Figma draws 40 tall on the phone, not 32.
   'deutschland-casinos': { slotClass: 'w-[150px] mobile:h-10', width: 108, height: 48 },
 }
 
-const DEFAULT_PARTNER_ART = { slotClass: 'w-[150px]', width: 100, height: 32 }
+const DEFAULT_PARTNER_ART = { slotClass: 'w-[150px] mobile:h-8', width: 100, height: 32 }
 
 /**
  * Figma named all ten switcher layers `en`; the codes come from `LANGUAGE_FLAGS`, which was read
@@ -123,8 +123,10 @@ function PartnerSlot({ logo }: { logo: FooterLogo }) {
 
   return (
     <li
-      // 32 tall on the phone: node 21:3785 lays the slots out 32 high in rows 16 apart.
-      className={`flex h-12 ${art.slotClass} shrink-0 items-center justify-center overflow-hidden mobile:h-8 mobile:w-[calc(33.333%-11px)]`}
+      // The phone height lives in slotClass with the width: node 21:3785 lays the slots out 32
+      // high, the seventh 40, and two competing mobile:h-* on one element resolved differently in
+      // dev (40) and in the Pages build (32).
+      className={`flex h-12 ${art.slotClass} shrink-0 items-center justify-center overflow-hidden mobile:w-[calc(33.333%-11px)]`}
     >
       {logo.href ? (
         <a

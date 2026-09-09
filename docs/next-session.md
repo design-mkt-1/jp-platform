@@ -831,6 +831,13 @@ slots `mobile:h-8`, the seventh (`21:4020`) `mobile:h-10`: the list is 136, Figm
 exactly. Casinostest and Casino Bonus Now overflow their 32px slot the same way Figma clips them
 (`cbn.svg` sits at y=−9, h=50, in a 32 frame). **Page 7360 → 7228.**
 
+One trap paid for on the way: the seventh slot first carried `mobile:h-8` from the shared string
+*and* `mobile:h-10` from its own — and the two resolved differently, 40 in `next dev` and 32 in the
+Pages build (the deployed page measured 7220, not 7228). Two competing utilities on one element
+are not a decision, they are an ordering accident; the height now lives in `slotClass` alone, and
+the number was re-checked on the production export before the push. **Re-measure on the export,
+not only on dev, whenever a class is meant to override another.**
+
 **Gate at fan-in:** 64 tests, `tsc` 0, `eslint` 0, `build:check` 0, axe over the nine states
 0/0/0/0 on the Pages export (served under `/jp-platform/`, `served 200` confirmed first — the
 first attempt served a 404 and reported five identical "moderate" findings per state, which is
