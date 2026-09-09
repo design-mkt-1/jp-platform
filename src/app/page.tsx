@@ -76,10 +76,14 @@ function HomeSections() {
           return <SectionRenderer key={desktop.id} section={desktop} priority={priority} />
         }
 
+        // Neither twin gets `priority`. It preloads unconditionally, and one of these two is
+        // always hidden, so marking both made every visitor fetch a card image they cannot see —
+        // the same mistake the hero made with its two artworks. The hero is the element above the
+        // fold that matters for the first paint, and it preloads itself by media query.
         return (
           <Fragment key={desktop.id}>
-            <SectionRenderer section={desktop} priority={priority} className={DESKTOP_ONLY} />
-            <SectionRenderer section={mobile} priority={priority} className={MOBILE_ONLY} />
+            <SectionRenderer section={desktop} className={DESKTOP_ONLY} />
+            <SectionRenderer section={mobile} className={MOBILE_ONLY} />
           </Fragment>
         )
       })}

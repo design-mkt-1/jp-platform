@@ -21,11 +21,10 @@ import { HERO_BONUS, HERO_BONUS_MOBILE } from '@/lib/assets'
  * is *not* baked into the artwork, so it is real DOM — which is also the only way it can be read at
  * 390px without the desktop headline turning into six illegible pixels.
  *
- * Both branches share one bitmap. `public/` is owned elsewhere and there is no mobile export of the
- * art, so the mobile crop is taken out of the desktop file with object-fit: at `object-cover` in a
- * box 62% of the card wide, the 1280x340 source renders 640x170 and `object-[68%_50%]` lands the
- * visible window on source x≈570–1010 — Zeus, his staff and the first rocks, and none of the
- * desktop lettering, which all sits left of x≈430.
+ * The two compositions have their own exports — node 1:5751 is the mobile card's own artwork, not a
+ * crop of the desktop bitmap — and both are always in the DOM, with CSS hiding one. Which one the
+ * browser actually downloads is decided by the two media-scoped preloads below rather than by
+ * `priority`; see the note there.
  */
 
 /** Stable because the page renders exactly one hero; a hook-generated id would force a client component. */
@@ -74,8 +73,20 @@ export default function HeroBanner({
       src={HERO_BONUS}
       alt=""
       fill
-      // The banner is the first paint above the fold; without this it loads after the game rows.
-      priority
+      /*
+       * `loading="lazy"` on a hero, and the media-scoped preload above, are one decision.
+       *
+       * Both compositions are always in the DOM and CSS hides one of them. This used to carry
+       * `priority`, which emits a `<link rel="preload">` that nothing gates by viewport — so every
+       * phone downloaded the 575 KB desktop banner it never shows, and every desktop the 559 KB
+       * mobile one. `lazy` is what stops that: the hidden twin has no layout box, never intersects
+       * the viewport, and is never fetched. The preload then gives the visible one the head start
+       * `priority` used to give it, without also fetching its twin.
+       *
+       * Measured on the built export at 390 and at 1440: one hero file per viewport, and it is the
+       * right one.
+       */
+      loading="lazy"
       sizes="1280px"
       className="object-cover"
     />
@@ -101,6 +112,16 @@ export default function HeroBanner({
       aria-labelledby={HEADING_ID}
       className={['w-full px-page-x mobile:px-4', className].filter(Boolean).join(' ')}
     >
+      {/*
+        The hero is the largest thing above the fold on both viewports, so it still gets a head
+        start — but only the composition that will actually be shown. React hoists these into
+        <head> and keeps the `media` attribute; verified in the built export. The 768px boundary is
+        the one Tailwind draws: `mobile` is `max-width: 767px` in tailwind.config.ts, so if that
+        moves, these two queries move with it.
+      */}
+      <link rel="preload" as="image" href={HERO_BONUS} media="(min-width: 768px)" />
+      <link rel="preload" as="image" href={HERO_BONUS_MOBILE} media="(max-width: 767px)" />
+
       <h2 id={HEADING_ID} className="sr-only">
         {eyebrow}: {headline}. {terms}
       </h2>
@@ -141,7 +162,9 @@ export default function HeroBanner({
             src={HERO_BONUS_MOBILE}
             alt=""
             fill
-            priority
+            /* Lazy for the same reason as the desktop artwork above: on a desktop viewport this
+               block is display:none, and only a lazy image stays unfetched inside one. */
+            loading="lazy"
             sizes="358px"
             className="pointer-events-none object-cover"
           />
