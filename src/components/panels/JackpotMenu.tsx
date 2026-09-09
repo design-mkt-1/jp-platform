@@ -40,14 +40,12 @@ interface MenuRow {
   label: string
   glyph: MenuGlyphName
   href: string
-  /** Nodes 1:8783, 1:8794 and 1:8867 carry a disclosure arrow; the other five do not. */
-  chevron?: boolean
 }
 
 /** Nodes 1:8781 / 1:8792 — the two category rows, spaced 8px apart from each other. */
 const CATEGORY_ROWS: MenuRow[] = [
-  { label: 'Sport', glyph: 'sport', href: '/sport', chevron: true },
-  { label: 'Casino', glyph: 'casino', href: '/', chevron: true },
+  { label: 'Sport', glyph: 'sport', href: '/sport' },
+  { label: 'Casino', glyph: 'casino', href: '/' },
 ]
 
 /** Nodes 1:8834 to 1:8875 — the account rows, spaced 6px apart. */
@@ -56,7 +54,7 @@ const ACCOUNT_ROWS: MenuRow[] = [
   { label: 'My Bonuses', glyph: 'bonuses', href: '/bonuses' },
   { label: 'Promotions', glyph: 'promotions', href: '/promos' },
   { label: 'Cashback', glyph: 'cashback', href: '/cashback' },
-  { label: 'Payments', glyph: 'payments', href: '/payments', chevron: true },
+  { label: 'Payments', glyph: 'payments', href: '/payments' },
   { label: 'Profile', glyph: 'profile', href: '/profile' },
 ]
 
@@ -91,9 +89,6 @@ function MenuLink({ row, onNavigate }: { row: MenuRow; onNavigate: () => void })
           <MenuGlyph name={row.glyph} size={15} strokeWidth={1.8} className="shrink-0 text-label" />
           <span className={`truncate ${ROW_LABEL_CLASSES}`}>{row.label}</span>
         </span>
-        {row.chevron ? (
-          <MenuGlyph name="chevron-down" size={20} className="shrink-0 text-secondary" />
-        ) : null}
       </Link>
     </li>
   )
