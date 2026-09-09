@@ -14,12 +14,20 @@ const providerNameById = new Map(providers.map((provider) => [provider.id, provi
  * "Cleopatra's", so punctuation is dropped too — otherwise the apostrophe silently kills the match.
  */
 function normalize(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim()
+  return (
+    value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      // Apostrophes are removed, not turned into a space, and the two straight/curly forms are
+      // treated alike. Collapsing them with the rest of the punctuation made "Gonzo's Quest"
+      // normalise to "gonzo s quest", so a player typing "gonzos" matched nothing \u2014 the exact case
+      // this function was written for. Three titles in the catalogue carry one: Gonzo's Quest,
+      // Pharaoh's Gold Megaways and Cleopatra's Crown.
+      .replace(/['\u2019]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim()
+  )
 }
 
 /**

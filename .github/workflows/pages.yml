@@ -36,6 +36,11 @@ jobs:
       - run: npx tsc --noEmit
       - run: npx eslint src --max-warnings=0
 
+      # A wrong asset path or a broken filter is a valid TypeScript program, so the two checks
+      # above cannot see it. These can, and they run before the build for the same reason the
+      # others do: a red check must not reach the link the client is looking at.
+      - run: npm test
+
       - run: npm run build
         env:
           GITHUB_PAGES: 'true'
