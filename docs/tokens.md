@@ -198,8 +198,15 @@ lista devine un depozit de culori ad-hoc și ne întoarcem exact la problema pe 
 | `#F2C146`       | `amber-soft`      | `--amber-soft`      | `1:6255`                              | pastila „join + timer" de pe cardul promo de mobil, plină                    |
 | `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | textul scris **pe** pastila aceea: eticheta butonului, „Time left" și ceasul |
 | `#36BCFF` ²     | — (doar SVG)      | —                   | `1:2239`, `1:4323`                    | lupa din câmpul de căutare de furnizori (`public/images/icons/search-blue.svg`) |
+| `rgba(8,8,20,0.75)` ³ | — (inline)  | —                   | `1:6179`                              | umbra cardului de joc pe mobil: `-2px 2px 12px`                              |
 
 ¹ Figma scrie `#65616A`. Ridicat la `#7F7A85` pentru AA — vezi „Abateri de contrast" mai jos.
+
+³ Singura culoare de umbră din tot designul. Nu primește variabilă pentru că tema nu are culori de
+umbră deloc: cealaltă umbră a cardului, cea de desktop, e scrisă tot inline în `GameCard.tsx`, ca
+`rgb(0_0_0/0.25)`. Cadrele de telefon o desenează diferit de desktop — deplasată spre stânga, blur
+de trei ori mai mare și aproape opacă — deci cardul poartă acum ambele valori, despărțite de
+varianta `mobile:`.
 
 ² Decizie de proprietar, 2026-09-09. Fișierul nostru desena lupa cu `#007AFF`, albastrul scris
 în ambele UI Kit-uri;Figma exportă `#36BCFF` pe ambele noduri (verificat cu `get_design_context` pe `1:2239`, care

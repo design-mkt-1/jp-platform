@@ -372,6 +372,31 @@ scroller) while the account cluster is `shrink-0`. Re-measured: `scrollWidth` eq
 from 768 to 1280, and 1440 is unchanged. `break-words` on the game card title for the same reason —
 at 1024 a squeezed card cut "Starburst" mid-letter.
 
+**The audit, and what checking it in a browser was worth.** Twelve agents compared the nine content
+rows against their Figma nodes and audited accessibility; none of them was allowed to run the site,
+so every figure came from node data plus source. Checking each claim against a rendered page changed
+the answer three times out of nine:
+
+- **The amber was already right.** The audit reported `docs/tokens.md` recording the promo pill fill
+  as `#F59E0B @ 10%` and `globals.css` implementing it. Measured on the "1,000,000.00 GBP PRIZE"
+  pill: background `rgba(242,193,70,0.1)`, text `rgb(245,158,11)` — the `#F2C146` tint with
+  `#F59E0B` text, exactly what nodes 1:3538 / 1:3594–1:3600 draw, and exactly what §2b records. The
+  agents read the token file from before that section existed.
+- **The wheel's stat rows do not overflow.** The audit inferred the banner would grow to ~264px.
+  Measured: pill stack 180x120 at y=36, each row 34 tall with 9px gaps, SPIN button at y=180,
+  banner 260 — every number equal to node 1:3593.
+- **The promo spacing was fixed already**, by `31f69f6`'s per-variant class maps.
+
+Five were real, and are now applied — each measured against its node before and after:
+
+| what | node | was | now |
+| --- | --- | --- | --- |
+| promo title line box | `1:3443`, `1:3535`, `1:3590` | `leading-none`, 32px, lifting the subtitle 5.5px | `leading-[39px]`; subtitle within 2px of the design |
+| `See All (206)` pill | `1:3264` | 31.5px tall, an inherited 1.5 line-height | 28px, on the `seeAll` variant so the hero's Get pill is untouched |
+| mobile row, header to grid | `1:6175` | 20px, the desktop value | 16px via `mobile:gap-4`, twelve rows at once |
+| mobile card shadow | `1:6179` | the desktop `0 4px 8px rgb(0 0 0/0.25)` | `-2px 2px 12px rgb(8 8 20/0.75)` under 768px |
+| gold button label | `1:3547`, `1:3604` | `text-page`, `#0f121d` | `text-black` |
+
 **Still open from this session:**
 
 - **Ten of the twenty-one icon files carry the whole Figma artboard** — `bonus-buy`, `crash`,

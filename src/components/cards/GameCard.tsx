@@ -40,6 +40,11 @@ export interface GameCardProps {
 const CARD_CLASSES = [
   'relative block aspect-[203/264] w-full overflow-hidden rounded-2xl',
   'border border-solid border-card bg-card shadow-[0_4px_8px_rgb(0_0_0/0.25)]',
+  // The phone frames draw their own shadow — node 1:6179 "Overlay+Shadow" carries
+  // -2px 2px 12px rgba(8,8,20,0.75): offset to the left, three times the blur, and near-opaque
+  // where the desktop one is a quarter-black drop. It has no token because the theme carries no
+  // shadow colours; docs/tokens.md §2b records it with its node.
+  'mobile:shadow-[-2px_2px_12px_rgb(8_8_20/0.75)]',
 ].join(' ')
 
 export default function GameCard({

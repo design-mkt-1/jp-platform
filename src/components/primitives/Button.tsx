@@ -38,7 +38,9 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
    * An earlier pass had guessed roughly half of each radius.
    */
   primaryGold: [
-    'bg-gradient-gold rounded-[20px] text-page',
+    // Pure black, which is what nodes 1:3547 and 1:3604 fill the label with — `text-page`
+    // (#0f121d) was near enough to look right and is not the design's value.
+    'bg-gradient-gold rounded-[20px] text-black',
     'shadow-[0_4px_12px_color-mix(in_srgb,var(--gold-dark)_25%,transparent)]',
     'hover:brightness-110 hover:shadow-[0_6px_20px_color-mix(in_srgb,var(--gold-dark)_35%,transparent)]',
     'active:brightness-90 active:shadow-[0_2px_8px_color-mix(in_srgb,var(--gold-dark)_20%,transparent)]',
@@ -62,7 +64,12 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
    * "mobile kit wins" token decision had replaced with 15% everywhere. See globals.css.
    */
   seeAll: [
-    'bg-see-all rounded-[14px] text-blue-text',
+    // `leading-4` because node 1:3265 draws "See All (206)" in a 16px line box, which with the
+    // size's own 6px padding is the 28px tall pill of node 1:3264. Without it the 13px text
+    // inherits the stylesheet's 1.5, the pill stands 31.5px, and every one of the fifteen row
+    // headers is 3.5px taller than the design. It sits on the variant rather than on the `tinted`
+    // size because that size is shared with the hero's Get pill, which Figma draws differently.
+    'bg-see-all rounded-[14px] leading-4 text-blue-text',
     'hover:bg-see-all-hover active:bg-see-all-active',
   ].join(' '),
 

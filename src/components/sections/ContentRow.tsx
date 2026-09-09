@@ -72,7 +72,11 @@ export default function ContentRow({
   return (
     <section
       aria-label={section.title}
-      className={['flex flex-col gap-5', className].filter(Boolean).join(' ')}
+      // 20 on desktop (node 1:3230: the header ends at 28, the grid starts at 48), 16 on the phone
+      // frames (node 1:6175: header ends at 52, grid starts at 68). The mobile value was measured
+      // when the frames were inventoried and never reached the code — `PromoRow` next door already
+      // carries the same pair. Twelve game rows sit on this one line.
+      className={['flex flex-col gap-5 mobile:gap-4', className].filter(Boolean).join(' ')}
     >
       <SectionHeader
         title={section.title}

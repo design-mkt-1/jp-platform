@@ -137,7 +137,14 @@ export default function PromoBanner({
         ) : null}
 
         <div className={`flex flex-col ${TITLE_GAP[data.variant]}`}>
-          <h2 className="text-[32px] font-black leading-none text-primary">{data.title}</h2>
+          {/*
+            39px, not `leading-none`. All three titles are 32px text in a 39px box in Figma — nodes
+            1:3443, 1:3535 and 1:3590 all measure it — and a 32px box is 7px short. Because the
+            column is centred, that shortfall does not shrink the title, it lifts everything under
+            it: measured on the lottery banner, the subtitle sat 5.5px and the pills 2.5px above
+            where node 1:3532 draws them.
+          */}
+          <h2 className="text-[32px] font-black leading-[39px] text-primary">{data.title}</h2>
           <p
             className={`text-sm text-muted ${SUBTITLE_WIDTH[data.variant]} ${
               // The tournament subtitle is sentence case in Figma; lottery and wheel are caps.
