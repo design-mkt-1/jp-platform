@@ -70,13 +70,13 @@
     {
       "id": "zamsino",
       "label": "Zamsino",
-      "src": "/images/partners/zamsino.png",
+      "src": "/images/partners/zamsino.webp",
       "href": "https://example.com/zamsino"
     },
     {
       "id": "deutschland-casinos",
       "label": "Deutschland Casinos",
-      "src": "/images/partners/deutschland-casinos.png",
+      "src": "/images/partners/deutschland-casinos.webp",
       "href": "https://example.com/deutschland-casinos"
     }
   ],

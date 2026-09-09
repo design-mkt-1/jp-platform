@@ -33,7 +33,13 @@ export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 export const withBase = (path: string): string =>
   path.startsWith('/') ? `${BASE_PATH}${path}` : path
 
-export const gameThumb = (slug: string) => withBase(`/images/games/${slug}.png`)
+/*
+ * WebP, not PNG. The Figma exports were the raw bitmaps and the Pages build serves them untouched
+ * — a static export has no image optimiser — so the whole of public/images went through
+ * `node scripts/to-webp.mjs`: 2.7 MB down to 313 KB. Add a new export by running that script, not
+ * by dropping a .png in beside these.
+ */
+export const gameThumb = (slug: string) => withBase(`/images/games/${slug}.webp`)
 
 export const providerLogo = (id: string) => withBase(`/images/providers/${id}.svg`)
 
@@ -78,20 +84,20 @@ export const providerLogoOrNull = (id: string): string | null =>
   hasProviderLogo(id) ? providerLogo(id) : null
 
 /** Hero art under the header (Figma node 1:2437), exported at scale 1 to stay under 600 KB. */
-export const HERO_BONUS = withBase('/images/hero/welcome-bonus.png')
+export const HERO_BONUS = withBase('/images/hero/welcome-bonus.webp')
 
 /**
  * The mobile hero has its own artwork in Figma (node 1:5751), not a crop of the desktop one: the
  * navy gradient, the figure and the violet shard in the bottom corner are all painted into it.
  * Exported at 3x for a 358x170 card.
  */
-export const HERO_BONUS_MOBILE = withBase('/images/hero/welcome-bonus-mobile.png')
+export const HERO_BONUS_MOBILE = withBase('/images/hero/welcome-bonus-mobile.webp')
 
 /** Backdrops for the three promo rows. Keyed by `PromoVariant` so the banner needs no switch. */
 export const PROMO_BANNERS: Readonly<Record<PromoVariant, string>> = {
-  tournament: withBase('/images/hero/tournament-banner.png'),
-  lottery: withBase('/images/hero/lottery-banner.png'),
-  wheel: withBase('/images/hero/wheel-banner.png'),
+  tournament: withBase('/images/hero/tournament-banner.webp'),
+  lottery: withBase('/images/hero/lottery-banner.webp'),
+  wheel: withBase('/images/hero/wheel-banner.webp'),
 }
 
 /**
@@ -120,7 +126,7 @@ export const PARTNER_LOGOS: Readonly<Record<string, string>> = {
   'no-deposit': withBase('/images/partners/nodeposit.svg'),
   'casino-bonus-club': withBase('/images/partners/cbc.svg'),
   // Zamsino was a raster fill in Figma, not a vector — the only partner that is not an SVG.
-  zamsino: withBase('/images/partners/zamsino.png'),
+  zamsino: withBase('/images/partners/zamsino.webp'),
 }
 
 export const paymentLogo = (id: string): string | null => PAYMENT_LOGOS[id] ?? null

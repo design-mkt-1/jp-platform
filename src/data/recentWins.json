@@ -1,7 +1,7 @@
 [
-  { "id": "win-01", "gameId": "big-bass-amazon-xtreme", "gameTitle": "Big Bass Amazon Xtreme", "thumb": "/images/games/big-bass-amazon-xtreme.png", "amountGbp": 41.04, "username": "le****et", "at": "2026-09-08T09:41:12Z" },
-  { "id": "win-02", "gameId": "yeti-quest", "gameTitle": "Yeti Quest", "thumb": "/images/games/yeti-quest.png", "amountGbp": 37.5, "username": "le****et", "at": "2026-09-08T09:39:48Z" },
-  { "id": "win-03", "gameId": "gates-of-olympus-1000", "gameTitle": "Gates of Olympus 1000", "thumb": "/images/games/gates-of-olympus-1000.png", "amountGbp": 1284.6, "username": "ma****19", "at": "2026-09-08T09:37:05Z" },
+  { "id": "win-01", "gameId": "big-bass-amazon-xtreme", "gameTitle": "Big Bass Amazon Xtreme", "thumb": "/images/games/big-bass-amazon-xtreme.webp", "amountGbp": 41.04, "username": "le****et", "at": "2026-09-08T09:41:12Z" },
+  { "id": "win-02", "gameId": "yeti-quest", "gameTitle": "Yeti Quest", "thumb": "/images/games/yeti-quest.webp", "amountGbp": 37.5, "username": "le****et", "at": "2026-09-08T09:39:48Z" },
+  { "id": "win-03", "gameId": "gates-of-olympus-1000", "gameTitle": "Gates of Olympus 1000", "thumb": "/images/games/gates-of-olympus-1000.webp", "amountGbp": 1284.6, "username": "ma****19", "at": "2026-09-08T09:37:05Z" },
   { "id": "win-04", "gameId": "sweet-bonanza", "gameTitle": "Sweet Bonanza", "thumb": null, "amountGbp": 96.2, "username": "jo****ka", "at": "2026-09-08T09:35:22Z" },
   { "id": "win-05", "gameId": "aviator", "gameTitle": "Aviator", "thumb": null, "amountGbp": 512.75, "username": "ni****88", "at": "2026-09-08T09:33:57Z" },
   { "id": "win-06", "gameId": "sugar-rush", "gameTitle": "Sugar Rush", "thumb": null, "amountGbp": 24.9, "username": "an****el", "at": "2026-09-08T09:31:40Z" },

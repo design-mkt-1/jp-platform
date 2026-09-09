@@ -1,7 +1,7 @@
 [
-  { "id": "gates-of-olympus-1000", "slug": "gates-of-olympus-1000", "title": "Gates of Olympus 1000", "provider": "pragmatic-play", "thumb": "/images/games/gates-of-olympus-1000.png", "categories": ["popular", "slots"], "tags": ["hot", "megaways"], "rtp": 96.5 },
-  { "id": "big-bass-amazon-xtreme", "slug": "big-bass-amazon-xtreme", "title": "Big Bass Amazon Xtreme", "provider": "pragmatic-play", "thumb": "/images/games/big-bass-amazon-xtreme.png", "categories": ["popular", "slots"], "tags": ["hot", "bonusbuy"], "rtp": 96.71 },
-  { "id": "yeti-quest", "slug": "yeti-quest", "title": "Yeti Quest", "provider": "bgaming", "thumb": "/images/games/yeti-quest.png", "categories": ["popular", "slots"], "tags": ["new", "drops"], "rtp": 96.2 },
+  { "id": "gates-of-olympus-1000", "slug": "gates-of-olympus-1000", "title": "Gates of Olympus 1000", "provider": "pragmatic-play", "thumb": "/images/games/gates-of-olympus-1000.webp", "categories": ["popular", "slots"], "tags": ["hot", "megaways"], "rtp": 96.5 },
+  { "id": "big-bass-amazon-xtreme", "slug": "big-bass-amazon-xtreme", "title": "Big Bass Amazon Xtreme", "provider": "pragmatic-play", "thumb": "/images/games/big-bass-amazon-xtreme.webp", "categories": ["popular", "slots"], "tags": ["hot", "bonusbuy"], "rtp": 96.71 },
+  { "id": "yeti-quest", "slug": "yeti-quest", "title": "Yeti Quest", "provider": "bgaming", "thumb": "/images/games/yeti-quest.webp", "categories": ["popular", "slots"], "tags": ["new", "drops"], "rtp": 96.2 },
   { "id": "sweet-bonanza", "slug": "sweet-bonanza", "title": "Sweet Bonanza", "provider": "pragmatic-play", "thumb": null, "categories": ["popular", "slots"], "tags": ["hot", "bonusbuy"], "rtp": 96.51 },
   { "id": "sugar-rush", "slug": "sugar-rush", "title": "Sugar Rush", "provider": "pragmatic-play", "thumb": null, "categories": ["popular", "slots"], "tags": ["hot", "drops"], "rtp": 96.5 },
   { "id": "starburst", "slug": "starburst", "title": "Starburst", "provider": "netent", "thumb": null, "categories": ["popular", "slots"], "tags": ["hot"], "rtp": 96.09 },

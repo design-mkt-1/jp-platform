@@ -62,7 +62,7 @@ export type IconName =
 
 export interface Game {
   id: string
-  /** Also the thumbnail file name: `/images/games/<slug>.png`. */
+  /** Also the thumbnail file name: `/images/games/<slug>.webp`. */
   slug: string
   title: string
   /** A `Provider.id`, not a display name. Resolve through `providers.json`. */

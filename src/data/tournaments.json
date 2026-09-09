@@ -6,7 +6,7 @@
       "subtitle": "Spin on selected Pragmatic Play slots and climb the leaderboard",
       "prizePoolGbp": 1000000,
       "endsAt": "2026-09-08T18:12:36Z",
-      "image": "/images/hero/tournament-banner.png",
+      "image": "/images/hero/tournament-banner.webp",
       "ctaLabel": "JOIN NOW"
     },
     {
@@ -15,7 +15,7 @@
       "subtitle": "Every 100 spins on Megaways titles earns a leaderboard ticket",
       "prizePoolGbp": 250000,
       "endsAt": "2026-09-12T21:00:00Z",
-      "image": "/images/hero/tournament-banner.png",
+      "image": "/images/hero/tournament-banner.webp",
       "ctaLabel": "JOIN NOW"
     },
     {
@@ -24,7 +24,7 @@
       "subtitle": "Beat the dealer on selected live tables and take a share of the pot",
       "prizePoolGbp": 120000,
       "endsAt": "2026-09-15T19:30:00Z",
-      "image": "/images/hero/tournament-banner.png",
+      "image": "/images/hero/tournament-banner.webp",
       "ctaLabel": "JOIN NOW"
     }
   ],
@@ -34,7 +34,7 @@
       "variant": "tournament",
       "title": "SPIN CHALLENGE 2000",
       "subtitle": "Spin on selected Pragmatic Play slots and climb the leaderboard",
-      "image": "/images/hero/tournament-banner.png",
+      "image": "/images/hero/tournament-banner.webp",
       "ctaLabel": "JOIN NOW",
       "ctaHref": "/tournaments/spin-challenge-2000",
       "eyebrow": "Weekly tournament active",
@@ -50,7 +50,7 @@
       "variant": "lottery",
       "title": "100 FREE SPINS",
       "subtitle": "Bi-Weekly Lottery draw is now open",
-      "image": "/images/hero/lottery-banner.png",
+      "image": "/images/hero/lottery-banner.webp",
       "ctaLabel": "JOIN NOW",
       "ctaHref": "/promotions/weekly-lottery",
       "pills": [
@@ -65,7 +65,7 @@
       "variant": "wheel",
       "title": "2000 FREE SPINS",
       "subtitle": "Spin the wheel everyday and get crazy prizes",
-      "image": "/images/hero/wheel-banner.png",
+      "image": "/images/hero/wheel-banner.webp",
       "ctaLabel": "SPIN",
       "ctaHref": "/promotions/wheel",
       "stats": [
