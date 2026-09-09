@@ -218,7 +218,10 @@ export default function PromoBanner({
             <time
               {...(data.endsAt ? { dateTime: countdownEndIso(data.endsAt) } : {})}
               suppressHydrationWarning
-              className={`font-extrabold text-primary ${
+              // `tabular-nums` for the same reason as the mobile banner: Inter's proportional `1`
+              // is narrower than its `8`, so this once-a-second clock re-flowed its own box.
+              // Measured at 1440x900 before the fix: 179.13 -> 178.36 -> 177.91 -> 173.20px.
+              className={`font-extrabold tabular-nums text-primary ${
                 data.variant === 'lottery' ? 'text-base' : 'text-2xl'
               }`}
             >
