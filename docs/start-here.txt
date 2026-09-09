@@ -49,10 +49,10 @@ THE FIRST PROMPT FOR CLAUDE
 
 Open Claude Code in the jp-platform folder and give it this:
 
-    Read README.md, docs/next-session.md and docs/build-plan.md.
-    Then read docs/audit-session-8.md — it is the ranked list of everything
-    found by pressing every control on the deployed build, and nothing on it
-    has been fixed yet. Start from the owner's picks in Rank 1.
+    Read docs/session-9-plan.md first — it is written for a fresh machine and
+    starts with a checklist of what does not travel with a clone.
+    Then CLAUDE.md, docs/next-session.md and docs/audit-session-8.md.
+    Mobile at 390px is the only priority; 95% of traffic is a phone.
     Verify before you assume.
 
 
@@ -74,8 +74,18 @@ On another machine, without them, Claude will produce dry reports and fill gaps
 with plausible guesses instead of asking — exactly the behaviour those rules
 block. If you want the same working style, copy those two files across.
 
-What does travel with the repo: the project's own .claude/settings.json, which
-enables only the ui-ux-pro-max plugin.
+What DOES travel with the repo, as of 2026-09-09: .claude/skills/ (20 skills,
+committed), CLAUDE.md at the root, and .claude/hooks/skill-triggers.mjs — a
+UserPromptSubmit hook wired in .claude/settings.json that injects the skill
+triggers on every turn. That hook exists because the passive version failed:
+ui-ux-pro-max was enabled from the first commit and one whole session still ran
+a 49-control UI audit without invoking it once.
+
+The plugins themselves do NOT travel. .claude/settings.json declares
+ui-ux-pro-max, ponytail and caveman, but their code lives in ~/.claude/plugins/
+on the machine that installed them. On a new machine, check with /ponytail-help
+and install from: github:nextlevelbuilder/ui-ux-pro-max-skill,
+github:dietrichgebert/ponytail, github:JuliusBrussee/caveman.
 
 UNKNOWN: I do not know whether the Figma MCP connection works automatically on
 another machine. It is tied to the claude.ai account, so probably yes, but there
@@ -113,7 +123,7 @@ USEFUL COMMANDS
 ---------------
 
     npm run dev              review server on :3000
-    npm test                 vitest, 58 tests; also runs in CI, before the build
+    npm test                 vitest, 64 tests; also runs in CI, before the build
     npm run build:check      production build, safe while dev is running
     npx tsc --noEmit
     npx eslint src --max-warnings=0
@@ -149,23 +159,23 @@ docs/audit-session-8.md, which is the newest and the longest list.
 
 What is genuinely open right now:
 
-1. The countdown period. PERIOD_MS in src/lib/format.ts rolls an expired
-   deadline forward in 7-day steps, so the hours field has three digits (149h)
-   where the design draws two (08h). A 24-hour period is a one-constant change.
-   Your call — with the editorial cost that the copy beside the clock reads
-   "Weekly tournament" and a 24-hour timer contradicts it.
-2. Between 768 and 1279 px the header nav is a narrow scrolling strip. At 768 it
-   is a 33px window onto 569px of links — the header renders "CAS", clipped
-   mid-word. Nothing overflows. Figma has no frame for this range, so widening
-   it means designing it.
-3. Game cards stay <article> with no link, by your decision of 2026-08-08: a
+1. Everything in docs/session-9-plan.md — the mobile work, in waves, written
+   for a fresh machine.
+2. Game cards stay <article> with no link, by your decision of 2026-08-08: a
    link to nowhere is worse than no link. It resolves itself when game pages
    arrive.
-4. The deliberate differences, to re-confirm before sign-off: providers shown as
+3. The deliberate differences, to re-confirm before sign-off: providers shown as
    initials, cards with a gradient fallback, GBP as the currency, the mobile
    hero showing a single offer.
-5. Everything in docs/audit-session-8.md. The short version: of 49 controls on
-   the desktop homepage, 8 do what they say.
+4. What is left in docs/audit-session-8.md. Of 49 controls on the desktop
+   homepage, 8 did what they said when it was written; the owner picked from
+   that list and the picks are shipped. The status table at the top of that file
+   says which is which.
+
+Two more closed in session 8, recorded so nobody re-opens them: the countdown
+period is 24 hours by the owner's decision, and the 768-1279px header nav now
+collapses into a burger — four treatments were rendered side by side at 768,
+1024 and 1279 before it was chosen.
 
 Two items that used to be on this list are closed and are recorded here so
 nobody re-opens them:
@@ -184,7 +194,13 @@ DOCUMENTS IN THE REPO
 
 README.md                  what the project is, how to run it
 docs/next-session.md       what is left to do
-docs/audit-session-8.md    everything found by pressing every control, ranked
+docs/session-9-plan.md     START HERE on a new machine — what does not travel,
+                           then the mobile work in waves
+CLAUDE.md                  the working rules: which skill fires before which
+                           kind of work, the gate, the measuring traps
+docs/audit-session-8.md    everything found by pressing every control, ranked,
+                           with a status table for what has since been fixed
+docs/install-skills-in-a-repo.md   the same skill set-up for another repo
 docs/build-plan.md         why the architecture looks like this, and the traps
                            already hit
 docs/tokens.md             READ BEFORE TOUCHING A COLOUR. The Figma file has no

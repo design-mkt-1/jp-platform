@@ -87,6 +87,12 @@ are closed across the app. All in §11.
 | 7  | A dead Figma node id cannot be detected | `screens.test.ts` checks that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing in the repo can do better without calling Figma. | §9 |
 | 8  | Thirteen deliberate differences         | Currency, fallback artwork, the mobile hero showing one offer, and ten more — each listed with its node and its reason. To be re-confirmed at sign-off, not fixed. | §5 |
 
+## Start here → [`docs/session-9-plan.md`](session-9-plan.md)
+
+The next session's plan lives in the repo, not in `~/.claude/plans/`, because the machine changes.
+It opens with a ten-minute checklist of what does **not** travel with a clone — the plugins, the
+owner's two global hooks, and Orca — and then the mobile work in waves.
+
 ## How this repo is worked on — read before touching anything
 
 Since 2026-09-09 the working rules travel with the repo instead of living on one machine.
