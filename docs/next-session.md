@@ -305,6 +305,31 @@ Nobody should re-open them:
 
 Section 14 of the review report is the same five fixes with the after-capture beside the Figma node.
 
+### 7. Resuming on another machine (written 2026-09-09, after session 4)
+
+Everything is on `main` and deployed (`f00c275..a1c7bc0`). Nothing is half-done. Start here:
+
+- **One decision is open: the countdown period.** `PERIOD_MS` in `src/lib/format.ts` rolls a past
+  deadline forward in 7-day periods, as the session-4 plan asked. That makes the hours field three
+  digits (`164h : 06m : 33s`) where the design draws `08h : 12m : 36s`. A 24-hour period keeps two
+  digits; it is a one-constant change plus the roll-forward assert. Owner's call.
+- **Known and accepted, not to be re-opened:** the list under §6 "verified against Figma, do not fix".
+- **Pre-existing, open, small:** clicking a sheet's backdrop leaves focus on `body` instead of
+  returning it to the trigger (same in the Jackpot menu and the new mobile search; lives in
+  `useOverlayBehavior` / `Sheet`). Escape does return focus correctly.
+- **How to look before claiming a state is fine:** the iframe rig in §6, on `localhost:3000` or on
+  the deployed site. Two traps from this session: lazy images need about 3 s after a programmatic
+  `scrollTo` before the screenshot, or every card looks empty; and the dark "N" disc bottom-left at
+  390 in dev is the Next.js dev indicator, not the app.
+- **Parallel workers in one checkout.** Session 4 ran six workers through Orca (Run
+  `run_ee5ca14d3211` on the first machine; Orca state is per-machine, so on another PC use whatever
+  orchestration is installed there, or plain subagents). Two rules earned the hard way: a worker
+  that commits sweeps in whatever another worker has staged, so every worker stages and commits
+  its own paths in one step and checks `git show --stat`; and when two workers must edit one file,
+  give each a disjoint set of lines and re-read the file right before editing.
+- **Never** run `npm run build` or a static export in a checkout whose `next dev` is running:
+  they share `.next`. `npm run build:check` is the safe check.
+
 ## Things worth remembering about this codebase
 
 - **`docs/tokens.md` is the only link between Figma and the code.** The Figma file has no variables:
