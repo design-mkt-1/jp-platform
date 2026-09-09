@@ -128,7 +128,19 @@ export default function Home() {
         <CategoryNavBar className="pt-6 mobile:order-2 mobile:pt-4" />
 
         <div className="w-full px-page-x pb-12 pt-12 mobile:px-4 mobile:pb-5 mobile:pt-2 mobile:order-4">
-          <div className="mx-auto flex max-w-content flex-col gap-12 mobile:gap-5">
+          {/*
+            44px between rows on mobile, not 20. Figma's rebuilt mobile frames (node `21:2896`)
+            build that gap out of two pieces: 20px between one row frame and the next, plus 24px of
+            padding above the header inside each frame — `21:3297` puts its `section-header` at
+            y=24 and its `grid-container` at y=68, and the frame ends flush with the grid. Nothing
+            is drawn in either piece, so the two are one 44px gap here.
+
+            Measured on the deployed build before this: grid bottom to the next header top was 24px
+            against the design's 44, on all eleven rows and all three promos. It is why the phone
+            page read as denser than the design — the single largest rhythm difference on mobile,
+            and 95% of this product's traffic is a phone.
+          */}
+          <div className="mx-auto flex max-w-content flex-col gap-12 mobile:gap-11">
             {/*
               `HomeSections` stays a server render and is handed to the client wrapper as children,
               so choosing a tab does not push the fifteen rows into the browser bundle. On the
