@@ -118,6 +118,21 @@ sub-path deployment but not images. The first GitHub Pages export 404'd every pi
 while the dev server, served from the root, looked perfect. `withBase()` in `src/lib/assets.ts`
 handles it; paths coming out of `src/data/*.json` have to be wrapped at their call sites.
 
+**`priority` on a CSS-hidden twin preloads it anyway.** `HeroBanner` draws two different
+compositions and hides one with `mobile:hidden` / `hidden mobile:block`. Both carried `priority`,
+which emits a `<link rel="preload">` that nothing gates by viewport — so every phone fetched the
+575 KB desktop banner it never shows, and every desktop the 559 KB mobile one. Neither the type
+checker nor the eye catches it; it is only visible in the network panel. The rule that came out of
+it: a `priority` image must be one that renders at every width. Otherwise use `loading="lazy"`, so
+the hidden twin has no layout box and is never fetched, plus a `media`-scoped preload for the one
+that will show. React keeps the `media` attribute when it hoists the link — confirmed in the export.
+
+**The build's own output directory moves with `NEXT_DIST_DIR`.** `npm run build:check` sends the
+build to `.next-build`, and the static export lands there too — not in `out/`. A measurement taken
+against `out/` after a `build:check` is a measurement of the previous session's build. It happened
+here: the first reading of the hero preloads was taken from a stale file and pointed at the wrong
+conclusion.
+
 **Parallel agents guess each other's conventions.** The contracts agent and the asset agent ran at
 the same time. `footer.json` listed all fourteen payment and partner logos with a null source while
 the files sat on disk under different names — `bitcoin-cash` in the data, `gatewaycrypto-bch.svg` on

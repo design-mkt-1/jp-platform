@@ -115,13 +115,16 @@ COMENZI UTILE
 -------------
 
     npm run dev              server de review pe :3000
+    npm test                 vitest, 58 de teste; ruleaza si in CI, inainte de build
     npm run build:check      build de productie, sigur cat dev ruleaza
     npx tsc --noEmit
     npx eslint src --max-warnings=0
 
     node scripts/shot.mjs <url> <iesire.png> <latime> <inaltime> viewport '<selector|offset>'
-    node scripts/review.mjs <director>        conduce si captureaza toate cele 10 stari
+    node scripts/review.mjs <director>        toate cele 15 stari, in ambele moduri de motion
+    node scripts/a11y.mjs <director> [url]    axe-core pe 9 stari; iese cu 1 la violari serioase
     node scripts/clean-svg.mjs public/images --dry
+    node scripts/to-webp.mjs public/images --dry   reconverteste exporturile PNG noi
 
 
 DEEP-LINK-URI PENTRU O STARE ANUME
@@ -143,18 +146,29 @@ paginii implicite.
 CE A MAI RAMAS DE FACUT
 -----------------------
 
-Detaliat in docs/next-session.md. Pe scurt, in ordinea stabilita:
+Detaliat in docs/next-session.md, sectiunile 6, 7 si 8. Acest fisier ramasese in
+urma: cele noua randuri, cele 13 ecrane, cele patru cereri deschise si primul
+pas de accesibilitate sunt facute.
 
-1. Noua randuri de continut necomparate cu Figma. Cele mai riscante: Weekly
-   Lottery (1:3524) si Wheel (1:3580).
-2. Cele 13 ecrane din registru, niciunul parcurs comparativ. Doua nu au fost
-   vazute niciodata: empty-search-state-desktop (1:4321) si
-   mobile-providers-no-results (1:2218).
-3. Patru cereri deschise: Badge fara dimensiunea xs, formatCountdown in locul
-   gresit, lipsa lui src/lib/data.ts, starile butonului-iconita.
-4. Accesibilitate — zero verificari rulate pana acum.
-5. Diferentele constiente, de reconfirmat: providerii cu initiale, cardurile cu
-   gradient, moneda GBP, hero-ul mobil ca oferta unica.
+Ce e chiar deschis acum:
+
+1. Perioada cronometrului. PERIOD_MS din src/lib/format.ts rostogoleste un
+   termen expirat cu 7 zile, deci ora are trei cifre (164h) acolo unde designul
+   deseneaza doua (08h). O perioada de 24h e o schimbare de o constanta. Decizia
+   ta.
+2. Zece din cele 21 de icoane contin planșa Figma intreaga — un dreptunghi
+   1440x7453 in fiecare fisier. Azi sunt invizibile doar pentru ca acea culoare
+   e exact fundalul paginii. bonus-buy.svg are 16,9 KB pentru un glif de 20px.
+3. Intre 768 si 1279 px meniul din header e o fasie ingusta care se deruleaza.
+   Toate link-urile raman accesibile, dar Figma nu are cadru pentru intervalul
+   asta, deci a-l largi inseamna a-l desena.
+4. Cardurile de joc raman <article> fara link, prin decizia ta din 2026-09-08:
+   un link catre nicaieri e mai rau decat niciun link. Se rezolva singur cand
+   apar paginile de joc.
+5. Click pe fundalul unui sheet lasa focusul pe body in loc sa-l dea inapoi
+   declansatorului. Escape functioneaza corect.
+6. Diferentele constiente, de reconfirmat inainte de semnare: providerii cu
+   initiale, cardurile cu gradient, moneda GBP, hero-ul mobil ca oferta unica.
 
 
 DOCUMENTE IN REPO

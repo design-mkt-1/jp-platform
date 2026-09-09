@@ -43,6 +43,7 @@ Verified on the live site: zero failing requests, `noindex` header served, `/dev
 
 ```bash
 npm run dev          # review server on :3000
+npm test             # vitest, 58 tests; also runs in CI, before the build
 npm run build:check  # production build into .next-build, safe while dev is running
 npx tsc --noEmit
 npx eslint src --max-warnings=0
@@ -51,6 +52,7 @@ node scripts/shot.mjs <url> <out.png> <w> <h> viewport '<selector|scrollY>'
 node scripts/review.mjs <outDir>   # all 15 review states, each shot twice: reduce and no-preference
 node scripts/a11y.mjs <outDir> [baseUrl]  # axe-core over 9 states; exits 1 when critical/serious exist
 node scripts/clean-svg.mjs public/images --dry
+node scripts/to-webp.mjs public/images --dry   # re-encode any new PNG export
 ```
 
 A full-page capture used to come out with the footer's payment, partner and flag logos blank:
@@ -329,6 +331,59 @@ Everything is on `main` and deployed (`f00c275..a1c7bc0`). Nothing is half-done.
   give each a disjoint set of lines and re-read the file right before editing.
 - **Never** run `npm run build` or a static export in a checkout whose `next dev` is running:
   they share `.next`. `npm run build:check` is the safe check.
+
+### 8. Session 5 — the safety net, the bytes, and the range nobody had looked at
+
+Four things that were not on any list, found by measuring the repo and the deployed build. This
+session ran on a second machine and started from commit `e0dbe47`, so §6 and §7 above were written
+in parallel and none of it overlaps.
+
+**There are tests now.** `npm test` — vitest, six suites, 58 cases — and the Pages workflow runs it
+before the build. The one that earns its keep is `src/lib/__tests__/assets.test.ts`: it walks every
+path the code can produce, both the helpers in `assets.ts` and the raw strings in `src/data/*.json`,
+and fails if the file is not on disk; then it walks the other way and fails on a file no list
+mentions. That is the failure this project has already shipped twice — the sub-path deploy that
+404'd every image, and the `search-btn.svg` export that contained the whole page. `IconName` is
+checked as a `Record<IconName, true>`, so adding a glyph to the union without adding the file fails
+to compile; that is how `search-blue` was caught during the rebase.
+
+**The first run found a real bug.** Search could not find `Gonzo's Quest`. `normalize()` replaced
+the apostrophe with a space, so the stored title read `gonzo s quest` and a player typing "gonzos" —
+the case the function's own comment cites as its reason to exist — matched nothing. Three catalogue
+titles carry one. Fixed, with the test that names them.
+
+**Images: 2.7 MB → 313 KB.** Every PNG under `public/images` is WebP at quality 90, via
+`node scripts/to-webp.mjs`, which keeps the PNG whenever WebP would be larger. Checked on screen at
+both viewports; no banding in the hero's navy gradient or the tournament banner's smoke.
+
+**Each device fetches one hero artwork, not both.** `HeroBanner` draws two compositions and hides
+one with CSS. Both carried `priority`, which emits a preload nothing gates by viewport, so every
+phone downloaded the 575 KB desktop banner it never shows. Now: `loading="lazy"` on both, so the
+hidden twin has no layout box and is never fetched, plus two `media`-scoped preloads for the one
+that will show. Measured on the built export at 390 and at 1440: one hero file each, the right one.
+The same mistake was in `src/app/page.tsx`, which marked both twins of a doubled row as priority.
+
+**768–1279 px no longer overflows.** The Figma file draws 390 and 1440; the range between them ran
+the desktop layout squeezed and nobody had looked. Measured: `document.scrollWidth` was 1191 at
+every width below that, so the page carried a horizontal scrollbar and the header's right cluster
+sat outside the viewport — at 768 the balance, `Deposit` and the account menu were unreachable, not
+merely clipped. The header's nav now scrolls inside itself (`min-w-0` plus a hidden-scrollbar
+scroller) while the account cluster is `shrink-0`. Re-measured: `scrollWidth` equals the viewport
+from 768 to 1280, and 1440 is unchanged. `break-words` on the game card title for the same reason —
+at 1024 a squeezed card cut "Starburst" mid-letter.
+
+**Still open from this session:**
+
+- **Ten of the twenty-one icon files carry the whole Figma artboard** — `bonus-buy`, `crash`,
+  `instant`, `lottery`, `megaways`, `new`, `recommended`, `slots`, `tournaments`, `wheel` each open
+  with `<rect width="1440" height="7453" fill="#0F121D"/>`. `bonus-buy.svg` is 16.9 KB for a 20px
+  glyph. They are invisible today only because that fill equals the page background; `slots.svg`
+  also carries the category bar's capsule, so its glyph already sits on a lighter square. Put any
+  section icon on a card or a hover tint and ten dark squares appear at once. `scripts/clean-svg.mjs`
+  does not catch them: it strips Figma's `#1E1E1E` canvas rect, and this is a different fill.
+  (`drops-wins` and `egypt` are already clean — commit `5590575` re-exported them.)
+- **Between 768 and 1279 the nav is a scrollable sliver.** All links stay reachable, but the strip
+  is narrow. Figma has no frame for that range, so widening it means designing it. Owner's call.
 
 ## Things worth remembering about this codebase
 
