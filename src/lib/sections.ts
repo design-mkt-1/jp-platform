@@ -188,26 +188,30 @@ export const desktopSections: SectionSpec[] = [
 ]
 
 /**
- * The mobile frame (1:5720) repeats the same fifteen rows in the same order, but every games row
+ * The mobile frame (21:2896) repeats the same fifteen rows in the same order, but every games row
  * is a single 3x2 grid — so each one asks for six games even where desktop asks for twelve.
  * Ids are shared with `desktopSections` so a component can be looked up by id on either viewport.
  */
 const MOBILE_NODE_IDS: Record<string, string> = {
-  'popular-games': '1:5882',
-  'new-games': '1:5901',
-  'leading-providers': '1:5919',
-  'recommended-games': '1:6120',
-  'crash-games': '1:6138',
-  'must-play-slots': '1:6156',
-  'bonus-buy': '1:6174',
-  'current-tournaments': '1:6192',
-  'megaways-games': '1:6208',
-  'jackpot-games': '1:6226',
-  'weekly-lottery': '1:6244',
-  'drops-and-wins': '1:6261',
-  wheel: '1:6279',
-  'instant-games': '1:6481',
-  'egypt-games': '1:6499',
+  // Rebuilt in Figma on 2026-09-09 together with the frame itself. Every id this map used to
+  // carry, 1:5882 to 1:6499, resolves to nothing; each replacement below was read back from the
+  // row's own `section-header` and matched on its title text, because the layer names are
+  // copy-paste — twelve of the fifteen row frames are still called `popular-section`.
+  'popular-games': '21:3058',
+  'new-games': '21:3077',
+  'leading-providers': '21:3095',
+  'recommended-games': '21:3296',
+  'crash-games': '21:3314',
+  'must-play-slots': '21:3332',
+  'bonus-buy': '21:3350',
+  'current-tournaments': '21:3368',
+  'megaways-games': '21:3384',
+  'jackpot-games': '21:3402',
+  'weekly-lottery': '21:3420',
+  'drops-and-wins': '21:3437',
+  wheel: '21:3455',
+  'instant-games': '21:3657',
+  'egypt-games': '21:3675',
 }
 
 export const mobileSections: SectionSpec[] = desktopSections.map((section) => {
