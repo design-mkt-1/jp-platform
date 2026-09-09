@@ -112,11 +112,28 @@ export default function ProviderRow({
         // deliberate difference. The section's 20px gap plus the 32px `sm` carries would sit the
         // glyph 52px under the field where node 1:2245 puts it 8; -44px is that difference.
         <div className="-mt-11 hidden mobile:block">{noResults}</div>
+      ) : term ? (
+        // A filtered row is an answer, not decoration. Riding the 40s marquee, the single match for
+        // "net" sat at x=55 against a clip starting at x=80 — 25px of the only result cut off, and
+        // off-screen for part of every cycle. So while a term is typed the matches are one static
+        // wrapping row: no animation, no `w-max` track, and no aria-hidden second copy of a result
+        // the user asked for. The two bands come back untouched when the field is cleared.
+        <div className="flex flex-wrap">
+          {matches.map((provider) => (
+            <ProviderCard
+              key={provider.id}
+              provider={provider}
+              {...(hrefForProvider ? { href: hrefForProvider(provider) } : {})}
+            />
+          ))}
+        </div>
       ) : (
-        <div className="flex flex-col overflow-hidden">
+        // `group` so hovering or tabbing into *either* band pauses *both* — half a band frozen
+        // under the cursor while the other keeps sliding reads as a bug.
+        <div className="group flex flex-col overflow-hidden">
           {/* Band one, node 1:2658. Only the first copy of the badges is announced and focusable;
               the second exists so the wrap has no seam, which is decoration, not information. */}
-          <div className="flex w-max animate-marquee">
+          <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]">
             <div className="flex">
               {matches.map((provider) => (
                 <ProviderCard
@@ -139,7 +156,7 @@ export default function ProviderRow({
             band is hidden from assistive tech and left unlinked: no duplicate announcement, no
             second set of tab stops.
           */}
-          <div aria-hidden className="flex w-max animate-marquee-reverse">
+          <div aria-hidden className="flex w-max animate-marquee-reverse group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]">
             <div className="flex">
               {secondBand.map((provider) => (
                 <ProviderCard key={provider.id} provider={provider} />
