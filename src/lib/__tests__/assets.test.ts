@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -190,5 +191,29 @@ describe('files on disk that no list mentions', () => {
         true,
       )
     }
+  })
+})
+
+/**
+ * The bytes, not just the path.
+ *
+ * Every check above stops at `existsSync`, which is how `slots.svg` shipped for weeks holding the
+ * category bar's glass capsule and still passed. The same class came back in six files — four
+ * flags and two payment tiles kept the 1440x729 footer panel of node `1:3666` — and nothing failed,
+ * because a file carrying the whole artboard is still a file.
+ *
+ * `clean-svg.mjs --dry` is the byte-level reader that already exists: it opens all 50 SVGs, works
+ * out what is page furniture and what is artwork, and writes nothing. Asking it here keeps one
+ * definition of furniture instead of a second copy that drifts, and fails the moment an export
+ * lands with the artboard still attached.
+ */
+describe('bytes of the SVGs that ship', () => {
+  it('has no SVG still carrying its Figma artboard', () => {
+    const report = execFileSync(
+      process.execPath,
+      ['scripts/clean-svg.mjs', 'public/images', '--dry'],
+      { cwd: process.cwd(), encoding: 'utf8' },
+    )
+    expect(report, report).toContain('0 file(s) would be changed')
   })
 })

@@ -12,8 +12,18 @@ import { join, extname } from 'node:path'
  *
  * Three shapes are removed, all of which are provably not the artwork:
  *   1. a <rect> filling the whole viewBox with the canvas grey #1E1E1E
- *   2. a <path> whose first coordinate lies far outside the viewBox
+ *   2. a <path> whose own bounding box misses the viewBox entirely, or dwarfs it
  *   3. any <rect> or <foreignObject> outside <defs> that dwarfs the viewBox — see FURNITURE_SCALE
+ *
+ * ## Why rule 2 is a shape and not a distance
+ *
+ * Rule 2 used to ask how far a path's *first* coordinate sat from the viewBox and called anything
+ * past 1000 units page furniture. That is a property of where the artboard happened to be parked,
+ * not of the artwork. Six files kept a 1440x729 footer panel — `M-803.453 -464.576H636.547V264.424
+ * H-803.453V-464.576Z` in cascading-gbp-a.svg — purely because it starts at -803 and not at -1200,
+ * while the identical panel in every other export was removed. It now measures the shape instead:
+ * a path is furniture when its box does not touch the viewBox at all, or when it spans the viewBox
+ * FURNITURE_SCALE times over. That holds wherever Figma parks the frame.
  *
  * ## Why rule 3 is geometric and not a list of fills
  *
@@ -38,11 +48,8 @@ import { join, extname } from 'node:path'
 const ROOT = process.argv[2] ?? 'public/images'
 const DRY = process.argv.includes('--dry')
 
-/** How far outside the viewBox a coordinate has to be before it is page furniture, not a glyph. */
-const OUTSIDE = 1000
-
 /**
- * How many times the viewBox a <rect> has to span before rule 3 calls it page furniture.
+ * How many times the viewBox a shape has to span before rules 2 and 3 call it page furniture.
  *
  * Not a taste setting — it is read off the files. Measured across all 62 SVGs under public/images,
  * every shape sorts into one of two groups with a wide gap between them:
@@ -67,10 +74,56 @@ function walk(dir) {
   })
 }
 
-function firstCoordinate(d) {
-  const match = d.match(/-?\d+(?:\.\d+)?/g)
-  if (!match) return null
-  return [Number(match[0]), Number(match[1] ?? 0)]
+const NUMBER = /-?\d*\.?\d+(?:e-?\d+)?/gi
+
+/**
+ * Bounding box `[x0, y0, x1, y1]` of a path's `d`, or null when it holds no coordinates.
+ *
+ * Only M, L, C, H, V and Z occur in the 50 files under public/images — counted, not assumed — so
+ * this walks those and nothing else. H and V are why it cannot just min/max every number in the
+ * string: in `H636.547V264.424` those are an x and a y on their own, and pairing blindly would read
+ * them as one point at (636.547, 264.424) and miss the 1440-wide span they actually describe.
+ *
+ * Curve control points are folded in as they are, which can only overstate the box. A glyph's
+ * control points never push it past FURNITURE_SCALE, and a page frame is past it either way.
+ */
+function pathBox(d) {
+  let x = 0
+  let y = 0
+  let box = null
+  const grow = () => {
+    box = box
+      ? [Math.min(box[0], x), Math.min(box[1], y), Math.max(box[2], x), Math.max(box[3], y)]
+      : [x, y, x, y]
+  }
+  for (const [, command, args] of d.matchAll(/([MLCHVZ])([^MLCHVZ]*)/gi)) {
+    const numbers = (args.match(NUMBER) ?? []).map(Number)
+    if (command.toUpperCase() === 'H') {
+      for (const value of numbers) {
+        x = value
+        grow()
+      }
+    } else if (command.toUpperCase() === 'V') {
+      for (const value of numbers) {
+        y = value
+        grow()
+      }
+    } else {
+      for (let i = 0; i + 1 < numbers.length; i += 2) {
+        x = numbers[i]
+        y = numbers[i + 1]
+        grow()
+      }
+    }
+  }
+  return box
+}
+
+/** True when a path's box misses the viewBox altogether, or spans it FURNITURE_SCALE times over. */
+function isFurniturePath([x0, y0, x1, y1], vw, vh) {
+  const misses = x1 < 0 || y1 < 0 || x0 > vw || y0 > vh
+  const dwarfs = x1 - x0 > vw * FURNITURE_SCALE || y1 - y0 > vh * FURNITURE_SCALE
+  return misses || dwarfs
 }
 
 /** Reads one numeric attribute off an opening tag; null when absent or not a plain number. */
@@ -116,18 +169,15 @@ for (const file of walk(ROOT)) {
   // 1. the canvas backdrop
   out = out.replace(/\s*<rect\b[^>]*fill="#1E1E1E"[^>]*\/>/gi, '')
 
-  // 2. paths that start far outside the box
-  out = out.replace(/\s*<path\b[^>]*\bd="([^"]+)"[^>]*\/>/gi, (tag, d) => {
-    const point = firstCoordinate(d)
-    if (!point) return tag
-    const [x, y] = point
-    const far =
-      x < -OUTSIDE || y < -OUTSIDE || x > Number(vw) + OUTSIDE || y > Number(vh) + OUTSIDE
-    return far ? '' : tag
-  })
-
-  // 3. rects and blur layers bigger than the icon itself — the page behind the glyph
+  // Rules 2 and 3 both measure against the viewBox, so neither can run without one.
   if (Number(vw) > 0 && Number(vh) > 0) {
+    // 2. paths whose own geometry is the page and not the glyph
+    out = out.replace(/\s*<path\b[^>]*\bd="([^"]+)"[^>]*\/>/gi, (tag, d) => {
+      const box = pathBox(d)
+      return box && isFurniturePath(box, Number(vw), Number(vh)) ? '' : tag
+    })
+
+    // 3. rects and blur layers bigger than the icon itself — the page behind the glyph
     out = outsideDefs(out, (part) =>
       part
         .replace(/\s*<rect\b[^>]*\/>/gi, (tag) =>
@@ -139,12 +189,14 @@ for (const file of walk(ROOT)) {
     )
   }
 
-  // Groups left empty by the removals carry nothing. Repeated, because a group that only held
-  // another empty group is itself only empty after that inner one has gone.
+  // Groups and masks left empty by the removals carry nothing. An empty <mask> is exactly what the
+  // footer panel leaves behind — Figma wraps the panel's own outline in one — and the only path
+  // that referenced it was the panel's border, removed by the same rule. Repeated, because a group
+  // that only held another empty group is itself only empty after that inner one has gone.
   let collapsed
   do {
     collapsed = out
-    out = collapsed.replace(/\s*<g\b[^>]*>\s*<\/g>/g, '')
+    out = collapsed.replace(/\s*<(g|mask)\b[^>]*>\s*<\/\1>/g, '')
   } while (out !== collapsed)
 
   totalBefore += Buffer.byteLength(original)

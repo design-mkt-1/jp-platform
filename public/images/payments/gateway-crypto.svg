@@ -2,11 +2,6 @@
 <g id="1">
 <g id="desktop-main">
 <g id="Footer">
-<mask id="path-3-inside-1_0_1" fill="white">
-<path d="M-331.5 -132H1108.5V597H-331.5V-132Z"/>
-</mask>
-<path d="M-331.5 -132H1108.5V597H-331.5V-132Z" fill="#070F1D"/>
-<path d="M-331.5 -132V-131H1108.5V-132V-133H-331.5V-132Z" fill="#282936" mask="url(#path-3-inside-1_0_1)"/>
 <g id="mobile-payment-logos">
 <g id="logos-wrap-grid">
 <g id="Img - gateway_crypto:margin">
