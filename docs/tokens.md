@@ -173,6 +173,13 @@ Acestea sunt și fundalurile placeholder-elor pentru cardurile de joc fără ima
 | ------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | BG/Quaternary | `#0D1420` | Singura variabilă Figma din fișier. Nu apare în niciun swatch al celor două UI Kit-uri. Se folosește doar unde nodul o cere explicit; nu devine token. |
 
+Trei locuri o cer: bara de jos de pe mobil (nodul `1:8235`), footerul, și — din 2026-09-09 — panoul
+meniului de jackpot. Eșantionat din cadrele reconstruite, panoul, banda de sub el și bara sunt toate
+`#0D1420`; de-asta ecranul se citește ca o singură suprafață. Panoul nostru era `--bg-card`
+`#151624` și era singura piesă în afara acordului. `Sheet` primește culoarea printr-o proprietate,
+nu global: sheet-ul de căutare de pe mobil folosește aceeași componentă, iar rândurile lui sunt
+`bg-card` — s-ar fi transformat în carduri vizibil mai deschise dacă suprafața se muta sub ele.
+
 ---
 
 ## 2b. Valori din layere, absente din ambele UI Kit-uri
@@ -201,13 +208,22 @@ lista devine un depozit de culori ad-hoc și ne întoarcem exact la problema pe 
 | `rgba(8,8,20,0.75)` ³ | — (inline)  | —                   | `1:6179`                              | umbra cardului de joc pe mobil: `-2px 2px 12px`                              |
 | `#00B579` ⁴     | `deposit-green`   | `--deposit-green`   | `13:2340`                             | umplerea butonului `Deposit` din meniul de jackpot                           |
 | `#FF787A`       | `signout`         | `--text-signout`    | `13:2491`                             | eticheta „Sign out" din meniul de jackpot                                    |
+| `#222431` ⁵     | `menu-row`        | `--bg-menu-row`     | `13:2362`, `13:2342`                  | rândurile și câmpul de ID din meniul de jackpot                              |
+| `rgba(0,92,64,0.04)` | `balance-chip` | `--bg-balance-chip` | `13:2325`                             | pastila de sold din antetul aceluiași meniu                                  |
 
 ¹ Figma scrie `#65616A`. Ridicat la `#7F7A85` pentru AA — vezi „Abateri de contrast" mai jos.
+
+⁵ Se scria `bg-elevated`, adică alb la 6%. Cât timp panoul era `--bg-card`, cele două erau
+indistingibile: 6% peste `#151624` se compune în `#232431`, la o unitate de ce desenează Figma.
+Mutarea panoului pe `--bg-quaternary` (`#0D1420`, decizie de proprietar 2026-09-09) ar fi coborât
+aceeași umplere la `#1C222D` și ar fi stricat pe tăcute o culoare care era corectă. Nodul declară
+oricum o umplere opacă, nu una translucidă — iar o umplere translucidă nimerește designul doar cât
+timp e de acord cu suprafața de sub ea.
 
 ⁴ Eticheta scrisă **pe** el e albă în Figma. Alb pe `#00B579` măsoară 2,66:1, deci eticheta e
 `text-page` — vezi „Abateri de contrast" mai jos. Verdele în sine rămâne cel din design.
 
-Ultimele două valori vin din cadrele de meniu reconstruite în Figma pe 2026-09-09 (`13:2307`
+Ultimele patru valori vin din cadrele de meniu reconstruite în Figma pe 2026-09-09 (`13:2307`
 post-login, `13:2519` VIP; vechile `1:8260` / `1:8503` / `1:8504` nu se mai rezolvă). `#00B579` nu e
 din familia `emerald` — acela e `#00F299`, mult mai deschis, și rămâne pe butonul `Support`.
 `#FF787A` e singurul roșu din tot fișierul și nu are rudă în niciunul dintre UI Kit-uri; măsoară

@@ -50,29 +50,30 @@ flight.
 
 | # | What                            | The two readings                                                                                      | Where |
 | - | ------------------------------- | ----------------------------------------------------------------------------------------------------- | ----- |
-| 1 | The jackpot menu's panel colour | Figma samples `#0D1420` for the menu surface, the strip under it and the tab bar. Ours is `--bg-card #151624` on `--bg-page #0F121D`. A few units apart, and the screen reads as uniform either way. | §9 |
-| 2 | The identity line in that menu  | The rebuilt frames print `luckytest1234567` as the name and `23885` in the ID field. We print the email above the name and `user-luckytest`. That difference was recorded back when the design had no username to show — it now has one. | §9 |
-| 3 | The header balance chip         | Node `13:2325` puts `$ 140.00` in a 40px pill with a 4% `rgba(0,92,64)` fill and a gold text-shadow. Ours is plain gold text, same size and colour, no pill. | §9 |
-| 4 | The countdown period            | `PERIOD_MS` in `src/lib/format.ts` rolls a past deadline forward in 7-day steps, which makes the hours field three digits (`164h : 06m : 33s`) where the design draws `08h : 12m : 36s`. A 24-hour period keeps two digits — one constant plus the roll-forward assert. | §7 |
-| 5 | 768–1279 px                     | The nav works but is a narrow scrollable sliver. Figma draws 390 and 1440 and nothing between, so widening it means designing it. | §8 |
+| 1 | The countdown period            | `PERIOD_MS` in `src/lib/format.ts` rolls a past deadline forward in 7-day steps, which makes the hours field three digits (`164h : 06m : 33s`) where the design draws `08h : 12m : 36s`. A 24-hour period keeps two digits — one constant plus the roll-forward assert. | §7 |
+| 2 | 768–1279 px                     | The nav works but is a narrow scrollable sliver — measured at 1024, a 272px window onto 569px of content. The page does not overflow. Figma draws 390 and 1440 and nothing between, so widening it means designing it. | §8 |
 
 **Agreed, just not done yet:**
 
-| # | What                                   | Size                                                                                             | Where |
-| - | -------------------------------------- | -------------------------------------------------------------------------------------------------- | ----- |
-| 6 | Romanian docs become English           | Three files: `docs/tokens.md` (~360 lines), `docs/start-here.txt` (182), `public/review/index.html` (2343). One pass, not piecemeal. | §10 |
-| 7 | Ten icon SVGs carry the Figma artboard | `bonus-buy`, `crash`, `instant`, `lottery`, `megaways`, `new`, `recommended`, `slots`, `tournaments`, `wheel` each open with a `1440x7453` page-coloured rect. Invisible today only because that fill equals the page background. | §8 |
-| 8 | Backdrop click loses the focus origin  | Dismissing a sheet by its backdrop leaves focus on `body` instead of returning it to the trigger. Escape does return it correctly. Lives in `useOverlayBehavior`. | §7 |
+| # | What                         | Size                                                                                             | Where |
+| - | ---------------------------- | -------------------------------------------------------------------------------------------------- | ----- |
+| 3 | Romanian docs become English | Three files: `docs/tokens.md` (~380 lines), `docs/start-here.txt` (182), `public/review/index.html` (2343). One pass, not piecemeal. | §10 |
+
+**Done in session 7 — kept here only so the trail is findable:** the menu panel moved onto Figma's
+`#0D1420` with opaque `#222431` rows, the identity line and ID follow the rebuilt frames, the
+balance chip is node `13:2325`'s pill, the ten icon SVGs (and seventeen more nobody had checked)
+lost their Figma artboard, backdrop dismissal returns focus to its trigger, and the prefetch 404s
+are closed across the app. All in §11.
 
 **Known, accepted, and not to be re-opened without a reason:**
 
 | #  | What                                    | Why it stands                                                                                   | Where |
 | -- | --------------------------------------- | ------------------------------------------------------------------------------------------------- | ----- |
-| 9  | The tab bar is live to touch, not to AT | The jackpot menu is `aria-modal` with a focus trap, so a screen reader stays inside it while the bar is visibly lit. Nobody is stranded — Escape closes it, and Sport, Casino and Promotions are rows in the menu — but Live Casino is reachable only after closing. Undoing this means giving up `aria-modal`, the trap and backdrop dismissal together. | §9 |
-| 10 | Game cards are `article`, not links     | `GameCard` and `ProviderCard` both render an `<a>` when given an `href`; no caller passes one, because the demo has no game pages. A link to nowhere is worse than no link. Resolves itself if game pages arrive. | §4 |
-| 11 | `bonus-buy` draws stars, Figma a crown  | Node `1:3367`'s crown is fifteen masked fragments with no clean vector to export, and at 20px the difference is hard to see. | §1 |
-| 12 | A dead Figma node id cannot be detected | `screens.test.ts` checks that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing in the repo can do better without calling Figma. | §9 |
-| 13 | Thirteen deliberate differences         | Currency, fallback artwork, the mobile hero showing one offer, and ten more — each listed with its node and its reason. To be re-confirmed at sign-off, not fixed. | §5 |
+| 4  | The tab bar is live to touch, not to AT | The jackpot menu is `aria-modal` with a focus trap, so a screen reader stays inside it while the bar is visibly lit. Nobody is stranded — Escape closes it, and Sport, Casino and Promotions are rows in the menu — but Live Casino is reachable only after closing. Undoing this means giving up `aria-modal`, the trap and backdrop dismissal together. | §9 |
+| 5  | Game cards are `article`, not links     | `GameCard` and `ProviderCard` both render an `<a>` when given an `href`; no caller passes one, because the demo has no game pages. A link to nowhere is worse than no link. Resolves itself if game pages arrive. | §4 |
+| 6  | `bonus-buy` draws stars, Figma a crown  | Node `1:3367`'s crown is fifteen masked fragments with no clean vector to export, and at 20px the difference is hard to see. | §1 |
+| 7  | A dead Figma node id cannot be detected | `screens.test.ts` checks that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing in the repo can do better without calling Figma. | §9 |
+| 8  | Thirteen deliberate differences         | Currency, fallback artwork, the mobile hero showing one offer, and ten more — each listed with its node and its reason. To be re-confirmed at sign-off, not fixed. | §5 |
 
 ## Local commands
 
@@ -559,7 +560,123 @@ and the two token rows added with it are the first writing under the new rule; t
 to `docs/tokens.md` in the same change stayed Romanian on purpose, so that file is converted whole
 rather than left half and half.
 
+### 11. Session 7 — what looking at the deployed build in a browser found
+
+The previous session shipped the menu fix and every static check was green. This session opened the
+**deployed** build in Chrome, which found two things no static check could reach.
+
+**The page was quietly asking for pages that do not exist.** Measured at 390x844 on the live site:
+one failed `<route>/index.txt?_rsc=` request per dead link — eleven from the jackpot menu, nine more
+from the footer. Next prefetches `<Link>`s by default and this demo has exactly two routes, so every
+other href asks the static export for a page that is not there.
+
+This was the **third** appearance of one bug. It was fixed for the bottom tab bar in §2b (`5f5bda4`)
+and for the header before that, each time at the one place it was noticed. So it is now closed
+across the codebase: `prefetch={false}` on the five menu links, on `FooterLinkColumn` (eleven dead
+hrefs in `footer.json`, the largest offender), on the promo card's raw link, and hard-coded inside
+`Button`'s link branch — before the spread, so a caller that one day links somewhere real can still
+override it without widening a prop type. One thing worth knowing: the `mailto:` in `footer.json`
+goes through `<Link>` and is left alone on purpose.
+
+**The check is an A/B, because "zero 404s" on its own proves nothing.** The same script was pointed
+at the fixed export and at the deployed pre-fix build: open the menu at 390x844, hover a menu link,
+scroll to the footer, hover a footer link, then sit on the open menu for six minutes.
+
+| build | after the menu | after the footer | after six minutes | of which 404 |
+| --- | --- | --- | --- | --- |
+| before the fix (deployed) | 11 | 20 | 20 | **20** |
+| after the fix (local export) | 0 | 0 | 0 | 0 |
+
+Read the eleven and the nine. Eleven is every link in the pre-login menu — `/sport`, `/referral`,
+`/bonuses`, `/promos`, `/cashback`, `/payments`, `/profile`, `/terms`, `/support`, `/login`,
+`/register`. The other nine are the footer: `/responsible-gaming`, `/refer-a-friend`, `/providers`
+and the six under `/legal/`. **The footer really was an offender**, which is worth stating plainly
+because the short probes earlier in this session failed to reproduce it and could easily have been
+read as "the footer is fine". Fixing everything that can 404, rather than only the place the bug was
+first seen, was the right call — and it is the third time this bug has been found in this codebase
+precisely because the previous two fixes stopped at the place they were noticed.
+
+That control matters on its own terms too. Three separate probes against the fixed build returned
+zero before it ran, and none of them were evidence of anything. Only the side-by-side settles it.
+
+The control also corrected two things this session had believed on the way in. The requests do
+**not** trickle in over minutes — the pre-fix build fires all twenty inside the first minute and
+then stops; the "takes minutes to appear" reading came from measuring inside iframes parked outside
+the host page's viewport, which is a property of the measuring rig, not of Next. And the caveat that
+`prefetch={false}` leaves hover prefetching alive was dropped from the code comments, because on
+Next 15.5.25 a deliberate hover on a menu link and on a footer link produced nothing.
+
+**`slots.svg` was not a latent problem, it was a live one.** Ten icon files carry a
+`1440x7453` Figma artboard rect. Nine paint `#0F121D`, which equals the page, so they hide.
+`slots.svg` also drags along the category bar's glass capsule (`#151624`), an inactive tab chip and
+a backdrop-blur layer — its topmost opaque fill is *not* the page colour, so it has been drawing a
+lighter square in the "Must-Play Slots" header all along. It reads as fine inside the category bar
+only because the file happens to reproduce that exact stack.
+
+`scripts/clean-svg.mjs` now has a third rule, and the interesting part is why it is geometric.
+Extending the old fill list would have fixed nine files and missed `slots.svg`, whose extra layers
+are perfectly ordinary colours. What they are not is small. But a plain "bigger than the viewBox"
+test was worse: it would have deleted **the ring around every flag** — 39.142 in a 39 box, which is
+`--border-flag`, node 1:4016, and part of the design. Measured across all 62 SVGs the shapes sort
+into two groups with a wide gap: everything to keep is at most 1.63x the viewBox, everything to
+remove is at least 2.7x. The threshold sits in that gap.
+
+The rule found the same page rect in **seventeen more files** nobody had looked at — every flag,
+every provider badge, both payment logos. All 27 were checked line by line afterwards: the only
+things removed are page rects, the footer panel behind the payment logos, `slots.svg`'s four bar
+layers and its blur layer. Every file still parses balanced with no dangling `url(#…)`.
+
+Then they were checked by rendering rather than by reading, because bytes do not prove pixels. Drawn
+into a canvas at 40px, `megaways` before the fix is **100% painted with all four corners fully
+opaque** — a solid block — and 29% with transparent corners after. Every one of the sixteen icon
+files now has transparent corners. And drawn side by side on the page colour, the "lighter square"
+`slots.svg` was suspected of is plainly visible in the before and gone in the after, while
+`megaways` looks identical in both — exactly as it should, since its rect *was* the page colour.
+
+**Also in this pass, from §9's open list:**
+
+- **The menu panel moved onto Figma's `#0D1420`**, and the rows had to move with it. This is the
+  trap worth remembering: our rows already matched the design at `#232431` — but only because
+  `bg-elevated` is white 6% *over `#151624`*. Dropping the surface to `#0D1420` would have taken the
+  same 6% to `#1C222D` and broken a colour that was right. Node `13:2362` declares an opaque
+  `#222431`, so the rows and the ID field now use a token instead of a translucent fill. `Sheet`
+  takes the colour as a prop rather than globally, because `SearchOverlay` shares the component and
+  its rows are `bg-card` — they would have become visibly lighter cards.
+- **The identity line follows the rebuilt frames.** Post-login is one line, the name (node
+  `13:2338`); VIP puts the badge on its own line above it (node `13:2550`), not beside it. The email
+  is gone: it stood in while the design had no username, and now it has one. The ID is `23885`, from
+  node `13:2345`. `profile.email` now has no reader anywhere in `src`, and stays in `user.json`
+  alongside `phone`, `dob` and `address`, which have never had one either — the mock account is
+  meant to look like a real one, and `PersonalInfoPanel` renders none of those four because node
+  1:4153 does not draw them.
+- **The balance chip** is node `13:2325`'s pill — 4% green, 22px radius, extra-bold gold under a
+  gold-dark 25% text shadow. It stays a label and not a button: the layer is named "Emerald Outlined
+  Button" in Figma but carries no affordance, where the desktop header's pill has a chevron.
+- **Backdrop dismissal now returns focus to the trigger.** The cause was not a missed restoration —
+  both paths run `opener.focus()`. The backdrop path then hands control back to the browser, which
+  performs the uncancelled default action of `mousedown`: focus the nearest focusable ancestor of
+  the press target. That target is the backdrop, non-focusable and detached by then, so focus falls
+  to `body` and overwrites a restoration that had already succeeded. `keydown` has no such default
+  action, which is the whole of the difference. One `preventDefault()`, inside the existing
+  `target === currentTarget` guard — it has to stay inside it, or clicking into the search field
+  would stop focusing it.
+
+Still open and unchanged: the tab bar's modality, the 768–1279 nav, the countdown period, the
+Romanian docs (§10) and `public/review/index.html`'s dead node ids. See the table at the top.
+
 ## Things worth remembering about this codebase
+
+- **This demo has three routes.** `/`, `/dev/screens` and `not-found`. Every other href in the app
+  is dead by design, and Next prefetches `<Link>`s by default — so a new `<Link>` needs
+  `prefetch={false}` unless its href is one of those two. Forgetting it is silent: the page renders
+  correctly and 404s in the background. The same bug has now been fixed three times, in
+  `Header`, `MobileNavBar` and finally everywhere else.
+- **A translucent fill only matches the design while the surface under it agrees.** `bg-elevated`
+  is white 6%; it matched Figma's menu rows exactly until the panel colour moved, and then it did
+  not. Where a node declares a flat fill, use a flat token.
+- **`assets.test.ts` cannot see inside a file.** It walks every asset path both ways and fails on a
+  missing or unreferenced file, but it only ever calls `existsSync`. A dirty re-export — the exact
+  failure its own docblock cites as its reason to exist — passes it. Look at the bytes.
 
 - **`docs/tokens.md` is the only link between Figma and the code.** The Figma file has no variables:
   `get_variable_defs` returns one value. If that document goes stale, components start carrying

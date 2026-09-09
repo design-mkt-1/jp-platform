@@ -113,8 +113,17 @@
      design paints only here. Figma writes DEPOSIT on it in white, which measures 2.66:1; the
      label is --bg-page instead, 7.01:1. See docs/tokens.md §2b. */
   --deposit-green: #00b579;
-  /* Sign out, node 13:2491 — the only red in the file. 7.01:1 on --bg-card. */
+  /* Sign out, node 13:2491 — the only red in the file. 7.22:1 on the menu's --bg-quaternary. */
   --text-signout: #ff787a;
+  /* The rows and the ID field of the rebuilt jackpot-menu frames, nodes 13:2362 and 13:2342, which
+     both declare this as a flat fill. It used to be reachable as `bg-elevated` — white 6% over
+     --bg-card composites to #232431, one unit off — but the panel now sits on --bg-quaternary,
+     where that same 6% falls to #1C222D. An opaque token is what the design actually specifies and
+     is the only form that survives a change of surface. */
+  --bg-menu-row: #222431;
+  /* The balance pill in that menu's header, node 13:2325. A green so faint it reads as a shade of
+     the panel rather than as a colour; nothing else in the design uses it. */
+  --bg-balance-chip: rgb(0 92 64 / 0.04);
 
   /*
    * Geometry, not colour, and the only length in this list.

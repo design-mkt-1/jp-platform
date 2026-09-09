@@ -163,6 +163,10 @@ function TournamentBody({ data }: { data: PromoBannerData }) {
          */}
         <Link
           href={data.ctaHref}
+          // The wheel card next door goes through `Button`, which opts out for itself; this one is
+          // a raw link for the reason above, so it has to say so separately. Same three dead
+          // `ctaHref`s either way — see the note in `Button`.
+          prefetch={false}
           className={[
             'inline-flex h-[30px] items-center rounded-[20px] bg-amber px-5',
             'whitespace-nowrap text-[13px] font-bold tracking-[-0.26px] text-ink',

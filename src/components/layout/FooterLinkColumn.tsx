@@ -25,6 +25,12 @@ export default function FooterLinkColumn({ title, links, className }: FooterLink
           <li key={link.href}>
             <Link
               href={link.href}
+              // Eleven of the twelve hrefs in footer.json are routes this demo does not have, and
+              // the twelfth is a `mailto:` — so Next's default prefetch can only ever ask the
+              // static export for pages that are not there. Tapping one still lands on
+              // `not-found.tsx`, which is intended; a background 404 for a page nobody asked for
+              // is not. The same opt-out is on `Header` and `MobileNavBar`.
+              prefetch={false}
               className="text-[13px] leading-4 text-secondary transition-colors hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
             >
               {link.label}

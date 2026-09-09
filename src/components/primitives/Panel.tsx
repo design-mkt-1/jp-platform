@@ -99,7 +99,24 @@ export function useOverlayBehavior(open: boolean, onClose: () => void): OverlayB
 
   const onBackdropMouseDown = useCallback(
     (event: ReactMouseEvent<HTMLDivElement>) => {
-      if (event.target === event.currentTarget) onClose()
+      if (event.target !== event.currentTarget) return
+
+      /*
+       * Without this, dismissing by the backdrop leaves focus on `<body>` while Escape returns it
+       * to the trigger — and the cleanup above is not what differs. Both paths run `opener.focus()`
+       * on line 96; the backdrop path then hands control back to the browser, which performs the
+       * uncancelled default action of `mousedown`: focus the nearest focusable ancestor of the
+       * press target. That target is this backdrop — not focusable, and detached by then — so
+       * focus is cleared to the body, overwriting a restoration that had already succeeded.
+       * `keydown` has no such default action, which is the whole of the difference.
+       *
+       * It has to stay inside the guard. In both `Panel` and `Sheet` the surface is a child of this
+       * element, so presses inside the surface bubble here too; cancelling their default action
+       * would stop a mouse click from focusing the search field. Guarded, only the press that
+       * actually dismisses is affected, and there is nothing left to focus after it.
+       */
+      event.preventDefault()
+      onClose()
     },
     [onClose],
   )

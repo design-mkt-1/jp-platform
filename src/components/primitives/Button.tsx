@@ -172,7 +172,17 @@ export default function Button({
   if (typeof rest.href === 'string') {
     const { href, ...anchor } = rest
     return (
-      <Link href={href} className={classes} {...anchor}>
+      // `prefetch={false}` is the default rather than a prop, because this demo has exactly two
+      // routes — `/` and `/dev/screens` — and every href a Button has ever been handed is one of
+      // the three dead promo links in tournaments.json. Next's default prefetch therefore asks the
+      // static export for pages that do not exist, one 404 each. An opt-out every caller has to
+      // remember is an opt-out that gets forgotten, which is how the same 404s reached a third
+      // place in this codebase after being fixed in `MobileNavBar` and `Header`.
+      //
+      // Before the spread on purpose: a caller that one day links somewhere real can still pass
+      // `prefetch` and win, without widening `ButtonAsLinkProps` — which is typed from
+      // `AnchorHTMLAttributes` and has no `prefetch` in it.
+      <Link href={href} prefetch={false} className={classes} {...anchor}>
         {children}
       </Link>
     )

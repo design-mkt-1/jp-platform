@@ -1,7 +1,6 @@
 <svg width="110" height="32" viewBox="0 0 110 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="1">
 <g id="desktop-main">
-<rect width="1440" height="7453" transform="translate(-149 -6856)" fill="#0F121D"/>
 <g id="Footer">
 <mask id="path-3-inside-1_0_1" fill="white">
 <path d="M-149 -132H1291V597H-149V-132Z"/>
@@ -9,8 +8,6 @@
 <path d="M-149 -132H1291V597H-149V-132Z" fill="#070F1D"/>
 <path d="M-149 -132V-131H1291V-132V-133H-149V-132Z" fill="#282936" mask="url(#path-3-inside-1_0_1)"/>
 <g id="mobile-payment-logos">
-<rect x="-51" y="-72" width="1244" height="138" rx="16" fill="#0D1420"/>
-<rect x="-50.5" y="-71.5" width="1243" height="137" rx="15.5" stroke="white" stroke-opacity="0.0627451"/>
 <g id="logos-wrap-grid">
 <g id="Img - cascading_gbp_a:margin">
 <rect x="-25" y="-10" width="160" height="52" rx="10" fill="#161625" fill-opacity="0.8"/>

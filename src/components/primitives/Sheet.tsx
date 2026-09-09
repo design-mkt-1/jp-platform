@@ -47,7 +47,28 @@ export interface SheetProps {
    * undimmed strip of page with no bar in it.
    */
   clearsNavBar?: boolean
+  /**
+   * Which token fills the surface. `card` is the sheet's own step off the page; `quaternary` is the
+   * darker `#0D1420` the jackpot-menu frames paint their panel, the strip under it and the tab bar
+   * with — the same value `MobileNavBar` and `Footer` already use.
+   *
+   * A prop rather than a `className` override, even though `SheetProps.className` is appended last
+   * below. Two `bg-*` utilities in one class attribute are resolved by their order in the generated
+   * stylesheet, not by the order they were written in, so the override would work or not depending
+   * on how Tailwind happened to sort that build. `Button` and `JackpotMenu` both carry the same
+   * warning.
+   *
+   * Opt-in, because `SearchOverlay` is the other consumer of this component and its rows are
+   * `bg-card` too: they read flush with the sheet today, and would become visibly lighter cards if
+   * the surface moved under them. Figma has no mobile search frame, so nothing says it should.
+   */
+  surface?: 'card' | 'quaternary'
   className?: string
+}
+
+const SURFACE_CLASSES: Record<NonNullable<SheetProps['surface']>, string> = {
+  card: 'bg-card',
+  quaternary: 'bg-quaternary',
 }
 
 export default function Sheet({
@@ -58,6 +79,7 @@ export default function Sheet({
   hideTitle = false,
   anchor = 'bottom',
   clearsNavBar = false,
+  surface = 'card',
   className,
 }: SheetProps) {
   const titleId = useId()
@@ -87,7 +109,8 @@ export default function Sheet({
         aria-labelledby={titleId}
         tabIndex={-1}
         className={[
-          'w-full overflow-y-auto outline-none bg-card px-5',
+          'w-full overflow-y-auto outline-none px-5',
+          SURFACE_CLASSES[surface],
           // The insets are 8 rather than the 12/24 they were, because at 390x844 the box available
           // to a top-anchored sheet is 760px and the jackpot menu's own content came to 804: the
           // last row, Sign out, fell outside the sheet and could only be reached by scrolling. The

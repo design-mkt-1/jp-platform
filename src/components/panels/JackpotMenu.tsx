@@ -60,8 +60,17 @@ const ACCOUNT_ROWS: MenuRow[] = [
   { label: 'Profile', glyph: 'profile', href: '/profile' },
 ]
 
+/*
+ * Node 13:2362 fills a row with a flat `#222431`, which is `bg-menu-row`.
+ *
+ * It used to be `bg-elevated` — white at 6% — and that was indistinguishable from the design while
+ * the panel was `--bg-card`: 6% over #151624 composites to #232431, one unit off what Figma paints.
+ * Moving the panel to #0D1420 would have dropped the same 6% to #1C222D and quietly broken a row
+ * colour that was right. A translucent fill only ever matches by agreeing with the surface under
+ * it; the opaque token is what the node actually specifies.
+ */
 const ROW_CLASSES = [
-  'flex h-11 w-full items-center justify-between rounded-lg bg-elevated px-3',
+  'flex h-11 w-full items-center justify-between rounded-lg bg-menu-row px-3',
   'transition-colors hover:bg-white/10',
   FOCUS_RING,
 ].join(' ')
@@ -72,7 +81,12 @@ const ROW_LABEL_CLASSES = 'font-flex text-[13px] font-medium uppercase leading-5
 function MenuLink({ row, onNavigate }: { row: MenuRow; onNavigate: () => void }) {
   return (
     <li>
-      <Link href={row.href} onClick={onNavigate} className={ROW_CLASSES}>
+      {/* Seven of the eight rows point at routes this demo does not have — only Casino's `/` is
+          real — so Next's default prefetch asks the static export for seven pages that are not
+          there. Measured on the deployed build: with the menu open the page accumulates one failed
+          `<route>/index.txt?_rsc=` per dead link, twenty-two of them pre-login once `/login` and
+          `/register` join in. The bar and the header already opt out the same way. */}
+      <Link href={row.href} onClick={onNavigate} prefetch={false} className={ROW_CLASSES}>
         <span className="flex min-w-0 items-center gap-2.5">
           <MenuGlyph name={row.glyph} size={15} strokeWidth={1.8} className="shrink-0 text-label" />
           <span className={`truncate ${ROW_LABEL_CLASSES}`}>{row.label}</span>
@@ -95,10 +109,15 @@ function AuthActions({ onNavigate }: { onNavigate: () => void }) {
   const base = `flex h-[38px] flex-1 items-center justify-center rounded-[20px] px-6 text-sm tracking-[-0.14px] transition-[filter] ${FOCUS_RING}`
 
   return (
-    <div className="flex items-center gap-2 rounded-[10px] bg-card px-4 py-3">
+    // No fill: the rebuilt frames sit this block straight on the panel — node 13:2333, the
+    // post-login equivalent, is placed at x=16, y=12 with nothing painted behind it. The
+    // `rounded-[10px] bg-card` that used to be here read as a card one step lighter than the sheet,
+    // which was invisible while the two were the same colour and would not be now.
+    <div className="flex items-center gap-2 px-4 py-3">
       <Link
         href="/login"
         onClick={onNavigate}
+        prefetch={false}
         className={`${base} bg-elevated font-semibold text-primary hover:brightness-150`}
       >
         Log In
@@ -106,6 +125,7 @@ function AuthActions({ onNavigate }: { onNavigate: () => void }) {
       <Link
         href="/register"
         onClick={onNavigate}
+        prefetch={false}
         className={[
           base,
           'bg-gradient-gold font-bold text-page hover:brightness-110',
@@ -141,7 +161,9 @@ function ProfileCard({ vip }: { vip: boolean }) {
   }, [user.id])
 
   return (
-    <div className="flex flex-col gap-2 rounded-[10px] bg-card px-4 pb-2 pt-3">
+    // Node 13:2333 sits at x=16, y=12 on the panel with no fill of its own; the `rounded-[10px]
+    // bg-card` this used to carry is gone for the same reason as in `AuthActions` above.
+    <div className="flex flex-col gap-2 px-4 pb-2 pt-3">
       <div className="flex items-center gap-3">
         <span
           aria-hidden
@@ -150,14 +172,28 @@ function ProfileCard({ vip }: { vip: boolean }) {
           <MenuGlyph name="user" size={24} />
         </span>
 
+        {/*
+         * Nodes 13:2338 (post-login) and 13:2550 (VIP).
+         *
+         * This block used to print the email above the name. That was the right call while it
+         * lasted: the design had no username to show and the mock data had no account number, so
+         * the email was the only identifier we had, and putting it here kept the line from simply
+         * repeating the ID field below. The rebuilt frames have both — the name is now spelled out
+         * as `luckytest1234567` and the ID field carries 23885 — so the stand-in is retired and the
+         * email is gone from the menu.
+         *
+         * Post-login is one line: node 13:2338 is 173x17 with node 13:2339, the name, as its only
+         * child. VIP is 173x44 and stacks the badge on its own line *above* the name (node 13:2552
+         * at y=0, the name at y=27) rather than setting it beside it, which is what this drew
+         * before. The type was already right: `text-sm font-bold text-primary` is the Inter Bold 14
+         * white that node 13:2339 asks for.
+         */}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <div className="flex min-w-0 items-center gap-1.5">
-            {vip ? <VipBadge /> : null}
-            {/* The design prints an account number here that the mock data does not carry; the
-                email is the identifier it does have, and it keeps this line distinct from the ID
-                field below instead of repeating it. See the change request. */}
-            <span className="truncate text-[11px] font-medium text-caption">{user.email}</span>
-          </div>
+          {vip ? (
+            <span className="flex min-w-0">
+              <VipBadge />
+            </span>
+          ) : null}
           <p className="truncate text-sm font-bold text-primary">{user.displayName}</p>
         </div>
 
@@ -175,8 +211,11 @@ function ProfileCard({ vip }: { vip: boolean }) {
         </Button>
       </div>
 
-      {/* Node 1:8296 */}
-      <div className="flex h-11 items-center justify-between rounded-lg bg-elevated px-2">
+      {/* Node 13:2342, 358x44, and the same flat `#222431` as a menu row — see ROW_CLASSES. The
+          value comes from `src/data/user.json`, which now carries the `23885` node 13:2345 prints
+          instead of the `user-luckytest` slug it held while the design had no account number to
+          copy from. */}
+      <div className="flex h-11 items-center justify-between rounded-lg bg-menu-row px-2">
         <p className="flex min-w-0 items-center gap-1.5 text-[17px] leading-[22px]">
           <span className="text-caption">ID:</span>
           <span className="truncate text-primary">{user.id}</span>
@@ -227,6 +266,11 @@ export default function JackpotMenu() {
       // `Menu` active. Sized by its content the sheet left 213px of live page showing pre-login and
       // 87px post-login, and its scrim greyed the bar out and ate the taps meant for it.
       clearsNavBar
+      // Sampled from the frames: the panel, the strip below it and the tab bar are all #0D1420 —
+      // one surface, which is why the design reads as full-screen. Our bar was already painted
+      // that way (`bg-quaternary`, the file's one Figma variable); the panel was `--bg-card`
+      // #151624 and is the piece that was out of step.
+      surface="quaternary"
     >
       {/* Node 1:8753 — the panel keeps its own header rather than borrowing the page's. */}
       <div className="mb-2 flex items-center justify-between gap-3">
@@ -239,8 +283,21 @@ export default function JackpotMenu() {
           className="h-9 w-[73px]"
         />
         <div className="flex items-center gap-2">
+          {/*
+           * Node 13:2325: an 8/4-padded pill at radius 22, filled with a 4% green so faint it
+           * reads as a shade of the panel, holding Inter Extra Bold 14 in #F0C775 — already our
+           * `gold-light` — under a gold-dark 25% text shadow. That shadow goes through
+           * `color-mix` the way `Button` tints its glows, rather than minting a fifth gold.
+           *
+           * Not a button, despite the layer being named "Emerald Outlined Button" in Figma. It
+           * carries no affordance: the desktop header's balance pill has a chevron
+           * (`PillAffordance` in HeaderPostlogin) and this has nothing, so it stays the label it
+           * has always been rather than growing a click target the design does not draw. That
+           * header pill is also filled `bg-card`, which would now stand out as a lighter block
+           * against this panel — another reason not to reuse it here.
+           */}
           {signedIn ? (
-            <span className="text-sm font-bold text-gold-light">
+            <span className="rounded-[22px] bg-balance-chip px-2 py-1 text-sm font-extrabold tracking-[-0.14px] text-gold-light [text-shadow:0_4px_12px_color-mix(in_srgb,var(--gold-dark)_25%,transparent)]">
               {formatGbp(BALANCES[authMode].totalGbp)}
             </span>
           ) : null}
@@ -271,6 +328,7 @@ export default function JackpotMenu() {
         <Link
           href="/terms"
           onClick={closePanel}
+          prefetch={false}
           className={`flex flex-1 items-center justify-center gap-2.5 rounded ${FOCUS_RING}`}
         >
           <MenuGlyph name="terms" size={22} className="shrink-0 text-label opacity-50" />
@@ -314,7 +372,7 @@ export default function JackpotMenu() {
           row heights and the 6px account-row gaps Figma sets are untouched. */}
       <div className="flex items-stretch justify-center gap-2 px-3 py-2">
         {/* Node 13:2487. `#FF787A` is the only red in the design and has no relative — it is
-            `--text-signout`, added with this frame. 7.01:1 on the panel. */}
+            `--text-signout`, added with this frame. 7.22:1 on the panel. */}
         {signedIn ? (
           <button
             type="button"
@@ -338,6 +396,7 @@ export default function JackpotMenu() {
         <Link
           href="/support"
           onClick={closePanel}
+          prefetch={false}
           className={`flex w-[168px] items-center justify-center gap-1.5 rounded-full border border-solid border-emerald px-5 py-[9px] text-[13px] leading-[18px] text-emerald transition-colors hover:bg-elevated ${FOCUS_RING}`}
         >
           <MenuGlyph name="support" size={16} strokeWidth={1.8} />
