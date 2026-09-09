@@ -2,6 +2,6 @@
   "enabledPlugins": {
     "ui-ux-pro-max@ui-ux-pro-max-skill": true,
     "ponytail@ponytail": true,
-    "caveman@caveman": false
+    "caveman@caveman": true
   }
 }
