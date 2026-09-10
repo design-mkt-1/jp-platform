@@ -6,8 +6,11 @@ import type { ReactNode } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 
 /**
- * The bottom tab bar of Figma node 1:8235 (390x84): four routes around a raised centre action that
- * opens the Jackpot menu.
+ * The bottom tab bar of Figma node 32:4828 (390x84): four routes around a centre action that opens
+ * the Jackpot menu, all sitting on a 360x64 glass capsule. The frame it replaced, the deleted
+ * 1:8235, raised the centre disc 42px above a full-width strip and labelled it "Menu"; the rebuilt
+ * one keeps the disc inside the capsule and draws no label, so the button is named by
+ * `aria-label` instead.
  *
  * Mobile only. The desktop frames have no equivalent — navigation there lives in the header — so
  * the whole bar is behind the `mobile:` breakpoint rather than being hidden by a page-level wrapper.
@@ -230,8 +233,8 @@ export function MenuGlyph({ name, size = 22, strokeWidth = 1.6, className }: Men
 const FOCUS_RING =
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue'
 
-/** Node 1:8244 and siblings: a 64px column, 22px mark, 4px gap, 10px label. */
-const TAB_CLASSES = `relative flex w-16 shrink-0 flex-col items-center justify-center gap-1 rounded-lg py-1 ${FOCUS_RING}`
+/** Node 32:4838 and siblings: a 64px column, 22px mark, 6px gap, 10px label. */
+const TAB_CLASSES = `relative flex w-16 shrink-0 flex-col items-center justify-center gap-1.5 rounded-lg py-1 ${FOCUS_RING}`
 
 interface Tab {
   label: string
@@ -271,9 +274,9 @@ function NavTab({
       // the intended behaviour; a background request for a page nobody asked for is not.
       prefetch={false}
       // The amber tint is the only visual cue for the current tab, and colour alone never
-      // reaches a screen reader.
+      // reaches a screen reader. Node 32:4841 and its siblings draw the rest white at 90%.
       aria-current={active ? 'page' : undefined}
-      className={`${TAB_CLASSES} ${active ? 'text-amber' : 'text-primary opacity-50'}`}
+      className={`${TAB_CLASSES} ${active ? 'text-amber' : 'text-primary opacity-90'}`}
     >
       <MenuGlyph name={tab.glyph} size={22} />
       <span
@@ -282,13 +285,6 @@ function NavTab({
       >
         {tab.label}
       </span>
-      {/* Node 1:8247: a 4px dot 18px below the column, outside the tab's own box. */}
-      {active ? (
-        <span
-          aria-hidden
-          className="absolute -bottom-[18px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-amber"
-        />
-      ) : null}
     </Link>
   )
 }
@@ -306,43 +302,45 @@ export default function MobileNavBar() {
       aria-label="Mobile"
       className={[
         'fixed inset-x-0 bottom-0 hidden pb-[env(safe-area-inset-bottom)] mobile:block',
-        // Normally under the z-50 scrims, which is what dims the bar behind the search sheet.
-        //
-        // Above them while the jackpot menu is open, because that sheet stops at the bar's top edge
-        // and the raised Menu disc is the one part of the bar that reaches past it — 54px of circle
-        // sitting 42px proud of the 84px strip. At z-40 the sheet painted over its top half and the
-        // disc rendered as a gold semicircle; the design draws it whole, over the panel. A number
-        // and not a swap of the scrim's own z-index: the search sheet must keep covering this bar,
-        // and it is portalled after the nav in the DOM, so equal values would still put it on top.
-        menuOpen ? 'z-[60]' : 'z-40',
+        // Under the z-50 scrims, which is what dims the bar behind the search sheet. The jackpot
+        // menu's sheet stops at the bar's top edge, and nothing in the bar reaches past it any more,
+        // so the bar needs no second z-index while that menu is open.
+        'z-40',
       ].join(' ')}
     >
-      {/* `bg-quaternary` is the design's own value here — node 1:8235 resolves to BG/Quaternary,
-          the one Figma variable in the file. */}
-      {/* The 84 of node 1:8235 is declared once as `--mobile-nav-h` in globals.css, because two
-          other places measure this bar: MobileShell's end-of-document spacer and the jackpot
-          menu's sheet, which stops its scrim exactly here. */}
-      <div className="relative flex h-[var(--mobile-nav-h)] w-full items-center justify-between rounded-t-3xl bg-quaternary px-4">
+      {/* Node 32:4828: `bg-quaternary` (#0D1420) under a 1px white-8% rule, 20px to the first tab.
+          Its 84 is declared once as `--mobile-nav-h` in globals.css, because two other places
+          measure this bar: MobileShell's end-of-document spacer and the jackpot menu's sheet,
+          which stops its scrim exactly here. */}
+      <div className="relative flex h-[var(--mobile-nav-h)] w-full items-center justify-between border-t border-solid border-medium bg-quaternary px-5">
+        {/* Node 32:4829, the glass capsule: 360 wide at 390 (15px each side), 64 tall, centred.
+            Decorative, so it takes no pointer events and the tabs above it keep every tap. */}
+        <span
+          aria-hidden
+          className={[
+            'pointer-events-none absolute inset-x-[15px] top-1/2 h-16 -translate-y-1/2 rounded-[32px]',
+            'border border-solid border-white/50 bg-gradient-to-r from-white/[0.12] to-white/0',
+            'shadow-[0_10px_24px_rgb(0_0_0/0.25)] backdrop-blur-[14px]',
+          ].join(' ')}
+        />
         {TABS.slice(0, 2).map((tab) => (
           <NavTab key={tab.href} tab={tab} active={pathname === tab.href} onNavigate={closePanel} />
         ))}
 
-        {/* Node 1:8236. The raised disc is a child of this column rather than a sibling of the
-            bar, so the label below it lands on the same baseline as the other four labels and the
-            whole 64px slot — disc included — is one hit target. */}
+        {/* Node 32:4830: a 64px slot holding the 56px disc of 32:4831, centred on the capsule.
+            The whole slot is the hit target. */}
         <button
           type="button"
           onClick={() => (menuOpen ? closePanel() : openPanel('jackpotMenu'))}
           aria-expanded={menuOpen}
           aria-haspopup="dialog"
-          className={`${TAB_CLASSES} text-amber`}
+          aria-label="Menu"
+          className={`relative flex size-16 shrink-0 items-center justify-center rounded-[32px] ${FOCUS_RING}`}
         >
           <span
             aria-hidden
             className={[
-              // Explicit centring rather than relying on the flex parent's static position for an
-              // absolutely positioned child — the rule holds, but not obviously enough to read.
-              'absolute -top-[42px] left-1/2 -translate-x-1/2 flex size-[54px] items-center justify-center rounded-[27px] text-page',
+              'flex size-14 items-center justify-center rounded-[28px] text-page',
               'border border-solid border-white/20',
               // The design's #FFD182 -> #F59E0B is the gold highlight falling into amber. Both
               // ends already exist as tokens, so the ramp is built from them rather than minting
@@ -353,11 +351,6 @@ export default function MobileNavBar() {
             ].join(' ')}
           >
             <MenuGlyph name="burger" size={20} strokeWidth={2.6} />
-          </span>
-          {/* Occupies the mark's slot so "Menu" sits level with the other labels (node 1:8259). */}
-          <span aria-hidden className="size-[22px]" />
-          <span className="whitespace-nowrap text-[10px] leading-3 font-medium capitalize tracking-[0.2px]">
-            Menu
           </span>
         </button>
 

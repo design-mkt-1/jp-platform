@@ -92,7 +92,7 @@ export const screens: ScreenSpec[] = [
     // placed inside the post-login homepage.
     figmaNodeId: '32:4828',
     description:
-      'The tab bar fixed to the bottom of every mobile page: Casino, Live Casino, the raised Menu disc, Sport, Promos.',
+      'The tab bar fixed to the bottom of every mobile page: Casino, Live Casino, the Menu disc, Sport, Promos, on a glass capsule.',
   },
   {
     id: 'jackpot-menu-prelogin',

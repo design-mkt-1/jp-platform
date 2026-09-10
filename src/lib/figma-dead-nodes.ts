@@ -5,7 +5,7 @@
 // whole-page `get_metadata` dump nor a numeric range is admissible evidence here: both were tried
 // in session 12 and both gave confident wrong answers.
 //
-// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 295 citations were already in the tree
+// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 291 citations were already in the tree
 // when the guard was written; the guard exists to stop new ones. Removing a line from this list
 // after cleaning up its citation is always safe — the guard never asks that a baseline entry still
 // be present.
@@ -323,17 +323,13 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '1:8235 src/app/globals.css',
   '1:8235 src/app/layout.tsx',
   '1:8235 src/components/layout/MobileNavBar.tsx',
-  '1:8236 src/components/layout/MobileNavBar.tsx',
   '1:8239 src/components/layout/MobileNavBar.tsx',
-  '1:8244 src/components/layout/MobileNavBar.tsx',
   '1:8245 src/components/layout/MobileNavBar.tsx',
-  '1:8247 src/components/layout/MobileNavBar.tsx',
   '1:8249 docs/audit-session-8.md',
   '1:8249 docs/next-session.md',
   '1:8249 src/components/layout/MobileNavBar.tsx',
   '1:8254 src/components/layout/MobileNavBar.tsx',
   '1:8257 src/components/layout/MobileNavBar.tsx',
-  '1:8259 src/components/layout/MobileNavBar.tsx',
   '1:8260 docs/next-session.md',
   '1:8260 docs/tokens.md',
   '1:8260 public/review/index.html',
