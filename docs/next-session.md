@@ -62,8 +62,8 @@ flight.
 | 5 | Three menu rows promise a submenu | `Sport`, `Casino` and `Payments` draw a disclosure chevron and navigate instead. `Casino` goes to `/`, the page you are already on. | audit §2.6 |
 | 6 | The provider filter's results ride a 40s marquee | Filter to `net` and the only match slides across the row, clipped 25px by its own container, off-screen for part of every cycle. | audit §2.7 |
 | 7 | The no-results copy points at nothing | "browse our categories below" — the panel below it holds one button and no categories. | audit §2.9 |
-| 8 | Four labels for two auth buttons | Desktop `Login`/`Register`, mobile `Log In`/`Sign In`; the mobile *register* button reads as log-in. The copy is Figma's own, so it is a question for whoever owns the design. | audit §3.4 |
-| 9 | Six SVGs still carry the Figma artboard | `clean-svg.mjs --dry` reports nothing to do. The furniture is a `<path>`, and rule 2 only catches paths starting more than 1000 units outside the viewBox — these start at −149 to −961. Invisible today; the same class of bug as `slots.svg`. | audit §3.5 |
+| 8 | Two spellings of one auth label | Half of this closed in session 10: the mobile *register* button no longer reads as log-in, and `HeaderPrelogin.tsx:71` and `JackpotMenu.tsx:135` both say `Register`. What survives is desktop `Login` against mobile `Log In` — one label, two spellings. Still the design owner's question. | audit §3.4, §14 |
+| ~~9~~ | ~~Six SVGs still carry the Figma artboard~~ — **closed in `eb99091`** | Closed as a class, not as six instances: `clean-svg.mjs` now judges the geometry's own bounding box instead of how far the artboard happened to sit, so the −149 to −961 cases rule 2 missed are caught. `assets.test.ts` fails if it returns. This row contradicted both §13 and `start-here.txt` and is struck rather than deleted so the trail stays findable. | §13 |
 
 **Agreed and done:**
 
@@ -87,19 +87,18 @@ are closed across the app. All in §11.
 | 7  | A dead Figma node id cannot be detected | `screens.test.ts` checks that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing in the repo can do better without calling Figma. | §9 |
 | 8  | Thirteen deliberate differences         | Currency, fallback artwork, the mobile hero showing one offer, and ten more — each listed with its node and its reason. To be re-confirmed at sign-off, not fixed. | §5 |
 
-## Start here → [`docs/session-11-plan.md`](session-11-plan.md), then §14 below
+## Start here → [`docs/session-11-plan.md`](session-11-plan.md), then §15 below
 
-Session 10 ran on 2026-09-10. It put the six open choices in front of the owner as rendered
-before/after pairs at 390 rather than editing toward them, then implemented what was picked. Halfway
-through, the owner compared the category bar against Figma and rejected it, and that comparison
-opened the real finding: **four separate desktop-frame elements were painting on the phone**, none of
-them scoped to a viewport. §14 below carries the measurements.
+Session 11 ran on 2026-09-10. It committed session 10's work, then spent itself on the machine
+rather than on the design: seventeen plugins were declared and one was installed, parallel work moved
+to one git worktree per worker, and four copies of the setup checklist became one. §15 below carries
+the measurements, including a trap this repo's own gate had presented as safe — the accessibility
+build, run while `next dev` is up, wrote into the shared `.next` and took every route to 500.
 
-What is left is four areas of work, which is what `session-11-plan.md` is built around — its §0 is
-the checklist of what does not travel with a clone (the plugins, the owner's two global hooks, Orca,
-and the memory files), and its §4 is the list of traps this project has already paid for, including
-the one session 10 paid: a static export served from a stale `out/` directory scored twelve phantom
-`serious` accessibility findings per state and read exactly like a real result.
+**`session-11-plan.md` still carries an 11 because its §2 has never been executed.** It is the live
+plan, not an archive. All four areas of work are still open, and the next session amends that file in
+place rather than opening a `session-12-plan.md` — copying a plan is how four setup checklists came
+to disagree with each other. Its §0 is the new-machine checklist, its §4 the traps already paid for.
 
 Pull before anything else: the repo's skill hook fires only from files on disk, and two sessions
 running have opened on a stale checkout.
@@ -139,7 +138,7 @@ which a dead id still does.
 
 ```bash
 npm run dev          # review server on :3000
-npm test             # vitest, 64 tests; also runs in CI, before the build
+npm test             # vitest, 65 tests; also runs in CI, before the build
 npm run build:check  # production build into .next-build, safe while dev is running
 npx tsc --noEmit
 npx eslint src --max-warnings=0
@@ -970,6 +969,76 @@ from `html` and came out **21 tall against Figma's 18**, pushing the title and s
 "baseline" — producing 12–15 phantom `serious` colour-contrast findings per state and an identical
 pair of results that appeared to prove the session's changes were innocent. The HTTP 200 check proved
 a server was up, not what it served. Confirm the served bytes equal the freshly built bytes.
+
+### 15. Session 11 — the preconditions closed, and an export that wrote into the shared build
+
+Opened clean and current, the first session in three to do so. Three commits landed — `9f73ce8`,
+`56e9c5c`, `3257db2` — and none of them touched `session-11-plan.md` §2. What closed was that plan's
+§0 and §3: the machine, the plugins, and how parallel work is run.
+
+**A `/clear` drops the handle, not the subagent.** The session opened after the conversation was
+cleared while W7, the hero badge worker, was still running. `TaskList` returned nothing, so there was
+no way to address it; its completion notification arrived anyway, fourteen minutes later. What a
+fresh session can do about a worker it can see on disk but cannot address is **unknown**. Watching
+`scripts/.tmp/` for the writes to stop was set up and turned out to be unnecessary.
+
+**A worker's own report is not evidence — twice over.** W7's report closed both of these:
+
+| Reported closed | What was true | Evidence |
+| --- | --- | --- |
+| `.next-w7` removed | the directory went, the line did not | `tsconfig.json` still carried `.next-w7/types/**/*.ts` in `include`, one `git add` from a committed path no clone will ever have |
+| its dev server gone | the **process** was not | the orphan on port 3107 recreated `.next-w7` between two checks **two minutes** apart, and would have rewritten `tsconfig.json` again during the gate |
+
+Both are why one git worktree per worker became the default in `56e9c5c`; the reasoning is in
+`CLAUDE.md`'s Orchestration section and is not repeated here.
+
+**Plugins: seventeen declared, one installed.** `.claude/settings.json` declared seventeen and
+exactly one — `ui-ux-pro-max` — had an install record whose `projectPath` was this checkout. The gap
+was invisible because `claude plugin list` prints "enabled" machine-wide: it names the current
+project's flag beside a record that may belong to another project, and it called fifteen plugins
+enabled that were not installed here. `scripts/plugins.mjs` is the check and its docblock carries the
+mechanism; a `SessionStart` hook runs it before the first message. Now 17/17.
+
+`superpowers` and `figma` were **predicted** to be the awkward two, because their marketplace entries
+resolve from separate git repos pinned by sha rather than from paths inside the marketplace. That was
+reasoning. **Measured**, both installed like the other fourteen.
+
+**Hero geometry, re-measured on the artefact that ships.** Taken from the static export served over
+HTTP, not from the worker's private `.next-w7`, at asserted `innerWidth` 390:
+
+| | Before | Measured on the export |
+| --- | --- | --- |
+| Welcome badge height | 21 | **18**, `line-height` 12px |
+| Wager badge height | 21 | **18**, on `rgba(255,149,0,0.1)` |
+| Get pill | 700 / 19.5 / normal | **600 / 19px / −0.26px**, glow `rgb(48,48,214)` |
+
+The hero card measures x=16, width 358, so the Welcome badge at viewport x=40 sits at **24**
+card-relative — which is Figma's number, and the reason the worker's 24 and this session's 40 were
+the same measurement taken from two origins rather than a disagreement.
+
+**The gate, run twice.** 65 tests, `tsc` 0, `eslint` 0, `build:check` 0, and axe over the nine states
+at 0 critical / 0 serious / 0 moderate / 0 minor.
+
+**The dead node ids, counted rather than estimated.** The `1:5720`–`1:8234` band still resolves to
+nothing and still appears **38 distinct ids across 18 files** under `src/`, and **47 across 6 files**
+under `docs/`. One trap inside the trap: `1:5687`, which `IconButton.tsx:4`, `Header.tsx:106` and
+`globals.css:26` all cite, is dead too and sits **below** the band — a grep written to the band alone
+misses all three.
+
+**`audit-session-8.md` was not touched.** Nothing in that audit closed today, so the file gets no new
+date and no churn. `session-11-plan.md` §6 asks for it to be updated at fan-in; this is the answer,
+recorded so the omission reads as a decision.
+
+**The trap this session paid for.** The documented accessibility build —
+`GITHUB_PAGES=true NEXT_DIST_DIR=.next-a11y npx next build --turbopack` — was run while `next dev`
+was up, which this repo's own gate presents as safe. The export landed correctly in `.next-a11y`,
+**and** the shared `.next` gained `export-detail.json`, `export-marker.json`, `BUILD_ID` and
+`required-server-files.json`, every one stamped 13:02:25–13:02:33, exactly that build's window. Every
+route then returned HTTP 500 until `.next` was deleted and the dev server restarted. The redirect
+looked complete because in the direction anyone checked it was: `next.config.ts:23` reads
+`NEXT_DIST_DIR`, and the export honoured it. Why the same run also wrote into `.next` is **unknown**,
+and the evidence is gone — `.next` was deleted to recover the server. Stop the dev server before the
+accessibility run, the same as for `npm run build`.
 
 ## Things worth remembering about this codebase
 

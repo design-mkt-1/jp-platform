@@ -56,7 +56,7 @@ Open Claude Code in the jp-platform folder and give it this:
     `npm ci` and `npm run plugins`; if anything is missing, `npm run
     plugins:install` and restart. Then read docs/session-11-plan.md: §2 is the
     work and §4 is the list of traps this project has already paid for. Then
-    CLAUDE.md and docs/next-session.md §14. The setup checklist lives in this
+    CLAUDE.md and docs/next-session.md §15. The setup checklist lives in this
     file, docs/start-here.txt, and nowhere else.
     Mobile at 390px is the only priority; 95% of traffic is a phone.
     Verify before you assume.
@@ -149,6 +149,10 @@ That is what this exists for:
 
 which sends the build to .next-build and cannot touch the running server.
 
+The accessibility run is NOT exempt, even though it points at .next-a11y for
+exactly this reason. On 2026-09-10 it wrote into .next as well and took every
+route to 500. Why it wrote to both is unknown. Stop the dev server before it.
+
 The same thing happens after you edit next.config.ts while dev is running: Next
 restarts itself when the config changes and treads on itself. After any change
 there, stop and restart the server by hand.
@@ -158,7 +162,7 @@ USEFUL COMMANDS
 ---------------
 
     npm run dev              review server on :3000
-    npm test                 vitest, 64 tests; also runs in CI, before the build
+    npm test                 vitest, 65 tests; also runs in CI, before the build
     npm run build:check      production build, safe while dev is running
     npx tsc --noEmit
     npx eslint src --max-warnings=0
@@ -194,12 +198,27 @@ docs/audit-session-8.md, which is the newest and the longest list.
 
 What is genuinely open right now:
 
-1. The seven items at the end of docs/next-session.md §13 — the legal paragraph,
-   the footer link rows, the divider placement, the 34px under the last row, a
-   play/pause button for the provider marquee, focus restoration from the phone
-   account sheet, and the four auth labels. Session 9 (2026-09-10) executed
-   docs/session-9-plan.md and then took five more items off
-   docs/audit-session-8.md; the page is 7228px against Figma's 7129.
+1. The seven items at the end of docs/next-session.md §13. Session 10 worked
+   through them and they now stand in four states:
+
+   CLOSED    the legal paragraph (hidden on mobile, -112), the divider moved
+             between links and flags, the 34px restored under the last row, and
+             the provider marquee's play/pause - closed as a decision to leave
+             it, not as a fix, so it stays a known gap at sign-off.
+   DID NOT   focus restoration from the phone account sheet. Re-run five times
+   REPRODUCE with real taps, a mouse, and against the deployed build: focus
+             landed on Menu every time, never on <body>. Which measurement was
+             the artefact is unknown - session 9's script is not in the repo.
+   PARTIAL   the auth labels. The real defect is closed: the mobile register
+             button no longer reads as log-in. What survives is desktop "Login"
+             against mobile "Log In" - one label, two spellings.
+   OPEN      the footer link rows, 32 -> 44. Measured at +80 over six rows.
+
+   The mobile page is 7150px, measured 2026-09-10. It was 7228. Do not treat
+   that as a subtraction: the known changes account for 7122, and the missing
+   28px is unknown. Figma's 7129 is unconfirmed - nothing re-measured it after
+   the mobile subtree was rebuilt on 2026-09-09, so it may be stale the way the
+   footer's recorded 1221.4 turned out to be.
 2. Game cards stay <article> with no link, by your decision of 2026-08-08: a
    link to nowhere is worse than no link. It resolves itself when game pages
    arrive.
@@ -226,9 +245,12 @@ nobody re-opens them:
   - Clicking a sheet's backdrop now returns focus to its trigger. Re-verified
     on 2026-09-09 with real mouse presses, which is the only way to test it:
     a scripted element.click() does not move focus and makes a working
-    restoration look broken. One gap is still open: Escape on the phone
-    account sheet lands focus on <body>, because More is unmounted by the
-    same commit that opens the panel — item 6 of next-session.md §13.
+    restoration look broken. The gap this note used to list as still open —
+    Escape on the phone account sheet landing on <body> — did not reproduce in
+    session 10. Five runs with real taps, a mouse and the deployed build all
+    landed on Menu. Escape sets panel: null, which closes the sheet and the
+    jackpot menu together, so More is not a reachable target and Menu is the
+    correct landing point. Which measurement was the artefact is unknown.
 
 
 DOCUMENTS IN THE REPO
@@ -236,9 +258,12 @@ DOCUMENTS IN THE REPO
 
 README.md                  what the project is, how to run it
 docs/next-session.md       what is left to do
-docs/session-11-plan.md    the work: the four areas and the traps already paid
-                           for. Its §0 points back here — THIS file is the only
-                           setup checklist, because four copies of it diverged
+docs/session-11-plan.md    STILL THE LIVE PLAN. Its §2 has never been executed,
+                           so the next session amends this file rather than
+                           opening a session-12-plan.md. The four areas of work
+                           and the traps already paid for. Its §0 points back
+                           here — THIS file is the only setup checklist,
+                           because four copies of it diverged
 docs/session-10-plan.md    the previous plan, executed 2026-09-10; kept for its
                            record of how the six owner choices were put in front
                            of you before anything was edited

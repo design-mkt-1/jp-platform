@@ -1,5 +1,11 @@
 # Session 11 — the mobile demo, after four leaks were closed
 
+> **Live as of 2026-09-10, after session 11. §2 has never been executed.** The 11 in the filename is
+> not staleness — this is the plan in force, and it is amended in place rather than replaced. A new
+> `session-N-plan.md` opens only when the previous one's §2 has been drained. Copying a plan forward
+> is how four copies of one setup checklist came to disagree with each other, which `3257db2` spent a
+> commit undoing.
+
 ## Context
 
 **Why this file exists.** Session 9 opened on a checkout **22 commits behind** `origin/main`. Session 10
@@ -18,7 +24,7 @@ Then the owner compared the category bar against Figma and rejected it. That com
 Closing them is most of what session 10 actually did, and the same shape is still open in two places.
 
 **Repo:** `main`. **Deployed:** https://design-mkt-1.github.io/jp-platform/
-**Read first:** [`CLAUDE.md`](../CLAUDE.md), then [`next-session.md`](next-session.md) §14.
+**Read first:** [`CLAUDE.md`](../CLAUDE.md), then [`next-session.md`](next-session.md) §15.
 
 ---
 
@@ -35,6 +41,11 @@ copied into every session plan, which is how four copies came to disagree with o
 one told you `ponytail` and `caveman` were not installed while `claude plugin list` said they were,
 and both readings were wrong in different ways. One list, one place.
 
+A `SessionStart` hook runs the plugin check before your first message, so silence there means all
+seventeen are installed for this checkout; `npm run plugins` is the manual confirmation. If anything
+is missing, `start-here.txt` carries the install step and the `git diff .claude/settings.json` that
+has to follow it — the installer rewrites that committed file.
+
 **Then confirm the repo's hook fires:** `PROJECT SKILLS (.claude/skills, committed)` must appear above
 your first message.
 
@@ -45,10 +56,30 @@ asserted.
 
 | | |
 | --- | --- |
-| Gate | 65 tests · `tsc` 0 · `eslint` 0 · static export green |
+| Gate, 2026-09-10 | 65 tests · `tsc` 0 · `eslint` 0 · `build:check` 0 |
 | axe over the nine states | 0 critical / 0 serious / 0 moderate / 0 minor |
-| Mobile page height | 7150, from 7228 |
+| Plugins installed for this checkout | 17/17 |
+| Mobile page height | **7150**, measured 2026-09-10. It was 7228. The two do not reconcile — the known changes account for 7122 — and the 28px difference is **unknown**. Figma's 7129 is **unconfirmed**: nothing re-measured it after the mobile subtree was rebuilt on 2026-09-09, so it may be stale the way the footer's 1221.4 was |
 | Mobile footer | 1069.38, from 1181.38. Figma `21:3693` is 1140.4 |
+
+### What session 11 landed — and what it did not
+
+Session 11 closed this plan's §0 and §3 preconditions and **executed none of §2**.
+
+| Commit | What |
+| --- | --- |
+| `9f73ce8` | session 10's UI work, which was still uncommitted in the tree — the four desktop leaks, the chips, `Badge` `leading-3`, `--blue-tint` 15% → 10%, and `.gitignore` globbed to `.next-*/` |
+| `56e9c5c` | `CLAUDE.md` Orchestration — Orca workers, one git worktree per task |
+| `3257db2` | `scripts/plugins.mjs`, `npm run plugins`, the `SessionStart` hook, and four setup checklists collapsed into `start-here.txt` |
+
+Re-measured on 2026-09-10 so the next session does not derive it again:
+
+| Area | State | Evidence |
+| --- | --- | --- |
+| A — focus defects | **not started** | `scripts/focus-restore.mjs` does not exist; `HeaderNavMenu.tsx:76-80`'s `onPointerDown` still calls `setOpen(false)` with no `focus()` |
+| B — dead node ids | **not started** | **38** distinct band ids across **18** files under `src/`, **47** across **6** under `docs/`; `1:5687` is dead too and sits below the band |
+| C — header and hero differences | **not started** | all five rows still undecided; `IconButton.tsx` unchanged and still citing `1:5687` |
+| D — recent-wins strip | **not started** | `RecentWinsTicker.tsx` and `RecentWinItem.tsx` untouched; the mobile node is still not in hand |
 
 ### What session 10 landed
 
@@ -106,8 +137,14 @@ beside the a11y run at fan-in, not in `npm test`.
 
 ### B — the dead node citations
 
-Roughly **54 distinct ids** in the deleted `1:5720`–`1:8234` band, across roughly **87 sites** in
-`src/` and `docs/`. The band was removed when the mobile subtree was rebuilt on 2026-09-09.
+Counted on 2026-09-10, not estimated: **38 distinct ids across 18 files under `src/`** (55 citations),
+and **47 across 6 files under `docs/`** (105 citations), all in the deleted `1:5720`–`1:8234` band.
+The band went when the mobile subtree was rebuilt on 2026-09-09.
+
+**The band is not the whole set.** `1:5687` is dead as well and sits *below* it, cited in three
+places — `IconButton.tsx:4`, `Header.tsx:106` and `globals.css:26`. A grep written to the band alone
+misses all three, which is the same shape as the defect this area exists to fix: a rule narrow enough
+to look complete.
 
 Nothing breaks today. What breaks is every future comparison: `CategoryPill.tsx` derived the mobile
 chip's 32px height and 12px label from `1:5799`, a node that no longer exists, and that is exactly the
@@ -194,6 +231,14 @@ Rules that earned their keep in session 10, worth quoting to workers:
   findings per state, then "proved" the session's changes were innocent by comparing the stale export
   against itself. **Confirm the served bytes equal the built bytes** and that the HTML references that
   exact file. An HTTP 200 proves a server is up, not what it is serving.
+- **The a11y build writes into the shared `.next` as well as into `NEXT_DIST_DIR`.** Session 11 ran it
+  with `next dev` up, which the gate below presents as safe. The export landed in `.next-a11y`
+  correctly — **and** `.next` gained `export-detail.json`, `export-marker.json`, `BUILD_ID` and
+  `required-server-files.json`, all stamped 13:02:25–13:02:33, exactly that build's window. Every route
+  returned 500 until `.next` was deleted and the server restarted. `next.config.ts:23` reads
+  `NEXT_DIST_DIR` and the export honoured it, so the redirect looked complete in the only direction
+  anyone checked. Why the same run also wrote into `.next` is **unknown**, and the evidence is gone —
+  `.next` was deleted to recover the server. **Stop the dev server before the a11y run.**
 - **A written measurement ages.** The footer's recorded 1221.4 was taken before session 9's own commit
   `0855c23` removed 40px from the partner slots. The real baseline was 1181.38, and the "40px
   dev-vs-export divergence" that cost an hour did not exist.
@@ -215,7 +260,8 @@ Rules that earned their keep in session 10, worth quoting to workers:
   was right and the CSS was forcing it square. But `live-casino.svg` (16.0087×11.2961) and
   `jackpots.svg` (20×17.8906) are also non-square while their Figma frames are 16×16, so a blanket
   "auto width for all icons" would have broken `Live Casino` by ~6.7px. Fix the instance you measured.
-- **Never run `npm run build` while `next dev` is up.** They share `.next`; every route then returns
+- **Never run `npm run build` while `next dev` is up** — and that includes the `NEXT_DIST_DIR=.next-a11y`
+  run, which looks exempt and is not, measured 2026-09-10. They share `.next`; every route then returns
   500 with `ENOENT … _buildManifest.js.tmp.…` while the source is fine.
 
 ## 5. The gate, once, at fan-in
@@ -242,9 +288,14 @@ node scripts/a11y.mjs $TEMP/a11y-out http://localhost:4180/jp-platform
 axe must stay at **0 critical / 0 serious**. Then commit, push, watch the Pages run, and re-check on
 the deployed site at 390.
 
+**"No dev server running" is not a formality.** If one was up when that build ran, `.next` is poisoned
+and every route returns 500. Delete `.next` and restart the server. The 500s are not a code defect and
+the source is fine — see §4.
+
 ## 6. Docs at fan-in
 
-Add a §15 to [`next-session.md`](next-session.md). Update the status tables in
-[`audit-session-8.md`](audit-session-8.md) for anything closed. Record measurements, not adjectives.
+Add a §16 to [`next-session.md`](next-session.md) — §15 is session 11's. Update the status tables in
+[`audit-session-8.md`](audit-session-8.md) for anything closed, and if nothing closed, say so in the
+new section rather than touching the file for a date. Record measurements, not adjectives.
 Any new colour goes into [`tokens.md`](tokens.md) **with its Figma node id**, in the same change — the
 citation rule is what stops that file becoming a dumping ground.

@@ -50,13 +50,14 @@ once somebody actually pressed the buttons.
 Then the standard gate, all four:
 
 ```bash
-npm test                          # vitest, 64 tests
+npm test                          # vitest, 65 tests
 npx tsc --noEmit
 npx eslint src --max-warnings=0
 npm run build:check               # safe while `next dev` is running
 ```
 
-and, when `src/` changed, the accessibility run over the nine states, which must stay at zero:
+and, when `src/` changed, the accessibility run over the nine states, which must stay at zero.
+**Stop `next dev` first** — see below, this run is not exempt:
 
 ```bash
 GITHUB_PAGES=true NEXT_DIST_DIR=.next-a11y npx next build --turbopack
@@ -68,6 +69,14 @@ node scripts/a11y.mjs $TEMP/a11y-out http://localhost:4173/jp-platform
 **Never** run `npm run build` or a static export while `next dev` is up. They share `.next`, the
 collision corrupts it, and every route starts returning 500 with `ENOENT … _buildManifest.js.tmp.…`
 while the source is perfectly fine. It looks like an application bug and it is not.
+
+**That includes the accessibility run above**, which is the trap session 11 paid for. It exists to
+avoid `.next` and so it reads as exempt. Measured on 2026-09-10: with `next dev` running, that build
+put the export in `.next-a11y` correctly *and* wrote `export-detail.json`, `export-marker.json`,
+`BUILD_ID` and `required-server-files.json` into the shared `.next`, timestamped inside its own
+window, and every route went to 500 until `.next` was deleted and the server restarted. Why it wrote
+to both is **unknown** — the evidence was deleted to recover the server. Recovery is the same either
+way: delete `.next`, restart `next dev`.
 
 ### Two measuring traps already paid for
 
