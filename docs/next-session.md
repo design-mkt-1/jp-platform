@@ -1,6 +1,6 @@
 # Next session — Jackpot demo
 
-## Handoff, 2026-09-10, session 14 — read this first if you are on a different machine
+## Handoff, 2026-09-10, session 15 — read this first if you are on a different machine
 
 **The goal, stated by the owner this session:** this is a **demo of what is in Figma**, front-end
 plus the buttons the design shows. Making the platform work is not the goal. So a control that looks
@@ -8,9 +8,30 @@ right and does nothing is on target; a control that renders 3px taller than its 
 That is why the thirteen "See All (206)" pills, the marquee with no stop button and the game cards
 being `<article>` with no link are all closed decisions, not defects.
 
-`main` is at `4ea643a`. Everything below is pushed and deployed.
+`main` is at `c60f5bc` plus this session's commit. Everything below is pushed and deployed.
 
-Closed this session:
+Closed in session 15, on a machine that had never run this repo:
+
+- **The recent-search line-height, handoff item 2 — measured, and it is correct.** Figma's
+  `1:4457` (the *Blackjack VIP* row inside `1:4431`) is Roboto Medium 13px with
+  `line-height: normal` — character for character the same spec as the popular tag `1:4436` on
+  line 33. In Chrome at an asserted `innerWidth` of 390, opened with a real `page.tap()`, the row
+  label reads **13px / 15px**, box **286 x 31**, padding 8px 12px. Setting it back to
+  `line-height: normal` gives the **same 31px**, so `leading-[15px]` states what the font already
+  does. No code change.
+- **102 more Figma node ids settled**, 65 alive and 37 dead. The ledger is now **279 of 324**;
+  45 remain, seven of which are unknown because the quota answered instead of the file.
+- **The dead-node guard regenerated** from the ledger: 111 dead ids, baseline 186 -> 290 citations.
+  Re-proved by hand — a throwaway `docs/guard-probe.md` citing `1:6994` made it fail with
+  `expected [ '1:6994 docs/guard-probe.md' ] to deeply equal []`, then was deleted.
+
+**The handoff's stated reason for item 2 was wrong, and is worth knowing.** It said "a fresh browser
+context has no recent searches". `useAppStore.ts:81` seeds `search.recent` with
+`defaultRecentSearches`, four terms defined at `search.ts:90` — *Blackjack VIP*, *Lightning
+Roulette*, *Aviator*, *Sugar Rush*. The section renders on the very first open. The state was never
+hard to reach.
+
+Closed in session 14:
 
 - The footer 44px tap target verified **on the deployed site**, not on the diff: `footer ul a` is
   149.5 x 44 at 390 with a 44px pitch, page `scrollHeight` 7223; 60.36 x 16 and a 32px pitch at 1440.
@@ -22,10 +43,12 @@ Closed this session:
 
 Open, in the order that matters for a Figma demo:
 
-1. **147 of 324 Figma node ids are still unclassified.** `docs/figma-node-ledger.md` carries the
-   method and the list. The Figma MCP quota is per seat and it ran out twice today, then reset.
-2. **`SearchPopularRecent.tsx:78`** got the same class change as line 33 but was never measured on
-   its own — a fresh browser context has no recent searches. Reach that state and check it.
+1. **45 of 324 Figma node ids are still unclassified.** `docs/figma-node-ledger.md` carries the
+   method and the list. The Figma MCP quota is per seat and it has now run out three times in two
+   days; it resets. Seven of the 45 — `1:6978` `1:6980` `1:7000` `1:8235` `1:8236` `1:8244`
+   `1:8245` — were asked and answered with the quota error, so they are unknown, not suspect.
+2. ~~**`SearchPopularRecent.tsx:78`**~~ — **closed in session 15**, see above. Measured against
+   `1:4457`, correct as written.
 3. **Nine `LOCKED` sites** in `docs/text-arbitrary-leading-audit.md` are cosmetically inert because a
    fixed-height ancestor absorbs the line box. Optional cleanup, not a bug.
 4. **Seven colour tokens in `tailwind.config.ts`** are justified by deleted nodes — `13:2325`,
