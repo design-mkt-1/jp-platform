@@ -255,6 +255,12 @@ mobile Figma frame for it in hand.** The first task is to find the mobile node �
 child `21:3035` `Recent wins - Ticker (iOS)`, 390×66 at y=325 — and establish whether the mobile design
 draws a card there, a bare band like `21:2975`, or nothing.
 
+> **Corrected 2026-09-10, session 14.** Every id in the paragraph above is **deleted**: `21:2897`,
+> `21:2896`, `21:3035` and `21:2975`, along with the whole of `21:*`, verified one id at a time with
+> `get_screenshot`. Following that instruction reaches nothing. The live band is **`32:1968`**, still
+> **390×66** — the same size `21:3035` was recorded at, in the `32:*` subtree the designers rebuilt
+> the mobile page into. Start there instead, and see `docs/figma-node-ledger.md`.
+
 ## 3. How to work here
 
 Orca if available; plain subagents otherwise, same shape. Session 10 used orca for the task ledger and
