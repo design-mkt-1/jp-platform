@@ -15,7 +15,9 @@ deploy each, and the owner checks each on Pages before the next one starts:
 | 1 | bottom nav bar: glass capsule, disc inside it, no "Menu" label | `32:4828` | **done**, `a039912` |
 | 2 | signed-out header (logo centred) and the Log In / Sign In strip | `32:3532`, `32:4797` | **done**, `a63cf52` |
 | 3 | signed-in balance button, and the header magnifier beside it | `32:1829`, `32:3536` | **done**, `4bcab7c` |
-| 4 | the three jackpot menus | `32:4852`, `32:5063`, `32:5279` | **next** |
+| — | iOS zoom on focus: 16px in every text field on the phone | — | **done**, `e0db163` |
+| — | bottom bar gaps removed, owner's choice B: bar 64, strip 57, no rule | deviates from `32:4797` / `32:4828` | **done**, `50c06ac` |
+| 4 | the three jackpot menus | `32:4852`, `32:5063`, `32:5279` | **next** — build on the 64px bar and the 57px strip, not Figma's 84 / 70 |
 
 **Owner's decisions, 2026-09-10.** Keep **£ and our amounts** — item 3 is a restyle only, even though
 Figma writes `$ 140.00`. The gold button reads **"Sign In"** on the phone, as Figma has it; desktop
