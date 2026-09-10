@@ -54,11 +54,17 @@ export type IconName =
    * through next/image, which no colour utility can reach.
    */
   | 'search-blue'
+  /**
+   * The phone header's magnifier, nodes 32:1838 and 32:3536: a white filled glyph, 18px inside
+   * its own 40x40 box. Not `search`, which is the grey 16px outline of the search fields.
+   */
+  | 'search-header'
   // UI glyphs rather than section marks: the clear control of the search field (node 1:4319),
-  // the 32x32 disc that opens the balance panel (node 1:4280) and the deposit plus (node 1:5741).
+  // the 32x32 disc that opens the balance panel (node 1:4280) and the blue add mark inside the
+  // phone's balance button (node 32:1833).
   | 'close'
   | 'chevron-down'
-  | 'plus'
+  | 'balance-add'
 
 export interface Game {
   id: string

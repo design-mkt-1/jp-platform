@@ -63,6 +63,8 @@ export default {
         signout: 'var(--text-signout)',
         'menu-row': 'var(--bg-menu-row)',
         'balance-chip': 'var(--bg-balance-chip)',
+        // The phone header's balance button, node 32:1830.
+        'balance-btn': 'var(--bg-balance-btn)',
         cyan: 'var(--cyan)',
         // The mobile category bar, node 32:1893 — see globals.css.
         'tab-bar': 'var(--bg-tab-bar)',

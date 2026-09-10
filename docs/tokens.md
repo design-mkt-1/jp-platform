@@ -235,7 +235,7 @@ list becomes a dumping ground of ad-hoc colours and we are back to exactly the p
 | `#FF9500 @ 10%` ⁷ | `wager-tint`    | `--wager-tint`      | `32:1852`                             | the fill of the mobile hero's `20X WAGER` badge                             |
 | `#FFAE00` ⁷     | `wager-amber`     | `--wager-amber`     | `32:1853`                             | the label written on it                                                     |
 | `#3030D6` ⁸     | — (shadow only)   | `--violet-glow`     | `21:2939`                             | the glow under the mobile hero's `Get` pill                                 |
-| `#3B82F6` ¹⁰    | — (gradient/shadow) | `--action-blue`   | `21:2916`                             | the mobile plus action: its gradient's far stop and its blue shadow layer   |
+| `#0D213F` ¹⁰    | `balance-btn`     | `--bg-balance-btn`  | `32:1830`                             | the signed-in balance button in the phone header                            |
 | `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | the text written **on** that pill: the button label, "Time left" and the clock |
 | `#36BCFF` ²     | — (SVG only)      | —                   | `1:2239`, `1:4323`                    | the magnifier in the provider search field (`public/images/icons/search-blue.svg`) |
 | `rgba(8,8,20,0.75)` ³ | — (inline)  | —                   | `1:6179`                              | the game card's shadow on mobile: `-2px 2px 12px`                           |
@@ -257,24 +257,14 @@ Contrast, over the hero artwork's flat `#050C1C`: `#FFAE00` on `#FF9500 @ 10%` c
 `#1E1A19` and measures **9.29:1**, against **7.77:1** for the `#F59E0B`-on-`--amber-tint` pair it
 replaces. Both pass; the design's own pair is the better of the two.
 
-¹⁰ Added 2026-09-10 from `get_design_context` on node `21:2916`, which returns
-`from-[#00f299] to-[#3b82f6]` and `shadow-[0px_6px_14px_0px_rgba(59,130,246,0.2),0px_10px_18px_0px_rgba(0,242,153,0.2)]`.
-The second shadow layer was the one we already had; the blue one was missing entirely, so the
-button was sitting on half its designed glow. **This is a third blue.** It is not `--blue`
-(`#006ee6`) and it is not the `#007AFF` that `--blue` was darkened from for AA, so neither of those
-decisions reaches it. Owner's decision of 2026-09-10 was to take the design's value and move the
-gradient's far stop onto it too, rather than leave one button carrying two different blues. No
-Tailwind token, for the same reason `--violet-glow` has none: both consumers are arbitrary values
-reading the variable directly, and a `colors` entry would advertise a `bg-`/`text-` use that does
-not exist. Contrast is not in play — it sits behind `plus.svg`, a graphical object under 1.4.11's
-3:1 bar, and white on `#3B82F6` measures 3.68:1.
-
-**A known deviation recorded beside it, not fixed.** The same frame's emerald pill, node `21:2913`,
-strokes `rgba(0,163,114,0.5)` and fills `rgba(0,92,64,0.04)` — two darker greens, `#00A372` and
-`#005C40`. Ours uses `--emerald` `#00F299` at those two alphas, so the green channel differs by 79
-and the blue by 39. Owner's decision of 2026-09-10: keep one emerald rather than mint two more
-tokens for a 1.5px stroke at half opacity. The pill's *shadow* already matches the design exactly,
-`rgba(0,242,153,0.12)` on both sides.
+¹⁰ Added 2026-09-10 from `get_design_context` on node `32:1829`, which returns `bg-[#0d213f]` on
+the box `32:1830` and no border, although the layer is named `Background+Border`. White on it
+measures **16.07:1**; the add mark `32:1833` is `#007AFF` inside `balance-add.svg`, a graphical
+object at **4.00:1** against 1.4.11's 3:1. It replaced the emerald pill and gradient plus of the
+deleted `21:2913` / `21:2916`, and took their two tokens' reasons with it: `--action-blue`
+(`#3B82F6`, which had no other consumer) is gone, and so is the recorded deviation about that pill's
+darker greens `#00A372` / `#005C40`, since nothing draws the pill any more. `--emerald` stays; the
+jackpot menu still uses it.
 
 ⁹ Corrected 2026-09-10. This row used to cite `1:2433`, which nobody had checked. `get_design_context`
 on the desktop ticker `1:2438` returns white 15% on its four dividers — `1:2448`, `1:2457`, `1:2466`,

@@ -65,23 +65,6 @@
    * the pressed See All fill included.
    */
   --blue-text: #479fff;
-  /*
-   * A third blue, and it is neither of the two above. Node 21:2916, the mobile header's plus
-   * action, writes `#3b82f6` twice: as the far stop of its `#00f299 → #3b82f6` gradient and as the
-   * colour of the first of its two drop shadows. It is not the #007AFF the note on `--blue`
-   * discusses, so the AA correction that produced #006ee6 does not apply to it and reusing --blue
-   * here would be borrowing an unrelated decision.
-   *
-   * Owner's decision 2026-09-10: adopt the design's value, and move the gradient stop onto it as
-   * well — the same button carrying two different blues would be worse than either choice alone.
-   * No Tailwind token, for the reason `--violet-glow` has none: both of its consumers are
-   * arbitrary values in `HeaderPostlogin` that read the variable directly, and listing it under
-   * `colors` would advertise a `bg-`/`text-` use that does not exist.
-   *
-   * Contrast is unaffected: it sits behind `plus.svg`, a graphical object under 1.4.11's 3:1 bar
-   * rather than text, and white on #3b82f6 measures 3.68:1.
-   */
-  --action-blue: #3b82f6;
   --amber: #f59e0b;
   --gold: #d4a352;
   --green: #34c759;
@@ -172,6 +155,9 @@
   /* The balance pill in that menu's header, node 32:4870. A green so faint it reads as a shade of
      the panel rather than as a colour; nothing else in the design uses it. */
   --bg-balance-chip: rgb(0 92 64 / 0.04);
+  /* The signed-in balance button in the phone header, node 32:1830: a flat navy box with no
+     border, the amount in white (16.07:1) and the #007AFF add mark (4.00:1, inside the SVG). */
+  --bg-balance-btn: #0d213f;
 
   /*
    * Geometry, not colour, and the only length in this list.

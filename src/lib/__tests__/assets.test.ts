@@ -75,9 +75,10 @@ const ALL_ICONS: Record<IconName, true> = {
   'live-casino': true,
   search: true,
   'search-blue': true,
+  'search-header': true,
   close: true,
   'chevron-down': true,
-  plus: true,
+  'balance-add': true,
 }
 
 describe('paths produced by src/lib/assets.ts', () => {

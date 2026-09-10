@@ -9,8 +9,8 @@ import type { AuthMode } from '@/lib/types'
 
 /**
  * The right-hand cluster of the header for a signed-in player: Figma node 1:4272 on desktop
- * (balance pill, DEPOSIT, profile pill) and node 1:5736 on mobile (emerald balance pill with its
- * own deposit action).
+ * (balance pill, DEPOSIT, profile pill) and node 32:1829 on mobile (one navy balance button with
+ * a blue add mark).
  *
  * `AccountCluster` is exported because the VIP header is this cluster plus a tier badge and a
  * different balance — two files rendering the same widget from one source beats two files that
@@ -106,50 +106,26 @@ export function AccountCluster({ tier }: AccountClusterProps) {
         </button>
       </div>
 
-      {/* Mobile — node 1:5736. Two controls inside one outlined shell: a button cannot nest inside
-          a button, so the shell is a plain element and the label and the action are siblings. */}
-      <div
+      {/* Mobile — node 32:1829. One control, not two: the design draws the amount and the add mark
+          in a single box (32:1830), and both used to open the same balance overlay anyway. The
+          design writes `$ 140.00`; the amount stays ours, in GBP, by the owner's decision of
+          2026-09-10. */}
+      <button
+        type="button"
+        onClick={openBalance}
+        aria-label={`Balance ${total} — deposit or open balance details`}
         className={[
-          'hidden h-10 items-center gap-3 rounded-[22px] px-2 py-1 mobile:flex',
-          'border-[1.5px] border-solid border-[color:color-mix(in_srgb,var(--emerald)_50%,transparent)]',
-          'bg-[color:color-mix(in_srgb,var(--emerald)_4%,transparent)]',
-          'shadow-[0_2px_8px_color-mix(in_srgb,var(--emerald)_12%,transparent)]',
+          'hidden h-10 shrink-0 items-center gap-1 rounded-lg bg-balance-btn px-2 mobile:flex',
+          'font-flex text-sm leading-[18px] font-semibold tabular-nums text-primary',
+          'transition-[filter] hover:brightness-125 active:brightness-90',
+          FOCUS_RING,
         ].join(' ')}
       >
-        <button
-          type="button"
-          onClick={openBalance}
-          aria-label={`Balance ${total} — open balance details`}
-          // The label's own box is only the 20px line box; the padding gives it the shell's full
-          // 40px height as hit area and the negative margin hands the 10px back to the flex row,
-          // so the painted shell does not move. Same idiom as the search field's clear button.
-          className={`-my-2.5 rounded-full px-1 py-2.5 text-sm font-extrabold tabular-nums tracking-[-0.14px] text-emerald ${FOCUS_RING}`}
-        >
-          {total}
-        </button>
-
-        <button
-          type="button"
-          onClick={openBalance}
-          aria-label="Deposit"
-          className={[
-            // No text colour: `plus.svg` is a flat white stroke (node 1:5741), not a currentColor
-            // outline, so nothing here can tint it.
-            'flex size-8 shrink-0 items-center justify-center rounded-[20px]',
-            'border border-solid border-[color:color-mix(in_srgb,var(--text-primary)_40%,transparent)]',
-            // Explicit `image:` hint so Tailwind cannot mistake the gradient for a colour.
-            'bg-[image:linear-gradient(90deg,var(--emerald),var(--action-blue))]',
-            // Node 21:2916 casts two shadows, not one: a blue at 6/14 under an emerald at 10/18.
-            // Only the emerald was here, so the button sat on half its designed glow. Both are the
-            // design's own colours at 20%; see `--action-blue` in globals.css for why the blue is
-            // its own value rather than `--blue`. Owner's decision 2026-09-10.
-            'shadow-[0_6px_14px_color-mix(in_srgb,var(--action-blue)_20%,transparent),0_10px_18px_color-mix(in_srgb,var(--emerald)_20%,transparent)]',
-            FOCUS_RING,
-          ].join(' ')}
-        >
-          <Icon name="plus" width={16} height={16} className="size-4" />
-        </button>
-      </div>
+        {total}
+        {/* `balance-add.svg` is the 24x24 frame 32:1833 with its 23.25 glyph at the frame's own
+            0.375 inset, so the file carries both boxes and nothing here pads it. */}
+        <Icon name="balance-add" width={24} height={24} className="size-6 shrink-0" />
+      </button>
     </>
   )
 }

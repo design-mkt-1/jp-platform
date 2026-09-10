@@ -5,7 +5,7 @@
 // whole-page `get_metadata` dump nor a numeric range is admissible evidence here: both were tried
 // in session 12 and both gave confident wrong answers.
 //
-// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 289 citations were already in the tree
+// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 283 citations were already in the tree
 // when the guard was written; the guard exists to stop new ones. Removing a line from this list
 // after cleaning up its citation is always safe — the guard never asks that a baseline entry still
 // be present.
@@ -203,11 +203,7 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '1:5722 docs/tokens.md',
   '1:5722 src/components/layout/Header.tsx',
   '1:5736 docs/tokens.md',
-  '1:5736 src/components/layout/HeaderPostlogin.tsx',
   '1:5741 docs/tokens.md',
-  '1:5741 src/components/layout/HeaderPostlogin.tsx',
-  '1:5741 src/components/primitives/Icon.tsx',
-  '1:5741 src/lib/types.ts',
   '1:5743 docs/tokens.md',
   '1:5743 src/components/layout/Header.tsx',
   '1:5749 README.md',
@@ -370,8 +366,6 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '21:2913 docs/tokens.md',
   '21:2916 docs/next-session.md',
   '21:2916 docs/tokens.md',
-  '21:2916 src/app/globals.css',
-  '21:2916 src/components/layout/HeaderPostlogin.tsx',
   '21:2919 docs/session-11-plan.md',
   '21:2919 src/components/layout/Header.tsx',
   '21:2919 src/components/primitives/IconButton.tsx',

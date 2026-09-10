@@ -109,6 +109,10 @@ function MobileSearchButton() {
   // `disc={false}`: node 21:2919 is a bare magnifier. Its asset, `search_header.svg`, is a single
   // white `<path>` — no rect, no radius — with the glyph filling 18 of a 40x40 box. Owner's
   // decision of 2026-09-10. The 40x40 box is unchanged, so the touch target does not shrink.
+  //
+  // The disc went but the glyph stayed `search`, the grey #A2A2A6 16px outline of the search
+  // fields, drawn at 20. The live frames `32:1838` (signed in) and `32:3536` (signed out) both
+  // export that same white 40x40 file, so it is served as it is, box and all.
   return (
     <IconButton
       onClick={openSearch}
@@ -116,7 +120,7 @@ function MobileSearchButton() {
       disc={false}
       className="hidden mobile:flex"
     >
-      <Icon name="search" width={20} height={20} className="size-5" />
+      <Icon name="search-header" width={40} height={40} className="size-10" />
     </IconButton>
   )
 }

@@ -22,8 +22,9 @@ export interface IconProps {
   name: IconName
   /**
    * Figma draws most glyphs in a 20x20 box; the section-header flame is 14x20, `close` (1:4319)
-   * and `plus` (1:5741) are 16x16, and `chevron-down` (1:4280) is a 32x32 disc with the chevron
-   * already inside it — pass its own size rather than scaling it to 20.
+   * is 16x16, `balance-add` (32:1833) is 24x24, `search-header` (32:1838) is 40x40 with the glyph
+   * already centred in it, and `chevron-down` (1:4280) is a 32x32 disc with the chevron already
+   * inside it — pass its own size rather than scaling it to 20.
    */
   width?: number
   height?: number
