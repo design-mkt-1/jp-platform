@@ -127,6 +127,38 @@ and `1:5720`, `1:5799` and `1:6517` all resolve to nothing; the live pair is `21
 The menu frames were rebuilt before that. `screens.test.ts` only checks the `^\d+:\d+$` shape, which
 a dead id still matches — so when a comparison looks wrong, check the id against the file first.
 
+## Orchestration — one worktree per worker, always
+
+Parallel work on this repo runs as **Orca workers, one git worktree per task**. The CLI is
+`orca` (`orca --help` lists it); this repo is registered as `D:/jp-platform`, so
+`orca worktree create --name <task> --repo path:D:/jp-platform` and
+`orca orchestration worker-start` are available without any setup. Use
+`orca worktree ps` to see what is running and `orca orchestration task-list` for the queue.
+
+Ask before fanning out, not after. State how many workers and what each one owns, then wait.
+
+**Why a worktree and not a plain subagent.** Subagents in the same checkout share the working tree,
+and Next owns `.next` per directory. On 2026-09-10 a worker doing the hero badge ran its own dev
+server with `NEXT_DIST_DIR=.next-w7` — correct, by this file's own rule — and it still cost two
+separate defects:
+
+- Its dev server rewrote the shared `tsconfig.json`, adding `.next-w7/types/**/*.ts` to `include`.
+  The worker deleted `.next-w7` when it finished but not the line, and the line was one `git add`
+  away from being committed into a tsconfig that points at a directory no clone will ever have.
+- The worker's report said its dev server was gone. The **directory** was gone; the **process** was
+  not. The orphan on port 3107 recreated `.next-w7` within two minutes of the check.
+
+A worktree removes the shared surface instead of relying on every worker remembering. It also gives
+each worker its own branch, so a bad run is discarded rather than untangled.
+
+**Whatever the mechanism, three things stay true.** A worker's own claim that it cleaned up is not
+evidence — check the processes and the directories. A worker's measurements are re-taken on the
+artefact that ships, not on the worker's private build. And nothing scratch enters a commit: files
+are staged by name, never with `git add -A`.
+
+Beyond Orca, `superpowers` carries `dispatching-parallel-agents`, `subagent-driven-development` and
+`using-git-worktrees`; read the matching one before inventing a fan-out shape.
+
 ## Language
 
 Conversation with the owner is in Romanian. Everything that lands in a file — code, comments,
