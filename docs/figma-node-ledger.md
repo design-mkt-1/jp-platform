@@ -1,10 +1,19 @@
-# Figma node id ledger — INCOMPLETE, 279 of 324
+# Figma node id ledger — 329 of 329
 
-File `2MyylxdZblfGnf05nQacUz`. Started 2026-09-10 session 13, continued sessions 14 and 15. **Do not
-read this as a finished inventory.** It stops where the Figma MCP quota stopped it, for the third
-time:
+File `2MyylxdZblfGnf05nQacUz`. Started 2026-09-10 session 13, finished session 15. Every id cited
+anywhere in `src/`, `docs/`, `public/` or the repository root is settled.
+
+279 came from the Figma MCP, which stopped for the third time on its per-seat quota:
 
 > You've reached the Figma MCP tool call limit for your Full seat on the Professional plan.
+
+The last 45 came from the Figma editor itself, driven in Chrome — see *A fourth probe* below. Five
+more were found only when the finished ledger was checked against every citation in the tree —
+`1:3447`, `1:4587` and `32:3296` are cited in `src/` and were never inventoried; `1:4436` and
+`1:4457` were cited by session 15 itself. All five are alive: the first three read in Chrome, the
+last two from `1:4431`'s live subtree. That
+probe is slower, and it has two traps of its own that each gave a confident wrong answer before it
+was trusted.
 
 ## Why it exists
 
@@ -53,9 +62,37 @@ batch where 39 of 40 answered *"not found"*, `1:2431` answered alive at 1440x745
 so the run was the tool working, not the tool failing. Without that control, forty identical errors
 and a dead connector look the same.
 
-## What the sweep is worth so far, and what it is not
+**A fourth probe, for when the MCP quota is gone: the editor, in Chrome.** The same account is
+logged into figma.com in the local Chrome, so the file opens there without the MCP. Open
+`/design/2MyylxdZblfGnf05nQacUz/Jackpot?node-id=1-2431` and read two things:
 
-279 settled — **168 alive, 111 dead**, 45 still to check. The whole of `21:*` (55 ids),
+- **alive** — the URL keeps the `node-id` asked for, and the properties panel header names the
+  node's type (`Frame`, `Image`, …). For many nodes the `Width` / `Height` inputs carry its size:
+  `1:4575` read `12` / `12`, the same 12x12 the MCP returned.
+- **dead** — Figma rewrites the URL to `node-id=0-1&p=f` and the panel header reads `Page`, meaning
+  nothing is selected.
+
+*Dead* is only recorded on that positive rewrite, never on "nothing selected yet". It was validated
+on six ids the MCP had already settled — `1:2431` and `1:4575` alive, `1:5799`, `1:6994`,
+`21:3693` and `1:5720` dead — and all six agreed. `1:2431` or `1:4575` then answered alive again
+every few ids through the sweep.
+
+Two traps, both measured:
+
+- **`history.pushState` is not a navigation.** Changing `node-id` in place and firing `popstate`
+  left the URL showing whatever was written — the dead `1:5799` and `21:3693` both "stayed". Figma
+  does not listen. Every probe is a full page load.
+- **A background tab never resolves the selection.** The automation tab reports
+  `document.visibilityState === "hidden"`. `21:3693` sat in the URL for **116 seconds** looking
+  alive, then flipped to `0-1` within three seconds of a screenshot forcing a frame. So each probe
+  loads, waits 18 seconds, captures a small crop of the panel header (which paints a frame), and
+  only then reads.
+
+The 45 settled this way: `1:2435` `1:2655` `1:3638` `1:4154` `1:4797` `1:5697` alive; the other 39 dead.
+
+## What the sweep is worth, and what it is not
+
+329 settled — **179 alive, 150 dead**, none left to check. The whole of `21:*` (55 ids),
 the whole of `13:*` (16 ids) and `112:330` are dead. The whole of `32:*` is alive: that is the
 subtree the designers rebuilt, and it is where the dead `21:*` work went.
 
@@ -85,11 +122,19 @@ Things measured rather than quoted, worth keeping:
   handoff item 2.
 - The dead ids cited under `src/` went from **71 to 108** in one session. Every one of the 37 new
   ones is in the mobile band above.
-- The inventory is **324**, not the 322 session 13 recorded. The difference is
+- **The last 45 are almost all dead: 39 of them.** All 27 still open under `src/` were dead —
+  `1:6978`–`1:7000` and `1:8235`–`1:8910`. That includes **`1:8751`**, the mobile menu. The
+  `?panel=jackpotMenu` deep link in `docs/next-session.md` names three nodes, `1:8751`, `13:2307`
+  and `13:2519`; all three are now confirmed deleted.
+- `1:4154` is alive and is an **Image**, 1440x1036 — the same frame size as `1:4116` and `1:4153`.
+- The inventory is **329**. Session 13 recorded 322 and session 14 324; each count missed
+  citations its scan did not reach. The check that closes this is mechanical — every id `citations()`
+  in `scripts/dead-nodes.mjs` finds must have a row here — and it passed at 329.
+- Earlier: 324, not the 322 session 13 recorded. The difference is
   `1:2435` and `1:2655`, cited in `public/review/index.html` — a directory the earlier count did
-  not scan. Both are still unchecked.
+  not scan. Both are alive; `1:2655` is 40x40.
 
-## Dead ids that are cited under `src/` — 108
+## Dead ids that are cited under `src/` — 135
 
 These are the ones that would earn a guard test. Every row is a citation in shipped source of a node
 that no longer exists in the file.
@@ -130,10 +175,37 @@ that no longer exists in the file.
 | `1:6480` | src/components/cards/PromoBannerMobile.tsx |
 | `1:6499` | src/lib/sections.ts |
 | `1:6517` | src/lib/screens.ts |
+| `1:6978` | src/components/layout/MobileShell.tsx |
+| `1:6980` | src/components/layout/Header.tsx |
 | `1:6994` | src/components/layout/HeaderPrelogin.tsx |
+| `1:7000` | src/components/layout/Header.tsx |
+| `1:8235` | src/app/globals.css, src/app/layout.tsx, src/components/layout/MobileNavBar.tsx, src/lib/screens.ts |
+| `1:8236` | src/components/layout/MobileNavBar.tsx |
 | `1:8239` | src/components/layout/MobileNavBar.tsx |
+| `1:8244` | src/components/layout/MobileNavBar.tsx |
+| `1:8245` | src/components/layout/MobileNavBar.tsx |
 | `1:8247` | src/components/layout/MobileNavBar.tsx |
+| `1:8249` | src/components/layout/MobileNavBar.tsx |
+| `1:8254` | src/components/layout/MobileNavBar.tsx |
+| `1:8257` | src/components/layout/MobileNavBar.tsx |
+| `1:8259` | src/components/layout/MobileNavBar.tsx |
+| `1:8260` | src/components/panels/JackpotMenu.tsx, src/lib/screens.ts |
+| `1:8285` | src/components/panels/JackpotMenu.tsx |
+| `1:8305` | src/components/panels/JackpotMenu.tsx |
+| `1:8503` | src/components/panels/JackpotMenu.tsx, src/lib/screens.ts |
+| `1:8504` | src/lib/screens.ts |
+| `1:8528` | src/components/panels/JackpotMenu.tsx |
 | `1:8536` | src/components/layout/HeaderPostlogin.tsx, src/components/layout/HeaderVip.tsx |
+| `1:8751` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx, src/lib/screens.ts |
+| `1:8753` | src/components/panels/JackpotMenu.tsx |
+| `1:8772` | src/components/panels/JackpotMenu.tsx |
+| `1:8781` | src/components/panels/JackpotMenu.tsx |
+| `1:8792` | src/components/panels/JackpotMenu.tsx |
+| `1:8834` | src/components/panels/JackpotMenu.tsx |
+| `1:8875` | src/components/panels/JackpotMenu.tsx |
+| `1:8885` | src/components/panels/JackpotMenu.tsx |
+| `1:8908` | src/components/panels/JackpotMenu.tsx |
+| `1:8910` | src/components/panels/JackpotMenu.tsx |
 | `13:2307` | src/app/dev/screens/page.tsx, src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx, src/lib/screens.ts |
 | `13:2325` | src/app/globals.css, src/components/panels/JackpotMenu.tsx |
 | `13:2333` | src/components/panels/JackpotMenu.tsx |
@@ -223,6 +295,7 @@ that no longer exists in the file.
 | `1:2432` | alive | 1440x80 | yes |
 | `1:2433` | alive | 1440x643 | yes |
 | `1:2434` | alive | 1424x201 | yes |
+| `1:2435` | alive | - | docs only |
 | `1:2436` | alive | 1280x340 | yes |
 | `1:2437` | alive | 1280x340 | yes |
 | `1:2438` | alive | 1440x104 | yes |
@@ -247,6 +320,7 @@ that no longer exists in the file.
 | `1:2650` | alive | 1280x40 | yes |
 | `1:2653` | alive | 187x13 | yes |
 | `1:2654` | alive | 160x1 | yes |
+| `1:2655` | alive | 40x40 | docs only |
 | `1:2656` | alive | 20x20 | yes |
 | `1:2657` | alive | 1280x280 | yes |
 | `1:2658` | alive | 1280x140 | yes |
@@ -267,6 +341,7 @@ that no longer exists in the file.
 | `1:3443` | alive | 374x24 | yes |
 | `1:3445` | alive | 368x28 | yes |
 | `1:3446` | alive | 191x28 | yes |
+| `1:3447` | alive | 159x16 | yes |
 | `1:3448` | alive | 165x28 | yes |
 | `1:3451` | alive | 180x48 | yes |
 | `1:3452` | alive | 86x12 | yes |
@@ -301,6 +376,7 @@ that no longer exists in the file.
 | `1:3604` | alive | 36x12 | yes |
 | `1:3605` | alive | 1294x324 | yes |
 | `1:3635` | alive | 1294x324 | yes |
+| `1:3638` | alive | 20x20 | docs only |
 | `1:3666` | alive | 1440x729 | yes |
 | `1:3993` | alive | 108x48 | yes |
 | `1:3998` | alive | 300x165 | yes |
@@ -317,6 +393,7 @@ that no longer exists in the file.
 | `1:4149` | alive | 23x18 | yes |
 | `1:4151` | alive | 304x68 | yes |
 | `1:4153` | alive | 1440x1036 | yes |
+| `1:4154` | alive | 1440x1036 | docs only |
 | `1:4155` | alive | 235x428 | yes |
 | `1:4160` | alive | 235x396 | yes |
 | `1:4161` | alive | 131x40 | yes |
@@ -340,7 +417,9 @@ that no longer exists in the file.
 | `1:4431` | alive | - | yes |
 | `1:4434` | alive | - | yes |
 | `1:4435` | alive | — | yes |
+| `1:4436` | alive | — | yes |
 | `1:4454` | alive | - | yes |
+| `1:4457` | alive | — | docs only |
 | `1:4459` | alive | - | yes |
 | `1:4479` | alive | 1440x720 | yes |
 | `1:4568` | alive | 344x72 | yes |
@@ -348,6 +427,7 @@ that no longer exists in the file.
 | `1:4576` | alive | 12x12 | yes |
 | `1:4579` | alive | 784x378 | yes |
 | `1:4583` | alive | — | yes |
+| `1:4587` | alive | 546x13 | yes |
 | `1:4611` | alive | 1440x720 | yes |
 | `1:4707` | alive | 12x12 | yes |
 | `1:4710` | alive | 1440x371 | yes |
@@ -361,6 +441,7 @@ that no longer exists in the file.
 | `1:4737` | alive | 75x28 | yes |
 | `1:4745` | alive | 1440x1114 | yes |
 | `1:4759` | alive | 140x124 | yes |
+| `1:4797` | alive | - | docs only |
 | `1:4800` | alive | 82x10 | yes |
 | `1:5199` | alive | 1440x1114 | yes |
 | `1:5325` | alive | 1312x37 | yes |
@@ -369,12 +450,22 @@ that no longer exists in the file.
 | `1:5623` | alive | 1312x371 | yes |
 | `1:5655` | alive | 1312x366 | yes |
 | `1:5687` | alive | 1312x378 | yes |
+| `1:5697` | alive | - | docs only |
 | `1:5720` | dead | - | yes |
 | `1:5722` | dead | - | yes |
 | `1:5736` | dead | - | yes |
 | `1:5741` | dead | - | yes |
 | `1:5743` | dead | - | yes |
+| `1:5749` | dead | - | docs only |
+| `1:5750` | dead | - | docs only |
 | `1:5751` | dead | - | yes |
+| `1:5752` | dead | - | docs only |
+| `1:5753` | dead | - | docs only |
+| `1:5755` | dead | - | docs only |
+| `1:5756` | dead | - | docs only |
+| `1:5758` | dead | - | docs only |
+| `1:5761` | dead | - | docs only |
+| `1:5762` | dead | - | docs only |
 | `1:5799` | dead | - | yes |
 | `1:5859` | dead | - | yes |
 | `1:5882` | dead | - | yes |
@@ -390,10 +481,12 @@ that no longer exists in the file.
 | `1:6247` | dead | - | yes |
 | `1:6249` | dead | - | yes |
 | `1:6250` | dead | - | yes |
+| `1:6253` | dead | - | docs only |
 | `1:6254` | dead | - | yes |
 | `1:6255` | dead | - | yes |
 | `1:6256` | dead | - | yes |
 | `1:6257` | dead | - | yes |
+| `1:6259` | dead | - | docs only |
 | `1:6260` | dead | - | yes |
 | `1:6282` | dead | - | yes |
 | `1:6464` | dead | - | yes |
@@ -403,10 +496,38 @@ that no longer exists in the file.
 | `1:6480` | dead | - | yes |
 | `1:6499` | dead | - | yes |
 | `1:6517` | dead | - | yes |
+| `1:6978` | dead | - | yes |
+| `1:6980` | dead | - | yes |
 | `1:6994` | dead | - | yes |
+| `1:7000` | dead | - | yes |
+| `1:8234` | dead | - | docs only |
+| `1:8235` | dead | - | yes |
+| `1:8236` | dead | - | yes |
 | `1:8239` | dead | - | yes |
+| `1:8244` | dead | - | yes |
+| `1:8245` | dead | - | yes |
 | `1:8247` | dead | - | yes |
+| `1:8249` | dead | - | yes |
+| `1:8254` | dead | - | yes |
+| `1:8257` | dead | - | yes |
+| `1:8259` | dead | - | yes |
+| `1:8260` | dead | - | yes |
+| `1:8285` | dead | - | yes |
+| `1:8305` | dead | - | yes |
+| `1:8503` | dead | - | yes |
+| `1:8504` | dead | - | yes |
+| `1:8528` | dead | - | yes |
 | `1:8536` | dead | — | yes |
+| `1:8751` | dead | - | yes |
+| `1:8753` | dead | - | yes |
+| `1:8772` | dead | - | yes |
+| `1:8781` | dead | - | yes |
+| `1:8792` | dead | - | yes |
+| `1:8834` | dead | - | yes |
+| `1:8875` | dead | - | yes |
+| `1:8885` | dead | - | yes |
+| `1:8908` | dead | - | yes |
+| `1:8910` | dead | - | yes |
 | `13:2307` | dead | — | yes |
 | `13:2325` | dead | — | yes |
 | `13:2333` | dead | — | yes |
@@ -486,17 +607,10 @@ that no longer exists in the file.
 | `32:2626` | alive | 390x1140 | docs only |
 | `32:3087` | alive | 390x769 | docs only |
 | `32:3284` | alive | 390x84 | docs only |
+| `32:3296` | alive | 35x12 | yes |
 | `32:3308` | alive | 390x769 | docs only |
 | `112:330` | dead | — | docs only |
 
-## Still to check — 45 ids
+## Still to check — none
 
-Grouped only for reading. **Do not classify by group**; that is the mistake above.
-
-Of these, seven were asked in session 15 and answered with the quota error rather than with a
-status — `1:6978` `1:6980` `1:7000` `1:8235` `1:8236` `1:8244` `1:8245` — so they are unknown, not suspect.
-The rest were never reached.
-
-**`1:*`** (45)
-
-`1:2435` `1:2655` `1:3638` `1:4154` `1:4797` `1:5697` `1:5749` `1:5750` `1:5752` `1:5753` `1:5755` `1:5756` `1:5758` `1:5761` `1:5762` `1:6253` `1:6259` `1:6978` `1:6980` `1:7000` `1:8234` `1:8235` `1:8236` `1:8244` `1:8245` `1:8249` `1:8254` `1:8257` `1:8259` `1:8260` `1:8285` `1:8305` `1:8503` `1:8504` `1:8528` `1:8751` `1:8753` `1:8772` `1:8781` `1:8792` `1:8834` `1:8875` `1:8885` `1:8908` `1:8910`
+Every one of the 329 ids is settled.

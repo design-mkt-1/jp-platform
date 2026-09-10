@@ -19,9 +19,15 @@ Closed in session 15, on a machine that had never run this repo:
   label reads **13px / 15px**, box **286 x 31**, padding 8px 12px. Setting it back to
   `line-height: normal` gives the **same 31px**, so `leading-[15px]` states what the font already
   does. No code change.
-- **102 more Figma node ids settled**, 65 alive and 37 dead. The ledger is now **279 of 324**;
-  45 remain, seven of which are unknown because the quota answered instead of the file.
-- **The dead-node guard regenerated** from the ledger: 111 dead ids, baseline 186 -> 290 citations.
+- **The Figma node ledger is finished: 329 of 329**, 179 alive and 150 dead. 102 came from the MCP
+  before its quota stopped it a third time; the last 45, and three ids nobody had inventoried, came
+  from the Figma editor driven in Chrome. That probe and its two traps are written up in
+  `docs/figma-node-ledger.md` under *A fourth probe*: a `pushState` "navigation" and a hidden
+  background tab each made a dead node look alive before it was validated on six known ids.
+- **Every id cited in the tree now has a row.** Checked mechanically against `citations()` — which
+  is how `1:3447`, `1:4587` and `32:3296`, cited in `src/` but missing from every earlier count,
+  were found.
+- **The dead-node guard regenerated** from the finished ledger.
   Re-proved by hand — a throwaway `docs/guard-probe.md` citing `1:6994` made it fail with
   `expected [ '1:6994 docs/guard-probe.md' ] to deeply equal []`, then was deleted.
 
@@ -43,10 +49,11 @@ Closed in session 14:
 
 Open, in the order that matters for a Figma demo:
 
-1. **45 of 324 Figma node ids are still unclassified.** `docs/figma-node-ledger.md` carries the
-   method and the list. The Figma MCP quota is per seat and it has now run out three times in two
-   days; it resets. Seven of the 45 — `1:6978` `1:6980` `1:7000` `1:8235` `1:8236` `1:8244`
-   `1:8245` — were asked and answered with the quota error, so they are unknown, not suspect.
+1. ~~**Unclassified Figma node ids**~~ — **closed in session 15**, 329 of 329. What it leaves is
+   the list itself: 135 dead ids are still cited under `src/`, all baselined by the guard, none
+   rendering wrong. One is worth knowing about before it misleads someone — the
+   `?panel=jackpotMenu` deep link below names `1:8751`, `13:2307` and `13:2519`, and all three
+   are deleted.
 2. ~~**`SearchPopularRecent.tsx:78`**~~ — **closed in session 15**, see above. Measured against
    `1:4457`, correct as written.
 3. **Nine `LOCKED` sites** in `docs/text-arbitrary-leading-audit.md` are cosmetically inert because a
