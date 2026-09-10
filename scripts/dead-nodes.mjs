@@ -15,6 +15,15 @@ const LEDGER = 'docs/figma-node-ledger.md'
 const OUT = 'src/lib/figma-dead-nodes.ts'
 const ROOTS = ['src', 'docs', 'public']
 
+// Root-level files are scanned too, without recursing — `README.md` cites node ids in its
+// `/dev/screens` table and two of them, `13:2307` and `13:2519`, are deleted. That is the first
+// file a newcomer reads, and it sat outside the first version of this scan.
+function rootFiles() {
+  return readdirSync('.')
+    .filter((entry) => !entry.startsWith('.'))
+    .filter((entry) => statSync(entry).isFile())
+}
+
 // A naive `\d+:\d+` drags in clock strings — `08:12`, `12:36`, `00:01` live in `format.ts`,
 // `useCountdown.ts` and `countdown.test.ts`. A node id has a non-zero first part and a 3-to-5
 // digit second.
@@ -24,7 +33,15 @@ export const NODE_ID = /\b([1-9]\d*):(\d{3,5})\b/g
 // test names three of them in its docblock to say what it is for. Scanning any of the three would
 // make the guard feed on its own output — measured: the first run flagged its own comment. The
 // blind spot that buys is one file, and it is the file whose whole job is to fail on dead ids.
-export const NOT_SCANNED = new Set([LEDGER, OUT, 'src/lib/__tests__/figma-dead-nodes.test.ts'])
+//
+// `CLAUDE.md` is excluded for the same reason: its Bug-fixes section has to name `21:2896`,
+// `13:2307` and `13:2519` to explain why this guard exists at all.
+export const NOT_SCANNED = new Set([
+  LEDGER,
+  OUT,
+  'CLAUDE.md',
+  'src/lib/__tests__/figma-dead-nodes.test.ts',
+])
 
 export function* walk(dir) {
   for (const entry of readdirSync(dir)) {
@@ -37,8 +54,8 @@ export function* walk(dir) {
 
 export function citations(roots = ROOTS) {
   const found = new Map() // id -> Set of posix-style paths
-  for (const root of roots) {
-    for (const file of walk(root)) {
+  for (const root of [...roots, null]) {
+    for (const file of root === null ? rootFiles() : walk(root)) {
       const rel = relative('.', file).replace(/\\/g, '/')
       if (NOT_SCANNED.has(rel)) continue
       if (/\.(png|jpg|jpeg|webp|ico|woff2?|pdf)$/i.test(rel)) continue

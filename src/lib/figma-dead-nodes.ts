@@ -5,7 +5,7 @@
 // whole-page `get_metadata` dump nor a numeric range is admissible evidence here: both were tried
 // in session 12 and both gave confident wrong answers.
 //
-// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 171 citations were already in the tree
+// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 180 citations were already in the tree
 // when the guard was written; the guard exists to stop new ones. Removing a line from this list
 // after cleaning up its citation is always safe — the guard never asks that a baseline entry still
 // be present.
@@ -88,6 +88,7 @@ export const DEAD_NODE_IDS: readonly string[] = [
 
 export const ACCEPTED_CITATIONS: readonly string[] = [
   '112:330 docs/tokens.md',
+  '13:2307 README.md',
   '13:2307 docs/next-session.md',
   '13:2307 docs/start-here.txt',
   '13:2307 docs/tokens.md',
@@ -99,6 +100,7 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '13:2325 docs/tokens.md',
   '13:2325 src/app/globals.css',
   '13:2325 src/components/panels/JackpotMenu.tsx',
+  '13:2325 tailwind.config.ts',
   '13:2333 src/components/panels/JackpotMenu.tsx',
   '13:2338 docs/next-session.md',
   '13:2338 src/components/panels/JackpotMenu.tsx',
@@ -108,21 +110,26 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '13:2340 src/app/globals.css',
   '13:2340 src/components/panels/JackpotMenu.tsx',
   '13:2340 src/components/primitives/Button.tsx',
+  '13:2340 tailwind.config.ts',
   '13:2342 docs/tokens.md',
   '13:2342 src/app/globals.css',
   '13:2342 src/components/panels/JackpotMenu.tsx',
+  '13:2342 tailwind.config.ts',
   '13:2345 docs/next-session.md',
   '13:2345 src/components/panels/JackpotMenu.tsx',
   '13:2362 docs/next-session.md',
   '13:2362 docs/tokens.md',
   '13:2362 src/app/globals.css',
   '13:2362 src/components/panels/JackpotMenu.tsx',
+  '13:2362 tailwind.config.ts',
   '13:2486 docs/next-session.md',
   '13:2486 src/components/panels/JackpotMenu.tsx',
   '13:2487 src/components/panels/JackpotMenu.tsx',
   '13:2491 docs/tokens.md',
   '13:2491 src/app/globals.css',
+  '13:2491 tailwind.config.ts',
   '13:2492 src/components/panels/JackpotMenu.tsx',
+  '13:2519 README.md',
   '13:2519 docs/next-session.md',
   '13:2519 docs/start-here.txt',
   '13:2519 docs/tokens.md',
@@ -174,9 +181,11 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '21:2934 src/app/globals.css',
   '21:2934 src/components/layout/HeroBanner.tsx',
   '21:2934 src/components/primitives/Badge.tsx',
+  '21:2934 tailwind.config.ts',
   '21:2935 docs/tokens.md',
   '21:2935 src/app/globals.css',
   '21:2935 src/components/primitives/Badge.tsx',
+  '21:2935 tailwind.config.ts',
   '21:2937 docs/tokens.md',
   '21:2937 src/components/layout/HeroBanner.tsx',
   '21:2938 docs/tokens.md',
