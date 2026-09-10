@@ -87,15 +87,22 @@ are closed across the app. All in §11.
 | 7  | A dead Figma node id cannot be detected | `screens.test.ts` checks that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing in the repo can do better without calling Figma. | §9 |
 | 8  | Thirteen deliberate differences         | Currency, fallback artwork, the mobile hero showing one offer, and ten more — each listed with its node and its reason. To be re-confirmed at sign-off, not fixed. | §5 |
 
-## Start here → [`docs/session-10-plan.md`](session-10-plan.md), then §13 below
+## Start here → [`docs/session-11-plan.md`](session-11-plan.md), then §14 below
 
-Session 9 ran on 2026-09-10 and did two things: it executed
-[`session-9-plan.md`](session-9-plan.md), and it then took five more items off
-[`audit-session-8.md`](audit-session-8.md). §13 below carries the measurements. What is left is
-**six choices for the owner and one fix that needs none**, which is what `session-10-plan.md` is
-built around — its §0 is the checklist of what does not travel with a clone (the plugins, the
-owner's two global hooks, Orca, and the memory files), and its §4 is the list of traps this project
-has already paid for. Pull before anything else: the repo's skill hook fires only from files on disk.
+Session 10 ran on 2026-09-10. It put the six open choices in front of the owner as rendered
+before/after pairs at 390 rather than editing toward them, then implemented what was picked. Halfway
+through, the owner compared the category bar against Figma and rejected it, and that comparison
+opened the real finding: **four separate desktop-frame elements were painting on the phone**, none of
+them scoped to a viewport. §14 below carries the measurements.
+
+What is left is four areas of work, which is what `session-11-plan.md` is built around — its §0 is
+the checklist of what does not travel with a clone (the plugins, the owner's two global hooks, Orca,
+and the memory files), and its §4 is the list of traps this project has already paid for, including
+the one session 10 paid: a static export served from a stale `out/` directory scored twelve phantom
+`serious` accessibility findings per state and read exactly like a real result.
+
+Pull before anything else: the repo's skill hook fires only from files on disk, and two sessions
+running have opened on a stale checkout.
 
 ## How this repo is worked on — read before touching anything
 
@@ -886,6 +893,83 @@ not what they looked like:
 7. **The four labels for two auth buttons** (audit §3.4): desktop says `Login` / `Register`, mobile
    says `Log In` / `Sign In`, and the mobile *register* button reads as log-in. The copy is Figma's
    own — nodes `1:4309` and `1:6994` — so it is a design question, not a coding defect.
+
+### 14. Session 10 — six choices rendered, then four desktop leaks found on the phone
+
+Opened **13 commits behind** `origin/main`, the second session running to do so. Everything in §13
+that reads as "open" was already answered on the remote.
+
+**Wave 0 — the choices, rendered rather than described.** Six before/after pairs at 390×844, produced
+by injecting CSS into the live page so no file was edited to make a picture. Two of the plan's numbers
+were wrong and were corrected by re-measuring against `HEAD`:
+
+| | Plan said | Measured at HEAD |
+| --- | --- | --- |
+| Mobile footer | 1221 | **1181.38** |
+| Link rows 32 → 44 | +72 | **+80** |
+| Both changes together | "neither lands on 1140" | **1149.38**, 8.98 over Figma `21:3693` |
+
+The 1221.4 was not a dev-versus-export divergence, which cost an hour to rule out. It was taken
+**before session 9's own commit `0855c23`** removed 40px from the partner slots. A written
+measurement ages: 1221.4 − 40 = 1181.4.
+
+**The owner's decisions.** Remove the legal paragraph (mobile only — Figma `1:4114` still draws it at
+1440); move the second divider between links and flags; add the 34px under the last row; leave the
+marquee without a stop control; change the mobile gold button from `Sign In` to `Register`.
+
+**Item 6 did not reproduce.** `Menu → More → Escape` was re-run five times — real taps, a mouse, and
+against the deployed build — and focus landed on `Menu` every time, never `<body>`. Escape sets
+`panel: null`, which closes the sheet *and* the jackpot menu, so `More` is not a reachable target and
+`Menu` is the correct landing point. Session 9's script is not in the repo, so which measurement was
+the artefact is **unknown**.
+
+Hunting the class instead of the instance found **four real ones**: `ProviderSearch` desktop (Escape
+and backdrop), `PersonalInfoPanel` → `Sign out`, `HeaderNavMenu` outside-click, and `ProviderSearch`
+inline at 390. The first was fixed in `Panel.tsx` by capturing the opener from `pointerdown`/`keydown`
+in the **capture phase**, before the commit — a `focusin` listener was tried first and **measured
+failing**, because React applies `autoFocus` during the commit's layout phase, ahead of passive-effect
+cleanup, so the panel's own input overwrote the capture. Ten passing rows stayed byte-identical.
+
+**Then the owner rejected the category bar**, and that opened the session's real finding.
+
+**Four desktop-frame elements were painting on the phone**, none scoped to a viewport, all real at
+1440 and absent from the mobile frames:
+
+| Element | Node cited | Evidence |
+| --- | --- | --- |
+| cyan ring on the active chip | `1:2503` | mobile `21:2978` is painted identically to its siblings |
+| cyan glow ellipse under the bar | `1:2434`, under desktop `1:2431` | mobile frame `21:2922` renders flat `#0F121D` down its whole 229px column |
+| category capsule — border, `bg-card`, radius | `1:2500` | our chip gaps read `#151624`, Figma's `#0F121D`; x=389 read `#262633`, which is white 7% over `#151624` |
+| the rule under the header | `1:4245`, under desktop `1:4244` | Figma row y=60 is a single colour across all 390px; ours was `#18273A`, and the header measured 61 |
+
+The capsule shows the mechanism. Someone saw it had no padding on mobile and wrote `mobile:p-0`; the
+comment still read *"Node 21:2975 has no capsule padding on mobile."* On the phone there is no capsule.
+
+**The other root cause is dead node ids.** `CategoryPill.tsx:21` derived the mobile chip's 32px height
+and 12px label from `1:5799` — deleted, along with the whole `1:5720`–`1:8234` band, when the mobile
+subtree was rebuilt on 2026-09-09. `screens.test.ts` validates the id's **shape**, which a dead id
+matches. Roughly 54 distinct dead ids across ~87 sites remain, listed in `tokens.md`.
+
+Chips now match measured Figma: 42 tall (was 32), `bg-section` `#12162B`, new `--border-chip`
+`#222A4E` (node `21:2978`), white labels (were `text-muted`), **Inter** 12/0.4 — Figma genuinely
+specifies Inter at 390 and Bricolage Grotesque 14/0.6 at 1440, confirmed on live node `1:2503`.
+
+**The flame icon**: `popular.svg` is `viewBox="0 0 14 20" preserveAspectRatio="none"` — the file was
+right and `mobile:size-4` was forcing it square. Fixed for `popular` only: `live-casino.svg`
+(16.0087×11.2961) and `jackpots.svg` (20×17.8906) are also non-square while their Figma frames are
+16×16, so a blanket rule would have broken `Live Casino` by ~6.7px.
+
+**Hero, measured and mostly innocent.** The card box, the image, the text block, the gaps and the
+button are exact. The artwork matches to 1.6/255 with zero offset, the copy is identical when
+rendered, and the carousel is not the cause. The one defect is that `Badge`'s `text-[10px]` is
+Tailwind's *arbitrary* form, which sets font-size only — so the pill inherited `line-height: 15px`
+from `html` and came out **21 tall against Figma's 18**, pushing the title and subtitle 3px down.
+
+**The trap this session paid for.** `NEXT_DIST_DIR=.next-a11y` writes the export into `.next-a11y/`,
+**not** `out/`. A stale `out/` left from session 9 was served twice — once as "after", once as
+"baseline" — producing 12–15 phantom `serious` colour-contrast findings per state and an identical
+pair of results that appeared to prove the session's changes were innocent. The HTTP 200 check proved
+a server was up, not what it served. Confirm the served bytes equal the freshly built bytes.
 
 ## Things worth remembering about this codebase
 

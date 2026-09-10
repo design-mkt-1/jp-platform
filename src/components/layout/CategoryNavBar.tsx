@@ -28,7 +28,7 @@ import type { Category, CategoryId } from '@/lib/types'
  *
  * So this component owns the desktop dropdown and `SearchOverlay` stands down while it does, which
  * it learns from `useSearchBarHost`. Below the `mobile:` breakpoint the design has no search
- * control in this bar at all (node 1:5799) — it is the header magnifier's job there — so the claim
+ * control in this bar at all (node 21:2975) — it is the header magnifier's job there — so the claim
  * is dropped, the trigger is hidden and the chip track takes the whole row.
  *
  * ## How the panel is positioned
@@ -50,8 +50,8 @@ const SEARCH_TRIGGER_CLASSES = [
   'text-left text-[13px] font-semibold text-nav',
   'transition-colors hover:border-medium hover:text-primary',
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue',
-  // Node 1:5799 lays the chips across the whole 390 row and carries no search field: on mobile
-  // the search control is the header magnifier (node 1:5743), which calls the same `openSearch`.
+  // Node 21:2975 lays the chips across the whole 390 row and carries no search field: on mobile
+  // the search control is the header magnifier, which calls the same `openSearch`.
   // A second trigger here claimed 244px of the row and left the scroller showing one chip.
   'mobile:hidden',
 ].join(' ')
@@ -162,13 +162,20 @@ export default function CategoryNavBar({
     >
       {/* Node 1:2434, redrawn rather than imported: Figma exports it as a pre-blurred SVG, and this
           component may not add files under public/. A blurred ellipse in the cyan token is the same
-          shape at the same place and re-tints itself if the token ever moves. */}
+          shape at the same place and re-tints itself if the token ever moves.
+
+          Desktop only. `1:2434` lives under the desktop frame `1:2431`, and the mobile design has no
+          such glow: frame `21:2922` renders a flat `#0F121D` from its top edge to its bottom, sampled
+          down the whole 229px column. Ours leaked onto the phone through a `mobile:inset-x-4` that
+          repositioned the ellipse instead of removing it — the same shape as the cyan ring on the
+          active chip, which was a desktop treatment reaching mobile too. Owner decision 2026-09-10:
+          the mobile category bar takes full Figma parity, and that includes its backdrop. */}
       <span
         aria-hidden
         className={[
           'pointer-events-none absolute inset-x-[76px] bottom-0 z-0 h-[81px]',
           'rounded-[50%] bg-cyan opacity-20 blur-[32px]',
-          'mobile:inset-x-4',
+          'mobile:hidden',
         ].join(' ')}
       />
 
@@ -180,14 +187,25 @@ export default function CategoryNavBar({
           'relative z-10 mx-auto flex max-w-content scroll-mt-6 items-center justify-between gap-4 p-4',
           // 44px, not `rounded-full`: the capsule is 78px tall, so a pill radius would be 39.
           'rounded-[44px] border border-solid border-divider bg-card',
-          // Node 1:5799 has no capsule padding on mobile — the chip track starts 16px from the
+          // Node 21:2975 has no capsule *at all* on mobile — it is a bare 390x42 band on the page
+          // background. The element stays for layout and for the scroll container, but none of the
+          // desktop chrome paints: the fill was measured as `#151624` in the 6px gap between two
+          // chips where Figma has the page's `#0F121D`, and the 1px border as `#262633` in the last
+          // column where Figma has the clipped chip's own artwork. The track starts 16px from the
           // page edge, which the wrapper's own `mobile:pl-4` already gives it, and runs to the
           // right edge so the chip that does not fit is visibly cut rather than hidden.
-          'mobile:p-0',
+          //
+          // One `mobile:` utility per Tailwind family, deliberately: `mobile:border-0` (width) and
+          // not `mobile:border-none` (style), so it never competes with `border-solid`. Against the
+          // unprefixed utility the order is defined, and it is verified with `getComputedStyle` on
+          // the static export, not only in `next dev` — this repo has had a `mobile:` pair resolve
+          // to 40 in dev and 32 in the Pages build.
+          'mobile:rounded-none mobile:border-0 mobile:bg-transparent mobile:p-0',
         ].join(' ')}
       >
-        {/* `mobile:gap-1.5` is node 1:5799's Horizontal-Chips-Track, which sets the chips 6px
-            apart rather than the desktop bar's 12px. */}
+        {/* `mobile:gap-1.5` is node 21:2977, the Horizontal-Chips-Track, which sets the chips 6px
+            apart rather than the desktop bar's 12px. The track is 42 tall and its background is
+            `--bg-page`, which is what the page already paints behind it. */}
         <div className="no-scrollbar flex min-w-0 items-center gap-3 overflow-x-auto mobile:gap-1.5">
           {categories.map((category) => (
             <CategoryPill

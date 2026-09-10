@@ -49,6 +49,10 @@ export default {
         amber: 'var(--amber)',
         'amber-tint': 'var(--amber-tint)',
         'amber-soft': 'var(--amber-soft)',
+        // The mobile hero's wager badge, nodes 21:2934 / 21:2935 — its own amber, so that
+        // `amber-tint` stays bound to the desktop promo pills it was measured from.
+        'wager-tint': 'var(--wager-tint)',
+        'wager-amber': 'var(--wager-amber)',
         ink: 'var(--ink)',
         gold: 'var(--gold)',
         green: 'var(--green)',
@@ -77,6 +81,7 @@ export default {
         header: 'var(--border-header)',
         flag: 'var(--border-flag)',
         emphasis: 'var(--border-emphasis)',
+        chip: 'var(--border-chip)',
       },
 
       fontFamily: {

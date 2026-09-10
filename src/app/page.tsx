@@ -127,7 +127,11 @@ export default function Home() {
         {/* 24px below the ticker frame on desktop; 16px below the hero on mobile. */}
         <CategoryNavBar className="pt-6 mobile:order-2 mobile:pt-4" />
 
-        <div className="w-full px-page-x pb-12 pt-12 mobile:px-4 mobile:pb-5 mobile:pt-2 mobile:order-4">
+        {/* 54px below the last row on the phone, not 20. Frame `21:3675` is 410 tall for 376 of
+            content, so the design leaves 34 more under the final grid than `pb-5` did — measured at
+            20.00px from the last row's bottom to the footer's top before this. Desktop keeps its
+            own 48 (`pb-12`), which the mobile frame has no say over. */}
+        <div className="w-full px-page-x pb-12 pt-12 mobile:px-4 mobile:pb-[54px] mobile:pt-2 mobile:order-4">
           {/*
             44px between rows on mobile, not 20. Figma's rebuilt mobile frames (node `21:2896`)
             build that gap out of two pieces: 20px between one row frame and the next, plus 24px of

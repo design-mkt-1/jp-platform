@@ -45,12 +45,47 @@ export function useOverlayBehavior(open: boolean, onClose: () => void): OverlayB
 
   useEffect(() => setMounted(true), [])
 
+  /*
+   * The trigger, recorded while the overlay is still closed — so it predates the commit that opens
+   * it. The capture at the top of the effect below is a passive one, and by the time a passive
+   * effect runs the opening commit is over: React has applied `autoFocus` on anything inside the
+   * surface (`ProviderSearch`'s field is exactly that) and React has unmounted anything the same
+   * state change removed (`CategoryNavBar`'s trigger, the jackpot menu's "More" row). Both leave
+   * the late capture pointing at the wrong node, and `focus()` on a detached node is a silent
+   * no-op that leaves the caret on `<body>`.
+   *
+   * `pointerdown`/`keydown` in the capture phase rather than `focusin`: these are the events that
+   * *cause* the open, so they are the last thing that happens before React's state update, whereas
+   * `focusin` also fires from inside the commit — `autoFocus` reaches it before this effect's
+   * cleanup can detach the listener, and the ref ends up holding the panel's own input again.
+   * Measured on `ProviderSearch` at 1440: with `focusin` the magnifier was still not restored.
+   */
+  const earlyTriggerRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (open) return
+
+    const remember = (event: Event) => {
+      const target = event.target
+      earlyTriggerRef.current =
+        target instanceof Element ? asTrigger(target.closest(FOCUSABLE_SELECTOR)) : null
+    }
+
+    document.addEventListener('pointerdown', remember, true)
+    document.addEventListener('keydown', remember, true)
+    return () => {
+      document.removeEventListener('pointerdown', remember, true)
+      document.removeEventListener('keydown', remember, true)
+    }
+  }, [open])
+
   useEffect(() => {
     if (!open) return
 
-    // Captured before anything inside is focused, so the caret goes back to the trigger and not
-    // to the top of the document when the overlay closes.
-    const opener = document.activeElement as HTMLElement | null
+    // The fallback: whatever held focus once the overlay was already open. It is still the right
+    // answer where the early capture cannot be — a nested overlay hands focus back to its own
+    // trigger during this same commit, and that happens after the press this hook saw.
+    const lateTrigger = asTrigger(document.activeElement)
     const surface = surfaceRef.current
 
     const focusables = surface
@@ -101,7 +136,12 @@ export function useOverlayBehavior(open: boolean, onClose: () => void): OverlayB
     return () => {
       document.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = previousOverflow
-      opener?.focus?.()
+
+      // The early capture wins when it is still in the document, the late one when it is not.
+      // Testing `isConnected` on both is what makes this the class fix rather than a third local
+      // patch: `CategoryNavBar` and `HeaderNavMenu` each already work around one half of it.
+      const early = earlyTriggerRef.current
+      ;(early?.isConnected ? early : lateTrigger?.isConnected ? lateTrigger : null)?.focus()
     }
   }, [open, onClose])
 

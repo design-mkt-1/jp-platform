@@ -25,8 +25,20 @@ kit's values win**, applied at both viewports. One token, one value.
 | Page Background | `#11111A`       | `#0F121D`       | `#0F121D`                                  |
 | Overlay         | `#000000 @ 20%` | `#161625 @ 80%` | **both, switched at 768px** — see below    |
 | Secondary Text  | `#FFFFFF @ 70%` | `#FFFFFF @ 60%` | `#FFFFFF @ 60%`                            |
-| Blue Tinted BG  | `#007AFF @ 13%` | `#007AFF @ 15%` | `#007AFF @ 15%`                            |
+| Blue Tinted BG  | `#007AFF @ 13%` | `#007AFF @ 15%` | `#007AFF @ 10%` ² — the kits lose this one |
 | Card Border     | `#FFFFFF @ 4%`  | `#262632`       | `#262632`                                  |
+
+² **Neither kit wins here, the page does.** Owner's decision, 2026-09-10. The two kit captions are
+transcribed correctly and both are still there — node `1:4800`, the caption under the Mobile kit's
+`Blue Tinted BG` swatch (`1:4797`), was re-read on 2026-09-10 and **still reads `#007AFF @ 15%`**.
+What disagrees with it is the page: the mobile hero's `WELCOME` badge, node `21:2932`, applies
+`rgba(0,122,255,0.1)`. The mobile subtree was rebuilt on 2026-09-09 and the kit was not, so the
+applied node is the newer of the two, and the decision is to follow it. The 13/15 conflict this row
+was written to resolve is therefore moot — **the recorded 15% did not match node `21:2932` when it
+was re-read on 2026-09-10**, and 10% is what ships.
+
+This is a real conflict between two live nodes, not a stale citation, and it is worth keeping in
+mind before the kit is used as an authority again.
 
 ### The one exception: `bg-overlay`
 
@@ -125,7 +137,7 @@ had nothing to move. The file now holds only the glyph (20x20), and
 | Figma name      | Value adopted    | Tailwind token | CSS variable  | Kit |
 | --------------- | ---------------- | -------------- | ------------- | --- |
 | Blue Primary    | `#006EE6` ¹      | `blue`         | `--blue`      | D M |
-| Blue Tinted BG  | `#007AFF @ 15%`  | `blue-tint`    | `--blue-tint` | D M |
+| Blue Tinted BG  | `#007AFF @ 10%` ² | `blue-tint`   | `--blue-tint` | D M |
 | — (derived) ¹   | `#479FFF`        | `blue-text`    | `--blue-text` | —   |
 | Amber / Warning | `#F59E0B`        | `amber`        | `--amber`     | D M |
 | Gold Nav Active | `#D4A352`        | `gold`         | `--gold`      | D   |
@@ -137,6 +149,18 @@ had nothing to move. The file now holds only the glyph (20x20), and
 text on the blue tints, so the blue is now two values — see "Contrast deviations" in §2b. The tints
 (`--blue-tint`, `--see-all-bg`) keep the design's own `0 122 255` channels: they are backgrounds,
 and darkening them would only have made the text they carry harder to read.
+
+² The opacity, not the channels — see the footnote in §1. `--blue-tint` moved from 15% to 10% on
+2026-09-10 to match node `21:2932`. Measured, not assumed: over a dark surface a *smaller* tint of
+a bright blue composites *darker*, so every pair the token carries gained contrast. On the hero
+artwork (a flat `#050C1C`, sampled with `sharp`) `--blue-text` on it goes **6.13:1 → 6.52:1**; over
+`--bg-section` **5.53:1 → 5.89:1**; over `--bg-field` **5.16:1 → 5.50:1**. Four other surfaces use
+the token and all moved the same way: the search-suggestion badges (`Badge` tone `blue`), the three
+balance pills in `BalancePanel` (`text-amber` 7.10 → 7.55, `text-muted` 5.43 → 5.77 over
+`--bg-card`), `::selection`, and the dev screens chip. The worst pair the token can produce
+anywhere in the file is `text-muted` over `--bg-menu-row`, and that moves 4.65 → 4.91 — still AA.
+Nothing regressed; the table in "Contrast deviations" below keeps the old 15% figures for the
+`--see-all-bg` rows, which are a separate token and did not move.
 
 ### Gradients
 
@@ -200,8 +224,12 @@ list becomes a dumping ground of ad-hoc colours and we are back to exactly the p
 | `#19191D`       | `border-flag`     | `--border-flag`     | `1:4016`                              | the ring around the language flags                                          |
 | `#7F7A85` ¹     | `text-legal`      | `--text-legal`      | `1:4115`                              | the footer's legal strip                                                    |
 | `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2433`                              | the separator in the wins ticker                                            |
+| `#222A4E` ⁶     | `border-chip`     | `--border-chip`     | `21:2978`                             | the 1px outline of **every** mobile category chip, selected one included    |
 | `#A5A6B5`       | `text-subtitle`   | `--text-subtitle`   | `1:6254`                              | the mobile promo card's subtitle                                            |
 | `#F2C146`       | `amber-soft`      | `--amber-soft`      | `1:6255`                              | the "join + timer" pill on the mobile promo card, solid                     |
+| `#FF9500 @ 10%` ⁷ | `wager-tint`    | `--wager-tint`      | `21:2934`                             | the fill of the mobile hero's `20X WAGER` badge                             |
+| `#FFAE00` ⁷     | `wager-amber`     | `--wager-amber`     | `21:2935`                             | the label written on it                                                     |
+| `#3030D6` ⁸     | — (shadow only)   | `--violet-glow`     | `21:2939`                             | the glow under the mobile hero's `Get` pill                                 |
 | `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | the text written **on** that pill: the button label, "Time left" and the clock |
 | `#36BCFF` ²     | — (SVG only)      | —                   | `1:2239`, `1:4323`                    | the magnifier in the provider search field (`public/images/icons/search-blue.svg`) |
 | `rgba(8,8,20,0.75)` ³ | — (inline)  | —                   | `1:6179`                              | the game card's shadow on mobile: `-2px 2px 12px`                           |
@@ -211,6 +239,35 @@ list becomes a dumping ground of ad-hoc colours and we are back to exactly the p
 | `rgba(0,92,64,0.04)` | `balance-chip` | `--bg-balance-chip` | `13:2325`                          | the balance pill in that menu's header                                      |
 
 ¹ Figma writes `#65616A`. Raised to `#7F7A85` for AA — see "Contrast deviations" below.
+
+⁷ Added 2026-09-10, read off `get_design_context` on node `21:2931`, which returns
+`bg-[rgba(255,149,0,0.1)]` on the badge and `text-[#ffae00]` on its label. **A third amber, and it
+deliberately does not reuse `--amber-tint`.** That token is `#F2C146 @ 10%` and is bound to the
+*desktop* promo pills (`1:3446`, `1:3538`, `1:3594`–`1:3600`); repointing it at `#FF9500` would
+have retinted every one of them to fix a badge on the phone. `Badge` reaches it through a `wager`
+tone rather than a `className` override on the call site, because an override would put two `bg-*`
+and two `text-*` utilities on one element and the winner would be stylesheet order.
+Contrast, over the hero artwork's flat `#050C1C`: `#FFAE00` on `#FF9500 @ 10%` composites to
+`#1E1A19` and measures **9.29:1**, against **7.77:1** for the `#F59E0B`-on-`--amber-tint` pair it
+replaces. Both pass; the design's own pair is the better of the two.
+
+⁸ Added 2026-09-10, from `get_design_context` on node `21:2939`, which returns
+`drop-shadow-[0px_0px_10px_#3030d6]`. The only violet in the file, and the only colour here that is
+a shadow and nothing else. It gets **no Tailwind token**: its one consumer is a `shadow-[…]`
+arbitrary value in `HeroBanner` that reads the variable directly, and a shadow colour listed under
+`colors` would advertise a `bg-`/`text-` use that does not exist — the same reasoning that keeps
+`#36BCFF` out of the theme. Written as a `box-shadow` rather than Figma's `drop-shadow` filter,
+because that is how every other glow in this codebase is written and the two are indistinguishable
+on a solid `rounded-full` pill. Figma writes the hex bare, so it is taken as fully opaque; the 60%
+blue mix it replaces was not something any node justified.
+
+⁶ Added 2026-09-10, sampled on the top edge of node `21:2978` where the border is a clean 1px. It is
+a **solid** colour deliberately, unlike `--border-divider` / `--border-medium` / `--border-strong`,
+which are white alphas: `#222A4E` over `--bg-section` is not any of them, and the chips sit on
+`--bg-page`, where an alpha border would composite to a third value again. The node id matters here
+more than usual — the chip metrics this replaces were cited to `1:5799`, which had been deleted when
+the mobile subtree was rebuilt on 2026-09-09, and `screens.test.ts` only checks the `^\d+:\d+$`
+shape, so nothing failed. See "Stale node citations" below.
 
 ⁵ This used to be `bg-elevated`, that is white at 6%. While the panel was `--bg-card` the two were
 indistinguishable: 6% over `#151624` composites to `#232431`, one unit off what Figma draws. Moving
@@ -268,6 +325,56 @@ no visible gain. They are noted here so they are not rediscovered as a "bug" at 
 | `#FFFFFF @ 9%` (the active pill's background)                     | `bg-elevated` `@ 6%` | 3 points of opacity                                                                                                                  |
 | `#11111A` (the game card's background, node `1:2602`)             | `bg-card` `#151624`  | `#11111A` is the **desktop** page background, which the "mobile wins" decision replaced with `#0F121D`                                |
 | `#000000` (the pill button's label, node `I1:6256;112:330`)       | `ink` `#09090D`      | Figma writes pure black on the button and `#09090D` on the clock 3px away. The difference is imperceptible, so both use `ink`         |
+| **No active indicator on the mobile category chips** (node `21:2977`) — owner's decision, 2026-09-10 | all four chips use `bg-section` + `border-chip` + `text-primary` | Figma paints `Chip-Active` (`21:2978`) identically to `21:2982` / `21:3017` / `21:3022` — measured pixel by pixel, not inferred from the layer name. Ours drew a cyan ring on the selected chip and `text-muted` on the rest, and the owner rejected it. **This contradicts `ui-ux-pro-max`'s Navigation → "Active State" rule on purpose** (severity Medium; *Do:* "Highlight active nav item with color/underline", *Don't:* "All links same style"). It is a deliberate design decision, not an oversight, and it is mobile-only: **desktop keeps its cyan ring**, because node `1:2503` genuinely draws one there. `aria-current` (link form) and `aria-pressed` (button form) stay in the markup and become the only selection signal on the phone — which satisfies WCAG 1.4.1 Use of Colour, since the state was never carried by colour alone for assistive tech |
+
+### Stale node citations — the `1:5720`–`1:8234` band
+
+The mobile subtree was rebuilt in Figma on 2026-09-09 and the whole `1:5720`–`1:8234` id band was
+deleted with it. A dead id still matches `screens.test.ts`'s `^\d+:\d+$` check, so a citation can rot
+without a single test failing. `CategoryPill.tsx` carried "node `1:5799` draws 32px tall" for weeks;
+the real chip (`21:2978`) is 42.
+
+Repointed on 2026-09-10: `CategoryPill.tsx` (→ `21:2978` / `21:2979`), `CategoryNavBar.tsx`
+(→ `21:2975` / `21:2977`), and — same day, from a `get_metadata` read of the whole `21:2926`
+subtree — `HeroBanner.tsx` and `Badge.tsx`:
+
+| Dead | Live | What it is |
+| --- | --- | --- |
+| `1:5750` | `21:2926` | `Hero-Card`, x=16 y=0, 358x170 |
+| `1:5751` | `21:2927` | `Image`, the card's own artwork |
+| `1:5752` | `21:2929` | `Label-Stack`, x=16 y=16, 326x138 — the "padding 16" frame |
+| `1:5753` | `21:2930` | the frame that adds 8 on the left, x=8, 318x95 |
+| `1:5755` | `21:2931` | `Tag-Row`, 158x18, 6px gap |
+| `1:5756` | `21:2932` | `Promo-Badge` (`WELCOME`), 72x18 |
+| `1:5758` | `21:2934` | `Wager-Badge` (`20X WAGER`), 80x18 |
+| `1:5761` | `21:2937` | `Bonus-Title`, 318x31 at card y=50 |
+| `1:5762` | `21:2938` | `Bonus-Subtitle`, 318x16 at card y=87 |
+| — | `21:2939` | `Button` (`Get`), 97x32 at card x=24 y=122 |
+
+The first two, and the last four, were handed over verified. `1:5752` / `1:5753` / `1:5755` were
+**derived**, not given: they are matched to the live tree by the geometry the existing comments
+already described (padding 16, "adding 8 on the left", the two-pill row). Stated as derived so the
+next reader knows which rung of the ladder they are standing on.
+
+**Still stale** and to be re-derived against the live file before anyone trusts a number taken from
+them — roughly 45 distinct ids across ~78 sites:
+
+| File | Ids still cited |
+| --- | --- |
+| `src/app/page.tsx`                          | `1:5720`, `1:5799`, `1:5859` |
+| `src/lib/screens.ts`, `src/lib/sections.ts` | `1:5720`, `1:5799`, `1:6517`, `1:5882`–`1:6499` |
+| `src/lib/assets.ts`, `src/lib/types.ts`     | `1:5751`, `1:5741` |
+| `src/components/cards/PromoBannerMobile.tsx`| `1:6195`, `1:6247`, `1:6249`, `1:6250`–`1:6260`, `1:6282`, `1:6464`–`1:6480` |
+| `src/components/cards/GameCard.tsx`         | `1:5888`, `1:6179` |
+| `src/components/layout/Header.tsx`, `HeaderPostlogin.tsx`, `HeaderPrelogin.tsx`, `MobileShell.tsx` | `1:5722`, `1:5736`, `1:5741`, `1:5743`, `1:6978`, `1:6980`, `1:6994`, `1:7000` |
+| `src/components/sections/*`                 | `1:5884`, `1:5887`, `1:5882`, `1:5936`, `1:6175`, `1:6192`, `1:6194` |
+| `src/components/primitives/Icon.tsx`        | `1:5741` |
+| `src/app/globals.css`                       | `1:5687`, `1:6254`, `1:6255`, `1:6256`–`1:6260`, `1:8235` |
+| this file                                   | `1:5655`, `1:6179`, `1:6254`, `1:6255`, `1:6256`–`1:6260` |
+
+They are listed rather than rewritten because each replacement has to be read back from the live
+file one at a time — `sections.ts` was remapped that way once already. Fixing them blind would trade
+a citation that is knowably dead for one that only looks alive.
 
 ### Contrast deviations — owner's decision, 2026-09-08
 
@@ -284,7 +391,7 @@ is the `0 122 255` channels multiplied by 0.9 — hue 211.3° and saturation 100
 | Token                | Figma node          | Figma value | New value | Where it shows                                                                | Ratio before → after |
 | -------------------- | ------------------- | ----------- | --------- | ----------------------------------------------------------------------------- | -------------------- |
 | `--blue`             | `1:5199` / `1:4745` | `#007AFF`   | `#006EE6` | white on solid blue: the mobile hero's "Get" pill, `Button` `primaryBlue`      | 4.02:1 → 4.80:1     |
-| `--blue-text` (new)  | `1:5199` / `1:4745` | `#007AFF`   | `#479FFF` | blue text on a tint: the `See All (206)` pill (`1:5655`), the blue badges in the suggestions (`1:4479`), the mobile hero's eyebrow pill (`1:5756`) | 3.51–4.06:1 → 5.15–5.97:1 |
+| `--blue-text` (new)  | `1:5199` / `1:4745` | `#007AFF`   | `#479FFF` | blue text on a tint: the `See All (206)` pill (`1:5655`), the blue badges in the suggestions (`1:4479`), the mobile hero's eyebrow pill (`21:2932`) | 3.51–4.06:1 → 5.15–5.97:1 |
 | `--text-legal`       | `1:4115`            | `#65616A`   | `#7F7A85` | the footer's legal strip                                                      | 3.17:1 → 4.58:1     |
 
 The ratios are computed with the WCAG 2.1 formula against the **actual composited background** — the
@@ -343,9 +450,11 @@ track has to render its items twice so the loop has no seam. Both respect
 ## 3. Totals
 
 - 26 colours in the Desktop UI Kit, 22 in the Mobile UI Kit
-- **34 distinct tokens** after unifying the duplicate names and resolving the conflicts (30 from the first wave, plus `text-subtitle`, `amber-soft` and `ink`, required by the mobile promo cards, plus `blue-text`, required by the AA threshold)
+- **37 distinct tokens** after unifying the duplicate names and resolving the conflicts (30 from the first wave, plus `text-subtitle`, `amber-soft` and `ink`, required by the mobile promo cards, plus `blue-text`, required by the AA threshold, plus `wager-tint`, `wager-amber` and `violet-glow`, required by the rebuilt mobile hero)
 - 2 composed gradients
 - 1 documented exception
+- of those 37, one — `violet-glow` — is a CSS variable with no Tailwind token, because it is only
+  ever a shadow colour
 
 ## 4. The discipline rule
 

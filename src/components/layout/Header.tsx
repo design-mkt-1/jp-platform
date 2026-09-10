@@ -119,8 +119,18 @@ export default function Header() {
 
   return (
     // Node 1:4245: the bar is painted darker than the page behind it and closed with its own rule,
-    // both of which now have tokens of their own.
-    <header className="w-full border-b border-solid border-header bg-header">
+    // both of which now have tokens of their own. `1:4245` lives under the *desktop* header board
+    // `1:4244` (1440x200), so only the fill crosses the breakpoint — the mobile header `21:2898` is
+    // 390x60 with no bottom rule at all. Measured on the static export against the render of
+    // `21:2897`: Figma row y=60 is a single `#0f121d` across all 390 (the page), and row y=59 at
+    // x=8 is the header's own `#080814`, so there is no rule tucked inside the 60 either. Ours
+    // painted `#18273a` at y=60 and the `<header>` measured 61 against the design's 60.
+    //
+    // One `mobile:` utility per Tailwind family, the same shape the category capsule uses:
+    // `mobile:border-0` is the *width* family, so it never competes with `border-solid` (style).
+    // Against the unprefixed `border-b` the order is defined — verified here with
+    // `getComputedStyle` and by sampling row y=60, not by reading the diff.
+    <header className="w-full border-b border-solid border-header bg-header mobile:border-0">
       <div className="mx-auto flex h-20 max-w-shell items-center justify-between gap-4 px-page-x mobile:h-[60px] mobile:gap-0 mobile:px-4">
         {/*
           `min-w-0` so this group is allowed to shrink. Between 768 and 1279 px — a range the Figma

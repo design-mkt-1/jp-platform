@@ -127,7 +127,12 @@ function AuthActions({ onNavigate }: { onNavigate: () => void }) {
           'shadow-[0_4px_6px_color-mix(in_srgb,var(--gold-dark)_25%,transparent)]',
         ].join(' ')}
       >
-        Sign In
+        {/* Figma labels this "Sign In", which is what the header used to say too. It is the same
+            wording as the neighbouring log-in control while the href is `/register`, so the button
+            contradicts what it does. Owner decision, 2026-09-10: use the desktop header's own word.
+            Changed in both places at once — this one and `HeaderPrelogin.tsx` — because fixing only
+            the header would leave the phone account menu still saying it. */}
+        Register
       </Link>
     </div>
   )

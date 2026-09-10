@@ -8,6 +8,13 @@ import { useAppStore } from '@/store/useAppStore'
  * Figma node 1:4282 on desktop (LOGIN outline + REGISTER gold) and node 1:6994 on mobile
  * ("Log In" as bare type + "Sign In" gold).
  *
+ * The gold control reads "Register", not Figma's "Sign In". Deliberate departure, owner decision
+ * 2026-09-10: on the phone the design gives both buttons a near-identical label while the gold one
+ * is the register action, so the mock ships a button that contradicts itself. The desktop node
+ * already says REGISTER, so this borrows the design's own word rather than inventing copy. The same
+ * pair exists in `JackpotMenu.tsx` and was changed in the same commit. The label fits the existing
+ * 95px pill with no overflow — measured, scrollWidth 95 against clientWidth 95.
+ *
  * The two are not one layout at two sizes — the labels, the weights and the outline all differ —
  * so they are two blocks behind a breakpoint rather than one block with six responsive overrides.
  *
@@ -61,7 +68,7 @@ export default function HeaderPrelogin() {
           Log In
         </button>
         <Button onClick={signIn} className="!h-10 !w-[95px] !text-sm tracking-[-0.14px]">
-          Sign In
+          Register
         </Button>
       </div>
     </>

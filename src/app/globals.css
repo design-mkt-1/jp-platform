@@ -50,7 +50,14 @@
    * darkening them would only make the text on them harder to read. See docs/tokens.md §2b.
    */
   --blue: #006ee6;
-  --blue-tint: rgb(0 122 255 / 0.15);
+  /*
+   * 10%, not the 15% the Mobile UI Kit's swatch caption writes (node 1:4800, re-read 2026-09-10
+   * and still 15%). The kit and the page disagree: the rebuilt mobile hero's WELCOME badge, node
+   * 21:2932, applies `rgba(0,122,255,0.1)`. Owner's decision 2026-09-10 — follow the live node.
+   * Measured, not assumed: the tint darkens over every dark surface it sits on, so every pair it
+   * carries gains contrast rather than losing it. See docs/tokens.md §2b.
+   */
+  --blue-tint: rgb(0 122 255 / 0.1);
   /*
    * The blue that text is written in when it sits on one of those tints — the See All pill and the
    * blue badges. #007AFF on the tinted surfaces measures 3.5–4.1:1; this is the same hue and
@@ -101,9 +108,27 @@
      same hue and saturation at lightness 50% instead of 39.8% measures 4.59:1. */
   --text-legal: #7f7a85;
   --border-emphasis: rgb(255 255 255 / 0.15); /* wins-ticker divider, node 1:2433 */
+  /* The mobile category chip's outline, node 21:2978. Every chip in the mobile Horizontal-Chips-
+     Track (21:2977) carries it, the selected one included — the phone frame draws no active ring.
+     It is a solid colour and not a white alpha like --border-divider/-medium/-strong: over
+     --bg-section it composites to #262E51, four units off, and the chips sit on --bg-page anyway,
+     where an alpha border would read a different colour again. */
+  --border-chip: #222a4e;
   /* The solid form of the same #F2C146 that --amber-tint carries at 10%: the join/countdown pill
      of the mobile promo cards, node 1:6255, is filled with it outright. */
   --amber-soft: #f2c146;
+  /* The mobile hero's "20X WAGER" badge, nodes 21:2934 (fill) and 21:2935 (label). A third amber,
+     and deliberately not --amber-tint: that token is bound to the *desktop* promo pills (1:3446,
+     1:3538, 1:3594-1:3600), so moving it to #FF9500 would have silently retinted all of them. The
+     hero draws #FF9500 at a tenth under a #FFAE00 label, which no other node in the file asks for. */
+  --wager-tint: rgb(255 149 0 / 0.1);
+  --wager-amber: #ffae00;
+  /* The glow under the mobile hero's Get pill, node 21:2939, which Figma draws as
+     `drop-shadow: 0 0 10px #3030D6` — a violet, not the button's own blue. The only violet in the
+     file. It gets no Tailwind colour: its one consumer is a `shadow-[…]` arbitrary value that
+     reads this variable directly, and listing a shadow colour under `colors` would advertise a
+     bg-/text- use that does not exist. Same reasoning as #36BCFF in docs/tokens.md §2b. */
+  --violet-glow: #3030d6;
   /* The near-black the design writes *on* that pill — its label, its countdown and its 15% rule,
      nodes 1:6256 to 1:6260. Not --bg-page: the pill is a light surface and the design gives it its
      own ink, two points darker than the page it sits on. */

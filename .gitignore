@@ -41,9 +41,12 @@ yarn-error.log*
 next-env.d.ts
 node_modules/
 .next/
-.next-build/
-.next-export/
+# Any build directory a script or a worker points NEXT_DIST_DIR at. Listing them one at a time was
+# already done twice and still missed two: `.next-a11y`, which the documented accessibility run
+# creates on every pass, and `.next-w7`, which a worker left behind. A glob covers the next one too.
+.next-*/
 out/
 
 # Temporary review captures and scripts made by workers
 .review-tmp/
+scripts/.tmp/

@@ -179,9 +179,18 @@ export default function Footer() {
         </section>
 
         {/* Figma ships both rules as a 1280x1 raster of a dashed gradient. Redrawn as hairlines so
-            they stay crisp at any width, the same call SectionHeader makes for its own rule. */}
+            they stay crisp at any width, the same call SectionHeader makes for its own rule.
+
+            Desktop (1:3666) stacks the pair here, at y=372 and y=412. The rebuilt phone frame
+            (21:3693) does not: it draws one rule above the link columns and the second between the
+            links and the flag row. Only the second one moves, and only below 768 — hence
+            `mobile:hidden` on this copy and a `hidden mobile:block` twin inside the row below.
+            The row below is `flex-row` above 767px, so moving this span into it unconditionally
+            would lay a full-width rule out as a third column beside the links and the flags
+            (measured: that container is `row` with an 80px gap and the flag list starts at x=760).
+            A hidden element is not a flex item, so neither copy costs the other viewport anything. */}
         <span aria-hidden className="w-full border-t border-dotted border-separator" />
-        <span aria-hidden className="w-full border-t border-dotted border-separator" />
+        <span aria-hidden className="w-full border-t border-dotted border-separator mobile:hidden" />
 
         <div className="flex w-full items-start justify-center gap-20 mobile:flex-col mobile:items-center mobile:gap-8">
           <div className="flex flex-1 items-start justify-center mobile:w-full mobile:gap-8 mobile:px-[21.5px]">
@@ -194,6 +203,15 @@ export default function Footer() {
               />
             ))}
           </div>
+
+          {/* The phone's second rule (21:3693). Lives inside this container rather than above it so
+              it sits between the links and the flags; `hidden` above 767px keeps it out of the
+              horizontal row entirely. It replaces, rather than adds to, the stacked copy above: the
+              outer column and this one both use a 32px mobile gap, so the move is height-neutral. */}
+          <span
+            aria-hidden
+            className="hidden w-full border-t border-dotted border-separator mobile:block"
+          />
 
           {/* No language state exists in the demo store, so the switcher renders as a labelled list
               rather than as ten links that would navigate nowhere. The first entry is the one
@@ -227,7 +245,12 @@ export default function Footer() {
           </ul>
         </div>
 
-        <FooterBottom legal={footer.legal} />
+        {/* Desktop 1:4114 draws the licensing strip; the rebuilt phone frame 21:3693 does not draw
+            it at all. `FooterBottom` has exactly one call site, so hiding it here is the whole
+            change — the same `mobile:hidden` switch `page.tsx` uses for its desktop-only rows.
+            Worth 112px on the phone: the paragraph wraps to 80px and, being a flex item, it also
+            carries the column's 32px gap. */}
+        <FooterBottom legal={footer.legal} className="mobile:hidden" />
       </div>
     </footer>
   )

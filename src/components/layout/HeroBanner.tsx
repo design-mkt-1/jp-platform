@@ -15,13 +15,13 @@ import { HERO_BONUS, HERO_BONUS_MOBILE } from '@/lib/assets'
  * reads the page as text. The 3.76:1 aspect ratio is locked rather than the 340px height: below
  * 1280 the frame has to shrink with the artwork, and a fixed height would letterbox or crop Zeus.
  *
- * Mobile — node 1:5750, a 358x170 card inside the 16px inset, 16px radius. It is a genuinely
+ * Mobile — node 21:2926, a 358x170 card inside the 16px inset, 16px radius. It is a genuinely
  * different layout, not the desktop one reduced: two separate pills instead of one, the amount and
  * the spins on two lines, sentence-case "Get", and the art cropped tall on the right. Here the text
  * is *not* baked into the artwork, so it is real DOM — which is also the only way it can be read at
  * 390px without the desktop headline turning into six illegible pixels.
  *
- * The two compositions have their own exports — node 1:5751 is the mobile card's own artwork, not a
+ * The two compositions have their own exports — node 21:2927 is the mobile card's own artwork, not a
  * crop of the desktop bitmap — and both are always in the DOM, with CSS hiding one. Which one the
  * browser actually downloads is decided by the two media-scoped preloads below rather than by
  * `priority`; see the note there.
@@ -40,12 +40,12 @@ export interface HeroBannerProps {
   /** Omit to render the banner as a static image — the demo has no promotions route. */
   ctaHref?: string
   className?: string
-  /** Mobile-only copy (node 1:5750), where the words differ from the desktop bitmap. */
+  /** Mobile-only copy (node 21:2926), where the words differ from the desktop bitmap. */
   mobileEyebrow?: string
   mobileWager?: string
-  /** The 26px line, node 1:5761. */
+  /** The 26px line, node 21:2937 — `Bonus-Title`, 318x31. */
   mobileAmount?: string
-  /** Node 1:5762, split so only the second half is white. */
+  /** Node 21:2938 (`Bonus-Subtitle`), split so only the second half is white. */
   mobileSpinsPrefix?: string
   mobileSpins?: string
 }
@@ -99,8 +99,13 @@ export default function HeroBanner({
   ) : (
     // No promotions route in the demo: the pill is drawn, but it must not announce itself as a
     // control that goes nowhere.
+    // Node 21:2939: 97x32, Inter Semi Bold 13 / 19 at -0.26px tracking, and a *violet* glow —
+    // `drop-shadow: 0 0 10px #3030D6`, not a tint of the button's own blue. Written as a
+    // box-shadow because that is how every other glow in this codebase is written and the two are
+    // indistinguishable on a solid `rounded-full` pill. The fill stays `bg-blue` (#006EE6 rather
+    // than Figma's #007AFF) — the owner's contrast decision of 2026-09-08, docs/tokens.md:325.
     <span
-      className="inline-flex h-8 w-[97px] items-center justify-center rounded-full bg-blue text-[13px] font-bold text-primary shadow-[0_0_10px_color-mix(in_srgb,var(--blue)_60%,transparent)]"
+      className="inline-flex h-8 w-[97px] items-center justify-center rounded-full bg-blue text-[13px] font-semibold leading-[19px] tracking-[-0.26px] text-primary shadow-[0_0_10px_var(--violet-glow)]"
       aria-hidden="true"
     >
       {ctaLabel}
@@ -147,16 +152,21 @@ export default function HeroBanner({
         )}
       </div>
 
-      {/* Node 1:5750. The card carries a Get button, so the card itself is not a link — nesting the
-          two would give the pill no reachable hit area of its own. */}
+      {/* Node 21:2926. The card carries a Get button, so the card itself is not a link — nesting
+          the two would give the pill no reachable hit area of its own. */}
       <div className="hidden aspect-[179/85] w-full overflow-hidden rounded-2xl bg-section mobile:block">
         <div className="relative h-full w-full">
           {/*
-            Node 1:5751, the mobile card's own artwork — exported at 3x (1074x510 for a 358x170 box).
-            It is the whole card, not just the figure: the navy gradient, Zeus on the right and the
-            violet shard at the bottom corner are all painted into it. That is why nothing here sets
-            a background or a fade. An earlier pass cropped the desktop bitmap instead, which put the
-            desktop's rocks and gold crown behind Zeus and had no shard at all.
+            Node 21:2927, the mobile card's own artwork — exported at 3x (1074x510 for a 358x170
+            box). It is the whole card, not just the figure: the navy ground, Zeus on the right and
+            the violet shard at the bottom *right* corner are all painted into it. That is why
+            nothing here sets a background or a fade. An earlier pass cropped the desktop bitmap
+            instead, which put the desktop's rocks and gold crown behind Zeus and had no shard.
+
+            The corner is named because this comment used to say only "the bottom corner", and that
+            sent a reader looking in the wrong place. Sampled with `sharp` on 2026-09-10, in card
+            coordinates: the shard occupies x 303-357, y 110-169 — brightest pixel rgb(206,126,240)
+            at (316,161) — while the bottom-*left* 60x40 is a flat #050C1C with nothing in it.
           */}
           <Image
             src={HERO_BONUS_MOBILE}
@@ -169,16 +179,17 @@ export default function HeroBanner({
             className="pointer-events-none object-cover"
           />
 
-          {/* Node 1:5752 padding 16, node 1:5753 adding 8 on the left. */}
+          {/* Node 21:2929 (`Label-Stack`) insets 16, node 21:2930 adds 8 on the left. */}
           <div className="relative flex h-full flex-col justify-between p-4 pl-6">
             <div className="flex flex-col gap-4">
-              {/* Node 1:5755 — two pills, where the desktop bitmap paints a single one. Their
-                  metrics are `Badge`'s `xs` size, nodes 1:5756 / 1:5758. */}
+              {/* Node 21:2931 (`Tag-Row`, 158x18) — two pills, where the desktop bitmap paints a
+                  single one. Their metrics are `Badge`'s `xs` size, nodes 21:2932 / 21:2934, and
+                  the 6px between them is the row's own gap. */}
               <div className="flex gap-1.5">
                 <Badge size="xs" tone="blue">
                   {mobileEyebrow}
                 </Badge>
-                <Badge size="xs" tone="amber">
+                <Badge size="xs" tone="wager">
                   {mobileWager}
                 </Badge>
               </div>

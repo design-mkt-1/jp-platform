@@ -50,10 +50,11 @@ THE FIRST PROMPT FOR CLAUDE
 Open Claude Code in the jp-platform folder and give it this:
 
     git pull first, before reading anything — the plan, the skills and the hook
-    live in the repo and a stale checkout does not have them. Then read
-    docs/session-10-plan.md: §0 is the checklist of what does not travel with a
-    clone, and §2 says why most of what is left needs my decision rather than
-    code. Then CLAUDE.md and docs/next-session.md §13.
+    live in the repo and a stale checkout does not have them. Two sessions
+    running have opened stale, 22 commits behind and then 13. Then read
+    docs/session-11-plan.md: §0 is the checklist of what does not travel with a
+    clone, §2 is the work, and §4 is the list of traps this project has already
+    paid for. Then CLAUDE.md and docs/next-session.md §14.
     Mobile at 390px is the only priority; 95% of traffic is a phone.
     Verify before you assume.
 
@@ -203,11 +204,13 @@ DOCUMENTS IN THE REPO
 
 README.md                  what the project is, how to run it
 docs/next-session.md       what is left to do
-docs/session-10-plan.md    START HERE on a new machine — what does not travel,
-                           then the six choices that are waiting on you and the
-                           one fix that is not waiting on anything
-docs/session-9-plan.md     the previous plan, executed 2026-09-10; kept for its
-                           record of how a session is structured
+docs/session-11-plan.md    START HERE on a new machine — what does not travel,
+                           the four areas of work, and the traps already paid for
+docs/session-10-plan.md    the previous plan, executed 2026-09-10; kept for its
+                           record of how the six owner choices were put in front
+                           of you before anything was edited
+docs/session-9-plan.md     the plan before that; kept for its record of how a
+                           session is structured
 CLAUDE.md                  the working rules: which skill fires before which
                            kind of work, the gate, the measuring traps
 docs/audit-session-8.md    everything found by pressing every control, ranked,
