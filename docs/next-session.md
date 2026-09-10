@@ -8,7 +8,8 @@ right and does nothing is on target; a control that renders 3px taller than its 
 That is why the thirteen "See All (206)" pills, the marquee with no stop button and the game cards
 being `<article>` with no link are all closed decisions, not defects.
 
-`main` is at `78882c9`. Everything below is pushed, and the Pages run for that commit is `success`.
+The last code change is `78882c9` (Pages run `success`); only docs-only handoff commits follow it.
+Everything below is pushed.
 
 Closed in session 15, on a machine that had never run this repo:
 
