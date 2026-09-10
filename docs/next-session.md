@@ -87,12 +87,15 @@ are closed across the app. All in §11.
 | 7  | A dead Figma node id cannot be detected | `screens.test.ts` checks that every `figmaNodeId` matches `^\d+:\d+$`, which the three dead ones did. Nothing in the repo can do better without calling Figma. | §9 |
 | 8  | Thirteen deliberate differences         | Currency, fallback artwork, the mobile hero showing one offer, and ten more — each listed with its node and its reason. To be re-confirmed at sign-off, not fixed. | §5 |
 
-## Start here → §13, then [`docs/session-9-plan.md`](session-9-plan.md) §0 on a new machine
+## Start here → [`docs/session-10-plan.md`](session-10-plan.md), then §13 below
 
-Session 9 executed that plan on 2026-09-10; §13 below has the measurements and the five decisions
-that now wait on the owner. The plan's §0 — what does **not** travel with a clone: the plugins,
-the owner's two global hooks, Orca — is still the checklist for any machine that has not run this
-repo before. Pull before anything else: the repo's skill hook fires only from the files on disk.
+Session 9 ran on 2026-09-10 and did two things: it executed
+[`session-9-plan.md`](session-9-plan.md), and it then took five more items off
+[`audit-session-8.md`](audit-session-8.md). §13 below carries the measurements. What is left is
+**six choices for the owner and one fix that needs none**, which is what `session-10-plan.md` is
+built around — its §0 is the checklist of what does not travel with a clone (the plugins, the
+owner's two global hooks, Orca, and the memory files), and its §4 is the list of traps this project
+has already paid for. Pull before anything else: the repo's skill hook fires only from files on disk.
 
 ## How this repo is worked on — read before touching anything
 
