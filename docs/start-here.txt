@@ -50,19 +50,19 @@ THE FIRST PROMPT FOR CLAUDE
 
 Open Claude Code in the jp-platform folder and give it this:
 
-    git pull first, before reading anything — the plan, the skills and the hook
-    live in the repo and a stale checkout does not have them. Two sessions
-    running have opened stale, 22 commits behind and then 13. Then run
+    git pull first, before reading anything — the skills, the hook and the
+    handoff live in the repo and a stale checkout does not have them. Then
     `npm ci` and `npm run plugins`; if anything is missing, `npm run
-    plugins:install` and restart. Then read docs/session-11-plan.md: §2 B is
-    the only area still open and its premise was wrong, §4 is the list of traps
-    this project has already paid for. Then CLAUDE.md and docs/next-session.md
-    §16. The setup checklist lives in this file, docs/start-here.txt, and
-    nowhere else.
-    The designers rebuilt the mobile subtree into a new 32:* range. Every
-    mobile node id written anywhere in this repo is suspect until you have
-    checked it with get_metadata on that one id — a whole-page dump comes back
-    truncated and will tell you live nodes are dead.
+    plugins:install` and restart. Then read CLAUDE.md and the "Handoff,
+    session 15" section at the top of docs/next-session.md — its "Open" list
+    is the whole of what is left: item 5 waits on my decision, item 6 is
+    optional cleanup that must not be done in bulk.
+    Every Figma id in the repo is now in docs/figma-node-ledger.md, 356 of
+    356. The live mobile frames are the 32:* range; any id not in the ledger
+    is unchecked. If the Figma MCP quota runs out, the ledger's "A fourth
+    probe" section reads the editor in Chrome instead — with its two traps.
+    Read the dev server's port from its log before measuring; on one machine
+    :3000 belongs to another project.
     Mobile at 390px is the only priority; 95% of traffic is a phone.
     Verify before you assume.
 

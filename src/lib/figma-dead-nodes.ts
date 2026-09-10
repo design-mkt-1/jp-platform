@@ -5,7 +5,7 @@
 // whole-page `get_metadata` dump nor a numeric range is admissible evidence here: both were tried
 // in session 12 and both gave confident wrong answers.
 //
-// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 310 citations were already in the tree
+// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 306 citations were already in the tree
 // when the guard was written; the guard exists to stop new ones. Removing a line from this list
 // after cleaning up its citation is always safe — the guard never asks that a baseline entry still
 // be present.
@@ -178,7 +178,6 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '13:2340 docs/next-session.md',
   '13:2340 src/components/panels/JackpotMenu.tsx',
   '13:2340 src/components/primitives/Button.tsx',
-  '13:2342 docs/next-session.md',
   '13:2342 src/components/panels/JackpotMenu.tsx',
   '13:2345 docs/next-session.md',
   '13:2345 src/components/panels/JackpotMenu.tsx',
@@ -187,7 +186,6 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '13:2486 docs/next-session.md',
   '13:2486 src/components/panels/JackpotMenu.tsx',
   '13:2487 src/components/panels/JackpotMenu.tsx',
-  '13:2491 docs/next-session.md',
   '13:2492 src/components/panels/JackpotMenu.tsx',
   '13:2519 docs/next-session.md',
   '13:2519 docs/tokens.md',
@@ -403,11 +401,9 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '21:2932 src/components/layout/HeroBanner.tsx',
   '21:2932 src/components/primitives/Badge.tsx',
   '21:2933 src/components/primitives/Badge.tsx',
-  '21:2934 docs/next-session.md',
   '21:2934 docs/tokens.md',
   '21:2934 src/components/layout/HeroBanner.tsx',
   '21:2934 src/components/primitives/Badge.tsx',
-  '21:2935 docs/next-session.md',
   '21:2935 src/components/primitives/Badge.tsx',
   '21:2937 docs/tokens.md',
   '21:2937 src/components/layout/HeroBanner.tsx',

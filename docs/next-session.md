@@ -8,7 +8,7 @@ right and does nothing is on target; a control that renders 3px taller than its 
 That is why the thirteen "See All (206)" pills, the marquee with no stop button and the game cards
 being `<article>` with no link are all closed decisions, not defects.
 
-`main` is at `c60f5bc` plus this session's commit. Everything below is pushed and deployed.
+`main` is at `78882c9`. Everything below is pushed, and the Pages run for that commit is `success`.
 
 Closed in session 15, on a machine that had never run this repo:
 
@@ -98,8 +98,8 @@ Closed in session 14:
 
 Open, in the order that matters for a Figma demo:
 
-1. ~~**Unclassified Figma node ids**~~ — **closed in session 15**, 329 of 329. What it leaves is
-   the list itself: 135 dead ids are still cited under `src/`, all baselined by the guard, none
+1. ~~**Unclassified Figma node ids**~~ — **closed in session 15**, 356 of 356. What it leaves is
+   the list itself: 117 dead ids are still cited under `src/`, all baselined by the guard, none
    rendering wrong. The ones that *do* something — the `/dev/screens` Figma links, the mobile row map in
    `sections.ts` and the seven colour tokens — were re-pointed at the live `32:*` frames in the
    same session; see the session-15 entry above.
@@ -107,9 +107,22 @@ Open, in the order that matters for a Figma demo:
    `1:4457`, correct as written.
 3. **Nine `LOCKED` sites** in `docs/text-arbitrary-leading-audit.md` are cosmetically inert because a
    fixed-height ancestor absorbs the line box. Optional cleanup, not a bug.
-4. **Seven colour tokens in `tailwind.config.ts`** are justified by deleted nodes — `13:2325`,
-   `13:2340`, `13:2342`, `13:2362`, `13:2491`, `21:2934`, `21:2935`. Nothing renders wrong; what is
-   lost is the ability to check them against the design.
+4. ~~**Seven colour tokens justified by deleted nodes**~~ — **closed in session 15**: each re-cited
+   to a live `32:*` node whose value was read and matches. See the session-15 entry above.
+5. **The 23.5px under the last phone row — an owner decision, not a bug.** Measured band by band in
+   the session-15 entry: without the 84px nav-bar reserve the page is 20.5px *shorter* than
+   `32:1813`, and −23.5 of that sits between the Egypt row and the footer. Closing it is one class —
+   `mobile:pb-[54px]` at `src/app/page.tsx:134`, whose comment still reasons from the dead
+   `21:3675`; the live row is `32:2608`, same 410. Whether to change it is the owner's call.
+6. **The 117 dead-id comments under `src/`** — optional cleanup. They mislead a reader, they render
+   nothing. **Do not replace them in bulk.** Many cite the old node for *metrics*, and the rebuilt
+   node is not always built the same way: `Button.tsx` says `13:2340` "is padded 10/24", while its
+   live counterpart `32:4885` is a fixed 113x38 box with no padding. Each one needs the live node
+   read with `get_design_context` and the comment's claim re-checked against it.
+
+**Start here, next session.** Items 5 and 6 are all that is left, and 5 waits on the owner. Before
+measuring anything, read the port from the dev log: on the machine `BogdanLocal` another project
+("Top-Win — screens") holds :3000, so this repo's `next dev` comes up on :3001.
 
 **What does not travel to another machine.** The two owner rules are `UserPromptSubmit` hooks in
 `~/.claude/`, not in this repo — see `docs/start-here.txt`. The 17 declared plugins are recorded per
