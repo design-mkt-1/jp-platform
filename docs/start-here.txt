@@ -54,12 +54,13 @@ Open Claude Code in the jp-platform folder and give it this:
     handoff live in the repo and a stale checkout does not have them. Then
     `npm ci` and `npm run plugins`; if anything is missing, `npm run
     plugins:install` and restart. Then read CLAUDE.md and the "Handoff,
-    session 15" section at the top of docs/next-session.md — its "Open" list
-    is the whole of what is left: item 5 waits on my decision, item 6 is
-    optional cleanup that must not be done in bulk.
-    Every Figma id in the repo is now in docs/figma-node-ledger.md, 356 of
-    356. The live mobile frames are the 32:* range; any id not in the ledger
-    is unchecked. If the Figma MCP quota runs out, the ledger's "A fourth
+    session 16" section at the top of docs/next-session.md — its table is
+    what is left: item 3 (the balance button, 32:1829) is next, then item 4
+    (the three jackpot menus). One item per commit and deploy; I check each
+    on Pages before the next one starts.
+    Every Figma id in the repo is in docs/figma-node-ledger.md, 382 of
+    382; add new ones with scripts/ledger-sync.mjs. The live mobile frames
+    are the 32:* range; any id not in the ledger is unchecked. If the Figma MCP quota runs out, the ledger's "A fourth
     probe" section reads the editor in Chrome instead — with its two traps.
     Read the dev server's port from its log before measuring; on one machine
     :3000 belongs to another project.

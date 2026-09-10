@@ -1,6 +1,70 @@
 # Next session — Jackpot demo
 
-## Handoff, 2026-09-10, session 16
+## Handoff, 2026-09-10, session 16 — read this first
+
+**Where it stands.** The owner compared the phone with Figma and asked for everything the designers
+rebuilt in the `32:*` frames to be brought over. A full pass of page `0:1` against the live site
+(`scripts/review.mjs` captures of all 15 states, at 390 and 1440) found that **desktop matches**
+(`1:2431`, `1:4116`, `1:4153`; only the known deliberate differences) and that **the phone differs
+wherever a frame was rebuilt**. The plan has four items plus the category bar, one commit and one
+deploy each, and the owner checks each on Pages before the next one starts:
+
+| # | area | node | state |
+| --- | --- | --- | --- |
+| — | category bar | `32:1893` | **done**, `ea74e86` |
+| 1 | bottom nav bar: glass capsule, disc inside it, no "Menu" label | `32:4828` | **done**, `a039912` |
+| 2 | signed-out header (logo centred) and the Log In / Sign In strip | `32:3532`, `32:4797` | **done**, `a63cf52` |
+| 3 | signed-in balance button | `32:1829` | **next** |
+| 4 | the three jackpot menus | `32:4852`, `32:5063`, `32:5279` | open |
+
+**Owner's decisions, 2026-09-10.** Keep **£ and our amounts** — item 3 is a restyle only, even though
+Figma writes `$ 140.00`. The gold button reads **"Sign In"** on the phone, as Figma has it; desktop
+keeps "Register" because `1:4312` says so. The mobile provider-search states `1:1748` (popular and
+recent providers) and `1:1989` (suggestions with SLOTS/LIVE badges) are **not now**.
+
+**Item 3, what is already read** (`get_metadata`, not yet `get_design_context` — run that first):
+`32:1829` is 141x40, a 99x40 bordered rectangle `32:1830` holding the amount (`32:1832`) and a 24px
+blue icon (`32:1833`), then the 40px search button `32:1837`. Ours is a green pill with a round `+`
+(`HeaderPostlogin.tsx`, `HeaderVip.tsx`). The menu header shows the amount too (item 4).
+
+**Item 4, what is already seen** (screenshots of the three frames beside ours, not yet measured):
+the user card (avatar, name, Deposit, ID, More) sits on its own raised panel with a rounded bottom;
+"More" is white, not amber; Sport, Casino and Payments carry chevrons; the row icons are a different
+set (export each through `get_design_context`, never `download_assets`); signed out, **Support and
+Vip Manager** sit side by side. The auth pair is already gone from the menu (item 2), and the
+menu's sheet already stops above the strip.
+
+**How items 1 and 2 are built, so item 4 does not undo them.** The strip is `AuthStrip` inside
+`MobileNavBar`, marked `data-auth-strip`; a `:root:has([data-auth-strip])` rule in `globals.css`
+sets `--mobile-auth-h` to 70px, and `MobileShell`'s end spacer and `Sheet clearsNavBar` both add it
+to `--mobile-nav-h`. The Menu button is named by `aria-label="Menu"`, because the design dropped its
+visible label.
+
+**Traps paid for this session.**
+
+- **The `next dev` indicator (the round "N", bottom left) sits on top of the Casino tab.** A real
+  `page.tap()` on Casino times out with *"nextjs-portal … intercepts pointer events"*. It is a dev
+  overlay, not a defect — test that tap on the static export (`:4173` in the a11y run) instead.
+- **The ledger is CRLF in the working copy.** A script that splits on `'
+
+'` finds nothing and
+  truncates the file; one did, and it was restored from git. `scripts/ledger-sync.mjs` normalises
+  line endings first — use it rather than editing the ledger's tables by hand. It adds rows for ids
+  you have read alive and regenerates both "cited" views from `citations()`.
+- **`?auth=prelogin` used to put a focus ring on Log In at load**, desktop included: the store starts
+  signed in and `UrlStateBridge` flips it one commit later, which `Header` read as a sign out. Fixed
+  in `a63cf52`; the first run now takes the starting state from the URL.
+- **The repo does not use Prettier.** `npx prettier --write` on one file reformatted it to
+  semicolons and double quotes; it was reverted. There is no formatter to run.
+
+**The session-16 gate, every item:** `npm test` (67), `npx tsc --noEmit`, `npx eslint src
+--max-warnings=0`, `npm run build:check`, `node scripts/focus-restore.mjs http://localhost:3000`
+(8/8), the a11y run with `next dev` stopped (zero on nine states), a 1440 pixel diff before/after
+(only the two countdowns' seconds may differ), `node scripts/ledger-sync.mjs` plus
+`node scripts/dead-nodes.mjs` for any new id, then commit by file name, push, `gh run watch`, and
+re-measure on the Pages URL. Ledger now 382 of 382; dead ids cited under `src/` 102.
+
+### The category bar, in detail
 
 **The mobile category bar is rebuilt to the live frame `32:1893`.** The designers had redrawn it and
 the code still followed the deleted `21:2977` — session 15 re-pointed ids, not drawings. Now: a
@@ -28,8 +92,6 @@ Two glyph fixes came with it, both from the live nodes: `live-casino.svg` (16x11
 draws it; the jackpot crown is 17.9x16 per `32:1941`, not 16x16. On the phone the glyphs are drawn
 as a CSS mask over the existing files, so one file serves both colours.
 
-**Not done, and next:** the header's balance button, `32:1829` — Figma draws a dark rectangle with
-`$ 140.00` and a blue square plus; ours is the green pill. The owner asked for it after the bar.
 Also known and left alone: Figma's bar shows seven tabs and writes "Jackpot"; ours has the four
 categories in `categories.json` and "Jackpots".
 
@@ -160,8 +222,8 @@ Open, in the order that matters for a Figma demo:
    live counterpart `32:4885` is a fixed 113x38 box with no padding. Each one needs the live node
    read with `get_design_context` and the comment's claim re-checked against it.
 
-**Start here, next session.** Superseded by the session-16 entry above: item 5 is closed, the
-balance button `32:1829` is next, then item 6 one comment at a time. Before measuring anything, read
+**Start here, next session.** Superseded by the session-16 entry above: item 5 is closed; the
+session-16 table says what is next. Item 6 waits until that table is done. Before measuring anything, read
 the port from the dev log: on the machine `BogdanLocal` another project ("Top-Win — screens") has
 held :3000, so this repo's `next dev` can come up on :3001 — in session 16 :3000 was free.
 
