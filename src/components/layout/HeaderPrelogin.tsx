@@ -8,6 +8,14 @@ import { useAppStore } from '@/store/useAppStore'
  * Figma node 1:4282 on desktop (LOGIN outline + REGISTER gold) and node 1:6994 on mobile
  * ("Log In" as bare type + "Sign In" gold).
  *
+ * Both now say "Log In". Owner decision 2026-09-10: the desktop control said `Login` and the phone
+ * said `Log In` — one label in two spellings, which is the half of the auth-label item session 10
+ * left open. The phone is the priority surface, so the phone's spelling won and only the desktop
+ * string changed. `uppercase` renders it LOG IN, so the desktop pill grows 90.48 → 93.33; measured
+ * at 768, 1024 and 1440, `header.scrollWidth` equals `clientWidth` at all three, so nothing wraps
+ * or overflows. That check is not ceremony: this file already carries a note about the two CTAs no
+ * longer fitting beside the six nav items once the label grows.
+ *
  * The gold control reads "Register", not Figma's "Sign In". Deliberate departure, owner decision
  * 2026-09-10: on the phone the design gives both buttons a near-identical label while the gold one
  * is the register action, so the mock ships a button that contradicts itself. The desktop node
@@ -58,7 +66,7 @@ export default function HeaderPrelogin() {
       {/* Desktop — node 1:4309 */}
       <div className="flex items-center gap-3.5 mobile:hidden">
         <button type="button" onClick={signIn} className={OUTLINE_PILL} data-login-control>
-          Login
+          Log In
         </button>
         {/* The primitive's gold variant is 16px; the header sets every label at 13px, and at 16px
             the two CTAs no longer fit beside the six nav items. `!` because a plain override would

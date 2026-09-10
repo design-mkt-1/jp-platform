@@ -226,16 +226,24 @@ What is genuinely open right now:
    REPRODUCE with real taps, a mouse, and against the deployed build: focus
              landed on Menu every time, never on <body>. Which measurement was
              the artefact is unknown - session 9's script is not in the repo.
-   PARTIAL   the auth labels. The real defect is closed: the mobile register
-             button no longer reads as log-in. What survives is desktop "Login"
-             against mobile "Log In" - one label, two spellings.
-   OPEN      the footer link rows, 32 -> 44. Measured at +80 over six rows.
+   CLOSED    the auth labels, both halves. Session 13 respelled the desktop
+             control to "Log In" to match the phone. The pill grows 90.48 ->
+             93.33 and nothing wraps at 768, 1024 or 1440.
+   CLOSED    the footer link rows. The backlog was right about the +80 and
+             wrong about the target: the tap area was 16px, not 32 - 32 was the
+             row pitch. On the phone the anchor is now 149.5 x 44 and the list
+             gap is 0. Desktop untouched. Session 13.
 
-   The mobile page is 7150px, measured 2026-09-10. It was 7228. Do not treat
-   that as a subtraction: the known changes account for 7122, and the missing
-   28px is unknown. Figma's 7129 is unconfirmed - nothing re-measured it after
-   the mobile subtree was rebuilt on 2026-09-09, so it may be stale the way the
-   footer's recorded 1221.4 turned out to be.
+   The page-height mystery is closed, by measuring the commits rather than
+   re-reading the arithmetic. eb99091 measures 7228 and 9f73ce8 measures 7157,
+   and the 71px between them attribute completely: header -1, category bar +8,
+   content rows +34, footer -112. The old note's 7150 does not reproduce and
+   its "7122 accounting" had missed the header and the category bar. There was
+   never an unexplained 28px in the browser. Today the page is 7223 and
+   decomposes to the pixel: header 60 + main 5929.5 + footer 1149.38 + the 84px
+   the page reserves for the fixed nav bar.
+
+   Figma's own number is now 7159 on node 32:1813, confirmed alive 2026-09-10.
 2. Game cards stay <article> with no link, by your decision of 2026-08-08: a
    link to nowhere is worse than no link. It resolves itself when game pages
    arrive.

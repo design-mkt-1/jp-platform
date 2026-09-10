@@ -206,6 +206,26 @@ evidence — check the processes and the directories. A worker's measurements ar
 artefact that ships, not on the worker's private build. And nothing scratch enters a commit: files
 are staged by name, never with `git add -A`.
 
+**What a worker does not get, measured 2026-09-10 and not obvious from anything above.** A worktree
+buys isolation and costs capability, and the cost was paid before it was known:
+
+- **claude.ai account connectors do not follow a worker.** A worker sent to verify Figma node ids
+  ran `ToolSearch` for `mcp__claude_ai_Figma__get_screenshot` and got *"No matching deferred tools
+  found"*. The only Figma server present was `plugin:figma:figma`, unauthenticated. **Anything that
+  needs the Figma connector stays in the coordinator.**
+- **A new worktree is a new project path, so it has none of the 17 declared plugins.** Installs are
+  recorded per project path — which is the same fact this file already states about
+  `claude plugin list` being machine-wide, carried one step further than anyone had carried it. The
+  committed `.claude/skills/` *do* travel, because a worktree is a checkout of this repo.
+
+So the rule stays "one worktree per worker", and the shape of the task has to fit inside it: scope
+workers to code, tests and measurement, and keep connector-bound and plugin-bound work here. Say
+which of the two a task needs **before** creating the worktree, not after.
+
+That worker was cheap to lose because its brief told it to stop and report on the first failure
+rather than work around it, and it did — 108 ids written as `"unknown"` with the error text, not one
+status guessed. Put that instruction in every task spec.
+
 Beyond Orca, `superpowers` carries `dispatching-parallel-agents`, `subagent-driven-development` and
 `using-git-worktrees`; read the matching one before inventing a fan-out shape. That holds only once
 `npm run plugins` reports `superpowers ok` — a rule pointing at a plugin that does not load is the

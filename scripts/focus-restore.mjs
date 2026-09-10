@@ -178,7 +178,10 @@ const CASES = [
     },
     // Owner's decision of 2026-09-10. The pill this panel hung off is unmounted by the same state
     // change, so there is nothing to return to and a landing has to be chosen rather than restored.
-    expect: 'Login',
+    // The name is "Log In", not "Login": the desktop control was respelled to match the phone in
+    // the same session. This row failed on the old string and passed on the new one, which is the
+    // guard working — the landing never moved, only its label did.
+    expect: 'Log In',
   },
   {
     name: 'ProviderSearch inline at 390 — Escape',

@@ -64,8 +64,8 @@ asserted.
 | Gate, 2026-09-10 | 65 tests · `tsc` 0 · `eslint` 0 · `build:check` 0 |
 | axe over the nine states | 0 critical / 0 serious / 0 moderate / 0 minor |
 | Plugins installed for this checkout | 17/17 |
-| Mobile page height | **7143** after session 12's ticker work, measured on the dev server *and* on the static export, identical on both. The baseline it came from is **7157**, re-measured at HEAD with the same script; the −14 is the wins band going 80→66. The **7150** this row used to carry does not reproduce on either dev or export, and it is not a dev-versus-export difference — that possibility was tested and ruled out. Figma's own number is now **7159**, node `32:1813` |
-| Mobile footer | 1069.38, from 1181.38. The 1140.4 target was read from `21:3693`, which is **dead**; the figure survives because the designers' new `32:2626` **footer-mobile** is 390x1140 |
+| Mobile page height | **7223** after session 13's footer hit-area work (+80), from 7143 after session 12's ticker work (−14), from a 7157 baseline. Dev and static export agree on every value. The **7150** this row used to carry does not reproduce, and session 13 settled why by measuring the commits: `eb99091` is 7228 and `9f73ce8` is 7157, with all 71px between them attributed — header −1, category bar +8, content rows +34, footer −112. Figma's own number is **7159**, node `32:1813`, confirmed alive 2026-09-10 |
+| Mobile footer | **1149.38** after session 13, from 1069.38, from 1181.38. The 1140.4 target was read from `21:3693`, which is **dead**; the figure survives because the designers' new `32:2626` **footer-mobile** is 390x1140 |
 
 ### What session 11 landed — and what it did not
 
@@ -188,6 +188,23 @@ Still stale, listed in `docs/tokens.md`: `page.tsx`, `screens.ts`, `assets.ts`, 
 `PromoBannerMobile.tsx` (~20 ids), `GameCard.tsx`, `HeroBanner.tsx`, `Header.tsx`,
 `HeaderPostlogin.tsx`, `MobileShell.tsx`, `SectionHeader.tsx`, `ProviderRow.tsx`, `ContentRow.tsx`,
 `PromoRow.tsx`, `GameGrid.tsx`, `Badge.tsx`, `Icon.tsx`, `globals.css`.
+
+**Session 13 started the sweep and was stopped by a quota, not by a method problem.** The inventory
+is **322 distinct ids**, not the 38 + 47 above — those were the suspected band, not the total. 67
+were settled (66 alive, 1 dead) before the Figma MCP returned *"You've reached the Figma MCP tool
+call limit for your Full seat on the Professional plan."* Everything reached lies in the intact
+`1:*` desktop tree; the ids already known to be dead live in `21:*`, which the quota cut off before,
+**so the part of the ledger that carries the value is the part still missing**. The method, the 67
+settled rows and the remaining 255 are in [`figma-node-ledger.md`](figma-node-ledger.md). Resume
+there rather than re-deriving; the quota is the binding constraint, not the reading.
+
+The probe to use is `get_screenshot` with `maxDimension: 16`, not `get_metadata` — measured: a live
+node returns a small JSON with its real size, a dead one returns the not-found error, and both cost
+about a hundred tokens, where `get_metadata` on a live node returns the whole subtree XML.
+
+**This work cannot be given to an Orca worker.** Session 13 tried; the claude.ai Figma connector
+does not follow into a worktree, and a fresh worktree has none of the 17 declared plugins either,
+because installs are keyed per project path. See the Orchestration section of `CLAUDE.md`.
 
 **Check every replacement against the live file before writing it**, one id at a time. Strengthening
 `screens.test.ts` so a shape check is not mistaken for an existence check still needs network access

@@ -1183,6 +1183,122 @@ The mobile band was re-measured on that export and is identical to dev on every 
 included: **7143**. So the 7 px between this session's HEAD baseline of 7157 and the plan's recorded
 7150 is not a dev-versus-export difference. The plan's figure simply does not reproduce on either.
 
+### 17. Session 13 — the footer hit area, one spelling, and the 28px explained by measuring it
+
+Four items were taken in order. **Two closed, one is explained and closed, one is blocked on a
+quota outside this repo.**
+
+**The footer link rows — closed.** The backlog said "32 → 44, +80 over six rows". Both halves needed
+correcting before anything was edited. The **tap target was 16px, not 32**: `FooterLinkColumn`
+renders an inline `<a>` at `text-[13px] leading-4`, so its box is the line and nothing more; 32 was
+the row *pitch*, 24px of `<li>` plus an 8px gap. The **+80 is right**, and it only works out if the
+gap collapses: 6×44 = 264 against 6×24 + 5×8 = 184.
+
+So on the phone the anchor becomes a 44-tall flex box that fills the column and the list gap goes to
+zero. Two class additions, both `mobile:`-scoped, no new component.
+
+| measured at 390 | before | after | at 1440 before | at 1440 after |
+| --- | --- | --- | --- | --- |
+| the `<a>` box | 60.36 × 16 | **149.5 × 44** | 60.36 × 16 | 60.36 × 16 |
+| pitch / row-gap | 32 / 8px | **44 / 0px** | 32 / 8px | 32 / 8px |
+| list per column | 184 | **264** | 184 | 184 |
+| footer | 1069.38 | **1149.38** | 785 | 785 |
+| page | 7143 | **7223** | — | — |
+| `scrollWidth` | 390 | **390** | — | — |
+
+Desktop is unchanged on every measured value. Every number above was re-taken on the **static
+export** served on :4180 and is identical to dev.
+
+Two checks that were not ceremony. The capture showed the fixed nav bar sitting over the last two
+rows, which looked like the change had pushed them under it — at maximum scroll `footerBottom` is
+**759.9** and `navBarTop` is **760**, so the page already reserves exactly the bar's 84px and
+nothing is covered. The capture was clipped to the footer while the bar rendered at its viewport
+position. And the enlarged box was probed with **real `touchscreen.tap`** at its top edge, bottom
+edge, far right and centre: all four land on the link. `element.click()` was not used anywhere.
+
+**The auth label — closed.** Desktop said `Login`, the phone said `Log In`. Owner decision: the
+phone spelling wins, because the phone is the priority surface, so only `HeaderPrelogin.tsx`
+changed. `uppercase` renders it LOG IN and the desktop pill grows **90.48 → 93.33**; at 768, 1024
+and 1440 `header.scrollWidth` equals `clientWidth`, so nothing wraps — worth checking, because that
+file already carries a note about the two CTAs not fitting beside the six nav items once a label
+grows. A first draft of that comment carried **97.72**, written before the measurement; it was
+wrong and was corrected from the measurement.
+
+`scripts/focus-restore.mjs` then failed 7/8 — and failed **correctly**. Its `PersonalInfoPanel →
+Sign out` row expects an accessible name and the name had just changed. Focus never moved; only its
+label did. The expectation is now `Log In` and the run is 8/8 again. That is the guard doing exactly
+what it was written for.
+
+**The 28px — explained, and it was never a rendering defect.** `start-here.txt` said the mobile page
+was 7150, had been 7228, that the known changes accounted for 7122, and that 28px were unknown. All
+three numbers were tested by measuring the commits themselves in a throwaway worktree with its own
+dev server on :3010, so nothing touched the shared `.next`:
+
+| commit | measured page height | the document said |
+| --- | --- | --- |
+| `eb99091` (before session 10's UI work) | **7228** | 7228 — correct |
+| `9f73ce8` (session 10's UI work committed) | **7157** | 7150 — does not reproduce |
+
+Session 12 had already found 7157 at that commit with a different script; this is an independent
+second reading of the same number. And the 71px between the two commits attribute completely, block
+by block, at 390:
+
+| block | `eb99091` | `9f73ce8` | delta |
+| --- | --- | --- | --- |
+| header | 61 | 60 | −1 |
+| hero | 186 | 186 | 0 |
+| recent-wins band | 104 | 104 | 0 |
+| category bar | 74 | 82 | **+8** |
+| content rows | 5537.5 | 5571.5 | **+34** |
+| footer | 1181.38 | 1069.38 | **−112** |
+| **page** | **7228** | **7157** | **−71** |
+
+−1 + 8 + 34 − 112 = −71 exactly. So the "28px" was the gap between an **incomplete accounting** —
+it counted the footer's −112 and +34 and missed the header's −1 and the category bar's +8 — and a
+**mis-recorded measurement** of 7150 for a page that was 7157. Nothing was unaccounted for in the
+browser. Two guesses made on the way were wrong and are recorded so nobody repeats them: the chips
+going 32→42 was assumed to be +10 and is **+8** measured, and the hero badge's line-height fix was
+assumed to cost −3 and cost **nothing** — the hero is 186 on both sides.
+
+The same decomposition run at HEAD accounts for today's page to the pixel: header 60 + main 5929.5 +
+footer 1149.38 + the 84px nav-bar reserve = 7222.88 against `scrollHeight` 7223.
+
+**The dead node ids — still open, and now blocked by something new.** The inventory is bigger than
+the plan recorded: **322 distinct ids across `src/` and `docs/`**, not 38 + 47. The plan's figures
+were the suspected band, not the total. A naive `\d+:\d+` grep also drags in clock strings —
+`08:12`, `12:36` — so the inventory filters on a non-zero first part and a 3-to-5 digit second.
+
+67 were settled before the run stopped on **the Figma MCP call limit for a Full seat on the
+Professional plan**. 66 alive, 1 dead. Everything reached is in the intact `1:*` desktop tree; the
+ids known to be dead live in `21:*`, which the quota cut off before. The partial table, the method
+and the remaining 255 are in [`figma-node-ledger.md`](figma-node-ledger.md), committed so the next
+session does not spend the quota re-deriving what is already known. **No guard test was written**: a
+test that knows one dead id would give false confidence, which is the failure `screens.test.ts`
+already demonstrates by checking a shape and being mistaken for an existence check.
+
+**Orchestration — two findings that make this repo's own rules collide.** The plan was three Orca
+workers, one worktree each, splitting the 322 ids. The first worker out reported, correctly and
+without guessing a single status, that it could not do the work:
+
+- **claude.ai account connectors do not follow a worker.** `ToolSearch` for
+  `mcp__claude_ai_Figma__get_screenshot` returned *"No matching deferred tools found"* in the
+  worktree. The only Figma server present was `plugin:figma:figma`, unauthenticated.
+- **A new worktree is a new project path, so none of the 17 declared plugins are installed for it.**
+  Plugin installs are recorded per project path — the same fact `CLAUDE.md` already states about
+  `claude plugin list` being machine-wide, carried one step further than anyone had carried it. The
+  committed `.claude/skills/` do travel, because a worktree is a checkout.
+
+That worker wrote all 108 of its ids as `"unknown"` with the error text attached rather than
+inventing statuses, which is the behaviour the brief asked for and the reason the failure was cheap.
+Both findings are now in `CLAUDE.md` under Orchestration.
+
+**Gate.** 65 tests · `tsc` 0 · `eslint` 0 · `build:check` 0 · `focus-restore` **8/8** · axe
+**0/0/0/0** across the nine states, run with the dev server stopped, on an export whose served CSS
+was proven byte-identical to the built file by SHA-256 and whose served `index.html` matched the
+built one exactly at 364388 bytes. The a11y build again wrote a second whole build into the shared
+`.next` — **187 files in `.next-a11y` and 251 in `.next`** — which is the measured trap, not a
+surprise; `.next` was deleted afterwards and the dev server restarted.
+
 ## Things worth remembering about this codebase
 
 - **This demo has three routes.** `/`, `/dev/screens` and `not-found`. Every other href in the app
