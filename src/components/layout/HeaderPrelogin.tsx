@@ -4,9 +4,10 @@ import Button from '../primitives/Button'
 import { useAppStore } from '@/store/useAppStore'
 
 /**
- * The right-hand cluster of the header for a visitor who has not signed in:
- * Figma node 1:4282 on desktop (LOGIN outline + REGISTER gold) and node 1:6994 on mobile
- * ("Log In" as bare type + "Sign In" gold).
+ * The right-hand cluster of the header for a visitor who has not signed in: Figma node 1:4282,
+ * desktop only (LOGIN outline + REGISTER gold). The phone header `32:3532` carries no auth
+ * controls at all — the logo is centred and the pair lives in the strip above the tab bar
+ * (`AuthStrip` in MobileNavBar, node 32:4823), so this renders nothing below 768.
  *
  * Both now say "Log In". Owner decision 2026-09-10: the desktop control said `Login` and the phone
  * said `Log In` — one label in two spellings, which is the half of the auth-label item session 10
@@ -16,23 +17,16 @@ import { useAppStore } from '@/store/useAppStore'
  * or overflows. That check is not ceremony: this file already carries a note about the two CTAs no
  * longer fitting beside the six nav items once the label grows.
  *
- * The gold control reads "Register", not Figma's "Sign In". Deliberate departure, owner decision
- * 2026-09-10: on the phone the design gives both buttons a near-identical label while the gold one
- * is the register action, so the mock ships a button that contradicts itself. The desktop node
- * already says REGISTER, so this borrows the design's own word rather than inventing copy. The same
- * pair exists in `JackpotMenu.tsx` and was changed in the same commit. The label fits the existing
- * 95px pill with no overflow — measured, scrollWidth 95 against clientWidth 95.
- *
- * The two are not one layout at two sizes — the labels, the weights and the outline all differ —
- * so they are two blocks behind a breakpoint rather than one block with six responsive overrides.
+ * The gold control reads "Register" here because desktop node 1:4312 says so. The phone strip says
+ * "Sign In", which is its own frame's word (owner's decision, 2026-09-10).
  *
  * The demo has no authentication, no backend and no /login route. Rather than ship two dead links,
  * both controls flip the mocked account state, which is the only way to reach the post-login header
  * from the page itself.
  *
- * Both log-in controls carry `data-login-control`. `Header` puts focus on one of them after a sign
- * out, because the control that was focused a moment earlier — the username pill — is unmounted by
- * the same state change. There are two of them and only one is ever on screen, so `Header` picks by
+ * This log-in control and the strip's both carry `data-login-control`. `Header` puts focus on one
+ * of them after a sign out, because the control that was focused a moment earlier — the username
+ * pill — is unmounted by the same state change. Only one is ever on screen, so `Header` picks by
  * `offsetParent` rather than by document order: focusing the `display: none` one would be a silent
  * no-op, which is exactly how the provider search lost focus at 390.
  */
@@ -50,41 +44,22 @@ const OUTLINE_PILL = [
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue',
 ].join(' ')
 
-const GHOST_PILL = [
-  'inline-flex h-10 w-[95px] items-center justify-center rounded-[20px]',
-  'text-sm font-semibold tracking-[-0.14px] text-primary',
-  'transition-colors hover:bg-elevated',
-  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue',
-].join(' ')
-
 export default function HeaderPrelogin() {
   const setAuthMode = useAppStore((state) => state.setAuthMode)
   const signIn = () => setAuthMode('postlogin')
 
   return (
-    <>
-      {/* Desktop — node 1:4309 */}
-      <div className="flex items-center gap-3.5 mobile:hidden">
-        <button type="button" onClick={signIn} className={OUTLINE_PILL} data-login-control>
-          Log In
-        </button>
-        {/* The primitive's gold variant is 16px; the header sets every label at 13px, and at 16px
-            the two CTAs no longer fit beside the six nav items. `!` because a plain override would
-            depend on which of the two font-size utilities Tailwind happens to emit last. */}
-        <Button onClick={signIn} className="!h-9 !text-[13px] uppercase">
-          Register
-        </Button>
-      </div>
-
-      {/* Mobile — node 1:6994 */}
-      <div className="hidden items-center mobile:flex">
-        <button type="button" onClick={signIn} className={GHOST_PILL} data-login-control>
-          Log In
-        </button>
-        <Button onClick={signIn} className="!h-10 !w-[95px] !text-sm tracking-[-0.14px]">
-          Register
-        </Button>
-      </div>
-    </>
+    // Desktop — node 1:4309
+    <div className="flex items-center gap-3.5 mobile:hidden">
+      <button type="button" onClick={signIn} className={OUTLINE_PILL} data-login-control>
+        Log In
+      </button>
+      {/* The primitive's gold variant is 16px; the header sets every label at 13px, and at 16px
+          the two CTAs no longer fit beside the six nav items. `!` because a plain override would
+          depend on which of the two font-size utilities Tailwind happens to emit last. */}
+      <Button onClick={signIn} className="!h-9 !text-[13px] uppercase">
+        Register
+      </Button>
+    </div>
   )
 }

@@ -5,7 +5,7 @@
 // whole-page `get_metadata` dump nor a numeric range is admissible evidence here: both were tried
 // in session 12 and both gave confident wrong answers.
 //
-// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 291 citations were already in the tree
+// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 289 citations were already in the tree
 // when the guard was written; the guard exists to stop new ones. Removing a line from this list
 // after cleaning up its citation is always safe — the guard never asks that a baseline entry still
 // be present.
@@ -310,7 +310,6 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '1:6994 docs/next-session.md',
   '1:6994 docs/session-10-plan.md',
   '1:6994 docs/tokens.md',
-  '1:6994 src/components/layout/HeaderPrelogin.tsx',
   '1:7000 docs/tokens.md',
   '1:7000 src/components/layout/Header.tsx',
   '1:8234 docs/next-session.md',
@@ -350,7 +349,6 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '1:8751 src/components/panels/JackpotMenu.tsx',
   '1:8751 src/components/primitives/Sheet.tsx',
   '1:8753 src/components/panels/JackpotMenu.tsx',
-  '1:8772 src/components/panels/JackpotMenu.tsx',
   '1:8781 src/components/panels/JackpotMenu.tsx',
   '1:8792 src/components/panels/JackpotMenu.tsx',
   '1:8834 src/components/panels/JackpotMenu.tsx',

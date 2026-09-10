@@ -76,12 +76,12 @@ const LOGO_SRC = LOGO
  * `images.dangerouslyAllowSVG` — the same call the Icon primitive makes and for the same reason.
  * `priority` because the mark is the first thing painted above the fold.
  */
-function Brand() {
+function Brand({ className = '' }: { className?: string }) {
   return (
     <Link
       href="/"
       aria-label="Jackpot — home"
-      className={`flex h-14 w-[120px] shrink-0 items-center mobile:h-9 mobile:w-[77px] ${FOCUS_RING}`}
+      className={`flex h-14 w-[120px] shrink-0 items-center mobile:h-9 mobile:w-[77px] ${FOCUS_RING} ${className}`}
     >
       <Image
         src={LOGO_SRC}
@@ -140,13 +140,19 @@ export default function Header() {
    * `HeaderPrelogin` renders two of them behind a breakpoint and `focus()` on the hidden one would
    * do nothing at all, quietly.
    *
-   * The ref starts from the first render's value so arriving straight on `?auth=prelogin` is not
-   * mistaken for a sign out and does not steal focus on load.
+   * Arriving straight on `?auth=prelogin` must not count as a sign out. The first render cannot
+   * say so: the store starts signed in and `UrlStateBridge` flips it one commit later, which read
+   * as signed-in -> signed-out and put a focus ring on Log In on every such load (seen on the
+   * deployed build, 2026-09-10). So the first run takes the starting state from the URL instead.
    */
-  const wasSignedIn = useRef(authMode !== 'prelogin')
+  const wasSignedIn = useRef<boolean | null>(null)
 
   useEffect(() => {
     const signedIn = authMode !== 'prelogin'
+    if (wasSignedIn.current === null) {
+      wasSignedIn.current = new URLSearchParams(window.location.search).get('auth') !== 'prelogin'
+      return
+    }
     const justSignedOut = wasSignedIn.current && !signedIn
     wasSignedIn.current = signedIn
     if (!justSignedOut) return
@@ -183,7 +189,7 @@ export default function Header() {
         and 16 is what the category track and the hero card below already use. Adopting 26/10 on the
         strength of one node would put the header out of line with every row under it.
       */}
-      <div className="mx-auto flex h-20 max-w-shell items-center justify-between gap-4 px-page-x mobile:h-[60px] mobile:gap-0 mobile:px-4">
+      <div className="relative mx-auto flex h-20 max-w-shell items-center justify-between gap-4 px-page-x mobile:h-[60px] mobile:gap-0 mobile:px-4">
         {/*
           `min-w-0` so this group is allowed to shrink. Between 768 and 1279 px — a range the Figma
           file has no frame for, since it draws only 390 and 1440 — the bar needed 1191 px and
@@ -192,7 +198,14 @@ export default function Header() {
           simply unreachable. Nothing here changes at 1440; the design's own width still fits.
         */}
         <div className="flex min-w-0 items-center gap-4 xl:gap-10">
-          <Brand />
+          {/* Signed out, the phone header `32:3532` centres the logo (`32:3538`, 77x36 at
+              `left: 50%`) and carries nothing on the left: the auth pair moved to the strip above
+              the tab bar. Signed in, `32:1815` keeps it on the left beside the balance. */}
+          <Brand
+            className={
+              authMode === 'prelogin' ? 'mobile:absolute mobile:left-1/2 mobile:-translate-x-1/2' : ''
+            }
+          />
 
           {/*
             The nav is what yields. It scrolls sideways inside the header rather than pushing the

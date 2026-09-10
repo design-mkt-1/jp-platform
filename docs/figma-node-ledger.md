@@ -1,4 +1,4 @@
-# Figma node id ledger — 374 of 374
+# Figma node id ledger — 382 of 382
 
 File `2MyylxdZblfGnf05nQacUz`. Started 2026-09-10 session 13, finished session 15. Every id cited
 anywhere in `src/`, `docs/`, `public/` or the repository root is settled.
@@ -136,7 +136,7 @@ Things measured rather than quoted, worth keeping:
   `1:2435` and `1:2655`, cited in `public/review/index.html` — a directory the earlier count did
   not scan. Both are alive; `1:2655` is 40x40.
 
-## Dead ids that are cited under `src/` — 104
+## Dead ids that are cited under `src/` — 102
 
 These are the ones that would earn a guard test. Every row is a citation in shipped source of a node
 that no longer exists in the file.
@@ -175,7 +175,6 @@ that no longer exists in the file.
 | `1:6480` | src/components/cards/PromoBannerMobile.tsx |
 | `1:6978` | src/components/layout/MobileShell.tsx |
 | `1:6980` | src/components/layout/Header.tsx |
-| `1:6994` | src/components/layout/HeaderPrelogin.tsx |
 | `1:7000` | src/components/layout/Header.tsx |
 | `1:8235` | src/app/globals.css, src/app/layout.tsx, src/components/layout/MobileNavBar.tsx |
 | `1:8239` | src/components/layout/MobileNavBar.tsx |
@@ -191,7 +190,6 @@ that no longer exists in the file.
 | `1:8536` | src/components/layout/HeaderPostlogin.tsx, src/components/layout/HeaderVip.tsx |
 | `1:8751` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx |
 | `1:8753` | src/components/panels/JackpotMenu.tsx |
-| `1:8772` | src/components/panels/JackpotMenu.tsx |
 | `1:8781` | src/components/panels/JackpotMenu.tsx |
 | `1:8792` | src/components/panels/JackpotMenu.tsx |
 | `1:8834` | src/components/panels/JackpotMenu.tsx |
@@ -378,6 +376,7 @@ that no longer exists in the file.
 | `1:4282` | alive | 1440x80 | yes |
 | `1:4309` | alive | 230x60 | yes |
 | `1:4310` | alive | 91x36 | yes |
+| `1:4312` | alive | 113x36 | yes |
 | `1:4314` | alive | 720x80 | yes |
 | `1:4319` | alive | 16x16 | yes |
 | `1:4321` | alive | 720x251 | yes |
@@ -469,7 +468,7 @@ that no longer exists in the file.
 | `1:6517` | dead | - | docs only |
 | `1:6978` | dead | - | yes |
 | `1:6980` | dead | - | yes |
-| `1:6994` | dead | - | yes |
+| `1:6994` | dead | - | docs only |
 | `1:7000` | dead | - | yes |
 | `1:8234` | dead | - | docs only |
 | `1:8235` | dead | - | yes |
@@ -491,7 +490,7 @@ that no longer exists in the file.
 | `1:8536` | dead | — | yes |
 | `1:8751` | dead | - | yes |
 | `1:8753` | dead | - | yes |
-| `1:8772` | dead | - | yes |
+| `1:8772` | dead | - | not cited |
 | `1:8781` | dead | - | yes |
 | `1:8792` | dead | - | yes |
 | `1:8834` | dead | - | yes |
@@ -574,6 +573,7 @@ that no longer exists in the file.
 | `32:1812` | alive | 3358x7788 | docs only |
 | `32:1813` | alive | 390x7159 | yes |
 | `32:1814` | alive | 390x335 | docs only |
+| `32:1815` | alive | 390x60 | yes |
 | `32:1829` | alive | 141x40 | docs only |
 | `32:1852` | alive | 80x18 | yes |
 | `32:1853` | alive | 64x12 | yes |
@@ -609,8 +609,14 @@ that no longer exists in the file.
 | `32:3087` | alive | 390x769 | docs only |
 | `32:3284` | alive | 390x84 | yes |
 | `32:3296` | alive | 35x12 | yes |
-| `32:3308` | alive | 390x769 | docs only |
+| `32:3308` | alive | 390x769 | yes |
 | `32:3530` | alive | 390x7159 | yes |
+| `32:3532` | alive | 390x60 | yes |
+| `32:3538` | alive | 77x36 | yes |
+| `32:4798` | alive | 390x70 | yes |
+| `32:4823` | alive | 350x56 | yes |
+| `32:4824` | alive | 170x40 | not cited |
+| `32:4826` | alive | 168x40 | not cited |
 | `32:4828` | alive | 390x84 | yes |
 | `32:4829` | alive | 360x64 | yes |
 | `32:4830` | alive | 64x64 | yes |

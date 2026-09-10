@@ -94,9 +94,10 @@ export default function Sheet({
         // `--mobile-nav-h` is the bar's own height, declared once in globals.css and read by the
         // bar, by MobileShell's end-of-document spacer and here. The safe-area inset is added
         // because the bar pads itself by it, so the two together are what it actually occupies.
+        // `--mobile-auth-h` is the pre-login strip on top of the bar, 0 when signed in.
         // Underscores are Tailwind's escape for the spaces `calc` requires around its operator.
         clearsNavBar
-          ? 'inset-x-0 top-0 bottom-0 mobile:bottom-[calc(var(--mobile-nav-h)_+_env(safe-area-inset-bottom))]'
+          ? 'inset-x-0 top-0 bottom-0 mobile:bottom-[calc(var(--mobile-nav-h)_+_var(--mobile-auth-h)_+_env(safe-area-inset-bottom))]'
           : 'inset-0',
         anchor === 'top' ? 'items-start' : 'items-end',
       ].join(' ')}

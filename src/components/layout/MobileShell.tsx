@@ -28,12 +28,13 @@ export default function MobileShell({ children }: MobileShellProps) {
 
       {/* The bar is fixed, so it is outside the flow and would otherwise sit on top of the last
           section. This reserves its 84px — plus the home indicator inset — at the end of the
-          document instead of putting padding on a wrapper the page does not control. */}
+          document instead of putting padding on a wrapper the page does not control. Signed out,
+          the Log In / Sign In strip on top of the bar adds its 70 through `--mobile-auth-h`. */}
       {/* Underscores are Tailwind's escape for the spaces `calc` requires around its operator, and
           `--mobile-nav-h` is the bar's 84 declared once in globals.css — see the note there. */}
       <div
         aria-hidden
-        className="hidden h-[calc(var(--mobile-nav-h)_+_env(safe-area-inset-bottom))] mobile:block"
+        className="hidden h-[calc(var(--mobile-nav-h)_+_var(--mobile-auth-h)_+_env(safe-area-inset-bottom))] mobile:block"
       />
 
       <MobileNavBar />

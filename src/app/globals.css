@@ -182,6 +182,12 @@
    * another is a strip of live page showing under a modal, which is exactly the defect this fixes.
    */
   --mobile-nav-h: 84px;
+  /*
+   * The pre-login strip that sits on top of that bar, node 32:4798 (390x70): Log In and Sign In
+   * above the tabs. Zero while signed in; the rule below turns it on whenever the strip
+   * is in the document, so the same three places that read the bar's height clear the strip too.
+   */
+  --mobile-auth-h: 0px;
 
   /*
    * Component-level fills for the "See All" pill, node 1:5655.
@@ -194,6 +200,10 @@
   --see-all-bg: rgb(0 122 255 / 0.13);
   --see-all-bg-hover: rgb(0 122 255 / 0.22);
   --see-all-bg-active: rgb(0 122 255 / 0.3);
+}
+
+:root:has([data-auth-strip]) {
+  --mobile-auth-h: 70px;
 }
 
 /*

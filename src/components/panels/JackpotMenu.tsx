@@ -94,50 +94,6 @@ function MenuLink({ row, onNavigate }: { row: MenuRow; onNavigate: () => void })
   )
 }
 
-/**
- * Node 1:8772. The pre-login block. Written out rather than assembled from `Button` because the
- * design's neutral pill has no matching variant — the primitive's `outline` is a hairline on a
- * transparent fill — and forcing it would put two utilities of the same Tailwind family in one
- * class attribute, where the winner is decided by stylesheet order. See the change request.
- */
-function AuthActions({ onNavigate }: { onNavigate: () => void }) {
-  const base = `flex h-[38px] flex-1 items-center justify-center rounded-[20px] px-6 text-sm tracking-[-0.14px] transition-[filter] ${FOCUS_RING}`
-
-  return (
-    // No fill: the rebuilt frames sit this block straight on the panel — node 13:2333, the
-    // post-login equivalent, is placed at x=16, y=12 with nothing painted behind it. The
-    // `rounded-[10px] bg-card` that used to be here read as a card one step lighter than the sheet,
-    // which was invisible while the two were the same colour and would not be now.
-    <div className="flex items-center gap-2 px-4 py-3">
-      <Link
-        href="/login"
-        onClick={onNavigate}
-        prefetch={false}
-        className={`${base} bg-elevated font-semibold text-primary hover:brightness-150`}
-      >
-        Log In
-      </Link>
-      <Link
-        href="/register"
-        onClick={onNavigate}
-        prefetch={false}
-        className={[
-          base,
-          'bg-gradient-gold font-bold text-page hover:brightness-110',
-          'shadow-[0_4px_6px_color-mix(in_srgb,var(--gold-dark)_25%,transparent)]',
-        ].join(' ')}
-      >
-        {/* Figma labels this "Sign In", which is what the header used to say too. It is the same
-            wording as the neighbouring log-in control while the href is `/register`, so the button
-            contradicts what it does. Owner decision, 2026-09-10: use the desktop header's own word.
-            Changed in both places at once — this one and `HeaderPrelogin.tsx` — because fixing only
-            the header would leave the phone account menu still saying it. */}
-        Register
-      </Link>
-    </div>
-  )
-}
-
 /** Node 1:8285 (and 1:8528 in the VIP frame): avatar, identity, deposit, the ID field, "More". */
 function ProfileCard({ vip }: { vip: boolean }) {
   const user = vip ? VIP_PROFILE : PROFILE
@@ -162,7 +118,7 @@ function ProfileCard({ vip }: { vip: boolean }) {
 
   return (
     // Node 13:2333 sits at x=16, y=12 on the panel with no fill of its own; the `rounded-[10px]
-    // bg-card` this used to carry is gone for the same reason as in `AuthActions` above.
+    // bg-card` this used to carry is gone: the rebuilt frames paint nothing behind it.
     <div className="flex flex-col gap-2 px-4 pb-2 pt-3">
       <div className="flex items-center gap-3">
         <span
@@ -307,7 +263,9 @@ export default function JackpotMenu() {
         </div>
       </div>
 
-      {signedIn ? <ProfileCard vip={authMode === 'vip'} /> : <AuthActions onNavigate={closePanel} />}
+      {/* Signed out, node 32:5279 has no auth pair inside the menu: Log In and Sign In are the strip
+          on top of the tab bar, which this sheet stops above (`--mobile-auth-h`). */}
+      {signedIn ? <ProfileCard vip={authMode === 'vip'} /> : null}
 
       <nav aria-label="Account menu" className="mt-1.5">
         <ul className="flex flex-col gap-2">

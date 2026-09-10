@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
+import Button from '../primitives/Button'
 import { useAppStore } from '@/store/useAppStore'
 
 /**
@@ -289,11 +290,52 @@ function NavTab({
   )
 }
 
+/**
+ * Node 32:4798 / 32:4823: the signed-out strip on top of the bar — 390x70 in the bar's own colour,
+ * its top corners at 34, holding Log In and Sign In side by side, 12 apart, 20 in from each edge.
+ *
+ * It replaces the Log In / Register pair the phone header and the pre-login jackpot menu used to
+ * carry: the rebuilt frames (32:3308, 32:5279) draw neither, only this. "Sign In" is Figma's word
+ * and the owner's decision of 2026-09-10; desktop keeps its own "Register" (node 1:4312). There is
+ * no authentication in the demo, so both flip the mocked account state, as the header's did.
+ *
+ * `data-auth-strip` is what turns on `--mobile-auth-h` in globals.css, so the page's end spacer
+ * and the jackpot menu's sheet clear the strip as well as the bar. `data-login-control` is where
+ * `Header` puts focus after a sign out.
+ */
+function AuthStrip() {
+  const setAuthMode = useAppStore((state) => state.setAuthMode)
+  const closePanel = useAppStore((state) => state.closePanel)
+  const signIn = () => {
+    closePanel()
+    setAuthMode('postlogin')
+  }
+
+  return (
+    <div data-auth-strip className="h-[70px] rounded-t-[34px] bg-quaternary px-5 pt-[17px]">
+      <div className="flex gap-3 drop-shadow-[0_12px_14px_rgb(0_0_0/0.2)]">
+        <button
+          type="button"
+          onClick={signIn}
+          data-login-control
+          className={`flex h-10 flex-1 items-center justify-center rounded-[20px] border border-solid border-strong bg-white/5 px-6 text-sm font-semibold tracking-[-0.14px] text-primary backdrop-blur-[8px] transition-[filter] hover:brightness-150 ${FOCUS_RING}`}
+        >
+          Log In
+        </button>
+        <Button onClick={signIn} className="!h-10 flex-1 !text-sm tracking-[-0.14px]">
+          Sign In
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export default function MobileNavBar() {
   const pathname = usePathname()
   const panel = useAppStore((state) => state.panel)
   const openPanel = useAppStore((state) => state.openPanel)
   const closePanel = useAppStore((state) => state.closePanel)
+  const signedOut = useAppStore((state) => state.authMode === 'prelogin')
 
   const menuOpen = panel === 'jackpotMenu'
 
@@ -308,6 +350,8 @@ export default function MobileNavBar() {
         'z-40',
       ].join(' ')}
     >
+      {signedOut ? <AuthStrip /> : null}
+
       {/* Node 32:4828: `bg-quaternary` (#0D1420) under a 1px white-8% rule, 20px to the first tab.
           Its 84 is declared once as `--mobile-nav-h` in globals.css, because two other places
           measure this bar: MobileShell's end-of-document spacer and the jackpot menu's sheet,
