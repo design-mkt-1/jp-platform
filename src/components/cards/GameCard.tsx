@@ -99,7 +99,11 @@ export default function GameCard({
       <p className="line-clamp-2 break-words font-display text-base font-extrabold leading-tight text-page mobile:text-[13px]">
         {game.title}
       </p>
-      <p className="mt-1 line-clamp-1 text-[11px] font-bold uppercase tracking-[0.6px] text-page opacity-70 mobile:text-[10px]">
+      {/* `line-height: normal` for Inter, measured: 14px at 11, 12px at 10. Figma's card node
+          1:2602 is artwork only and carries no text at all, so there is nothing to match here —
+          the provider line exists because our data has one and the design bakes it into the
+          image. */}
+      <p className="mt-1 line-clamp-1 text-[11px] leading-[14px] font-bold uppercase tracking-[0.6px] text-page opacity-70 mobile:text-[10px] mobile:leading-3">
         {provider}
       </p>
     </div>

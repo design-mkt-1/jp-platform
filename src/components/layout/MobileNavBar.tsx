@@ -277,7 +277,8 @@ function NavTab({
     >
       <MenuGlyph name={tab.glyph} size={22} />
       <span
-        className={`text-[10px] tracking-[0.2px] ${active ? 'font-semibold' : 'font-medium'} whitespace-nowrap`}
+        // Node 32:3296 and its siblings are 10px at `line-height: normal` — 12px for Inter.
+        className={`text-[10px] leading-3 tracking-[0.2px] ${active ? 'font-semibold' : 'font-medium'} whitespace-nowrap`}
       >
         {tab.label}
       </span>
@@ -355,7 +356,7 @@ export default function MobileNavBar() {
           </span>
           {/* Occupies the mark's slot so "Menu" sits level with the other labels (node 1:8259). */}
           <span aria-hidden className="size-[22px]" />
-          <span className="whitespace-nowrap text-[10px] font-medium capitalize tracking-[0.2px]">
+          <span className="whitespace-nowrap text-[10px] leading-3 font-medium capitalize tracking-[0.2px]">
             Menu
           </span>
         </button>

@@ -47,7 +47,9 @@ const SIZE_CLASSES: Record<BadgeSize, string> = {
   // `normal` moves the box and `leading-3` does not.
   xs: 'rounded-md px-2 py-[3px] text-[10px] uppercase leading-3 tracking-[0.5px]',
   sm: 'rounded-md px-3 py-1 text-xs',
-  md: 'rounded-lg px-4 py-1.5 text-[13px]',
+  // Node 1:3447's pill is 13px at `line-height: normal`, which is 16px for Inter — the same
+  // reasoning as `xs` above, one size up. Without it the pill rendered 31.5 instead of 28.
+  md: 'rounded-lg px-4 py-1.5 text-[13px] leading-4',
 }
 
 export interface BadgeProps {

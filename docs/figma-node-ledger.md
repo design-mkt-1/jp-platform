@@ -1,4 +1,4 @@
-# Figma node id ledger — INCOMPLETE, 173 of 324
+# Figma node id ledger — INCOMPLETE, 177 of 324
 
 File `2MyylxdZblfGnf05nQacUz`. Started 2026-09-10 session 13, continued session 14. **Do not read
 this as a finished inventory.** It stops where the Figma MCP quota stopped it, for the second time:
@@ -32,6 +32,14 @@ Two methods that were tried in session 12 and gave confident wrong answers:
 - **Numeric ranges.** `1:5687` sits inside a band recorded as dead and is alive — a UI-Kit spec
   frame, not a page node. `21:3297`, `21:3675` and `21:3693` are dead and sit nowhere near it.
 
+**A second probe, added when the quota came back.** `get_design_context` answers the same question
+and answers more of it: on a live node it returns the subtree as JSX with every child's
+`data-node-id`, its font sizes and its `line-height`; on a deleted one it returns the identical
+*"The provided node ID was not found in the file"*. That is how `1:8536` was settled dead and how
+the nine `text-[Npx]` line-heights were read. It costs more tokens than a 16px screenshot, so it is
+the right probe when the answer is wanted, not just the status. The four rows marked `—` for size
+come from it; `get_screenshot` is still what gives dimensions.
+
 A third guard was added in session 14 and is cheap: **put one known-alive id in every batch**. In the
 batch where 39 of 40 answered *"not found"*, `1:2431` answered alive at 1440x7453 in the same turn,
 so the run was the tool working, not the tool failing. Without that control, forty identical errors
@@ -39,7 +47,7 @@ and a dead connector look the same.
 
 ## What the sweep is worth so far, and what it is not
 
-173 settled — **100 alive, 73 dead**, 151 still to check. The whole of `21:*` (55 ids),
+177 settled — **103 alive, 74 dead**, 147 still to check. The whole of `21:*` (55 ids),
 the whole of `13:*` (16 ids) and `112:330` are dead. The whole of `32:*` is alive: that is the
 subtree the designers rebuilt, and it is where the dead `21:*` work went.
 
@@ -59,7 +67,7 @@ Things measured rather than quoted, worth keeping:
   `1:2435` and `1:2655`, cited in `public/review/index.html` — a directory the earlier count did
   not scan. Both are still unchecked.
 
-## Dead ids that are cited under `src/` — 70
+## Dead ids that are cited under `src/` — 71
 
 These are the ones that would earn a guard test. Every row is a citation in shipped source of a node
 that no longer exists in the file.
@@ -82,6 +90,7 @@ that no longer exists in the file.
 | `13:2519` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx, src/lib/screens.ts |
 | `13:2550` | src/components/panels/JackpotMenu.tsx |
 | `13:2552` | src/components/panels/JackpotMenu.tsx |
+| `1:8536` | src/components/layout/HeaderPostlogin.tsx |
 | `21:2896` | src/app/page.tsx, src/lib/screens.ts, src/lib/sections.ts |
 | `21:2897` | src/components/layout/Header.tsx |
 | `21:2898` | src/components/layout/Header.tsx |
@@ -233,6 +242,10 @@ that no longer exists in the file.
 | `1:4016` | alive | 600x69 | yes |
 | `1:4116` | alive | 1440x1036 | yes |
 | `1:4125` | alive | 280x299 | yes |
+| `1:4259` | alive | — | yes |
+| `1:4435` | alive | — | yes |
+| `1:4583` | alive | — | yes |
+| `1:8536` | dead | — | yes |
 | `13:2307` | dead | — | yes |
 | `13:2325` | dead | — | yes |
 | `13:2333` | dead | — | yes |
@@ -315,7 +328,7 @@ that no longer exists in the file.
 | `32:3308` | alive | 390x769 | docs only |
 | `112:330` | dead | — | docs only |
 
-## Still to check — 151 ids
+## Still to check — 147 ids
 
 Grouped only for reading. **Do not classify by group**; that is the mistake above.
 
@@ -323,6 +336,6 @@ Of these, thirteen were asked and answered with the quota error rather than with
 `1:3594` `1:3600` `1:3604` `1:3605` `1:3638` `1:3666` `1:3998` `1:4007` `1:4114` `1:4115` `1:4118` `1:4124` `1:4140` — so they are unknown, not
 suspect. The rest were never reached.
 
-**`1:*`** (151)
+**`1:*`** (147)
 
-`1:2435` `1:2655` `1:3594` `1:3600` `1:3604` `1:3605` `1:3638` `1:3666` `1:3998` `1:4007` `1:4114` `1:4115` `1:4118` `1:4124` `1:4140` `1:4145` `1:4149` `1:4151` `1:4153` `1:4154` `1:4155` `1:4160` `1:4161` `1:4186` `1:4244` `1:4245` `1:4250` `1:4259` `1:4272` `1:4280` `1:4282` `1:4309` `1:4310` `1:4314` `1:4319` `1:4321` `1:4322` `1:4323` `1:4329` `1:4334` `1:4431` `1:4434` `1:4435` `1:4454` `1:4459` `1:4479` `1:4568` `1:4575` `1:4576` `1:4579` `1:4583` `1:4611` `1:4707` `1:4710` `1:4711` `1:4712` `1:4719` `1:4721` `1:4724` `1:4725` `1:4731` `1:4737` `1:4745` `1:4759` `1:4797` `1:4800` `1:5199` `1:5325` `1:5587` `1:5591` `1:5623` `1:5655` `1:5687` `1:5697` `1:5720` `1:5722` `1:5736` `1:5741` `1:5743` `1:5749` `1:5750` `1:5751` `1:5752` `1:5753` `1:5755` `1:5756` `1:5758` `1:5761` `1:5762` `1:5799` `1:5859` `1:5882` `1:5884` `1:5887` `1:5888` `1:5936` `1:6175` `1:6179` `1:6192` `1:6194` `1:6195` `1:6247` `1:6249` `1:6250` `1:6253` `1:6254` `1:6255` `1:6256` `1:6257` `1:6259` `1:6260` `1:6282` `1:6464` `1:6467` `1:6478` `1:6479` `1:6480` `1:6499` `1:6517` `1:6978` `1:6980` `1:6994` `1:7000` `1:8234` `1:8235` `1:8236` `1:8239` `1:8244` `1:8245` `1:8247` `1:8249` `1:8254` `1:8257` `1:8259` `1:8260` `1:8285` `1:8305` `1:8503` `1:8504` `1:8528` `1:8536` `1:8751` `1:8753` `1:8772` `1:8781` `1:8792` `1:8834` `1:8875` `1:8885` `1:8908` `1:8910`
+`1:2435` `1:2655` `1:3594` `1:3600` `1:3604` `1:3605` `1:3638` `1:3666` `1:3998` `1:4007` `1:4114` `1:4115` `1:4118` `1:4124` `1:4140` `1:4145` `1:4149` `1:4151` `1:4153` `1:4154` `1:4155` `1:4160` `1:4161` `1:4186` `1:4244` `1:4245` `1:4250` `1:4272` `1:4280` `1:4282` `1:4309` `1:4310` `1:4314` `1:4319` `1:4321` `1:4322` `1:4323` `1:4329` `1:4334` `1:4431` `1:4434` `1:4454` `1:4459` `1:4479` `1:4568` `1:4575` `1:4576` `1:4579` `1:4611` `1:4707` `1:4710` `1:4711` `1:4712` `1:4719` `1:4721` `1:4724` `1:4725` `1:4731` `1:4737` `1:4745` `1:4759` `1:4797` `1:4800` `1:5199` `1:5325` `1:5587` `1:5591` `1:5623` `1:5655` `1:5687` `1:5697` `1:5720` `1:5722` `1:5736` `1:5741` `1:5743` `1:5749` `1:5750` `1:5751` `1:5752` `1:5753` `1:5755` `1:5756` `1:5758` `1:5761` `1:5762` `1:5799` `1:5859` `1:5882` `1:5884` `1:5887` `1:5888` `1:5936` `1:6175` `1:6179` `1:6192` `1:6194` `1:6195` `1:6247` `1:6249` `1:6250` `1:6253` `1:6254` `1:6255` `1:6256` `1:6257` `1:6259` `1:6260` `1:6282` `1:6464` `1:6467` `1:6478` `1:6479` `1:6480` `1:6499` `1:6517` `1:6978` `1:6980` `1:6994` `1:7000` `1:8234` `1:8235` `1:8236` `1:8239` `1:8244` `1:8245` `1:8247` `1:8249` `1:8254` `1:8257` `1:8259` `1:8260` `1:8285` `1:8305` `1:8503` `1:8504` `1:8528` `1:8751` `1:8753` `1:8772` `1:8781` `1:8792` `1:8834` `1:8875` `1:8885` `1:8908` `1:8910`

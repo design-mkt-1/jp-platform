@@ -5,12 +5,13 @@
 // whole-page `get_metadata` dump nor a numeric range is admissible evidence here: both were tried
 // in session 12 and both gave confident wrong answers.
 //
-// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 180 citations were already in the tree
+// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 182 citations were already in the tree
 // when the guard was written; the guard exists to stop new ones. Removing a line from this list
 // after cleaning up its citation is always safe — the guard never asks that a baseline entry still
 // be present.
 
 export const DEAD_NODE_IDS: readonly string[] = [
+  '1:8536',
   '13:2307',
   '13:2325',
   '13:2333',
@@ -139,6 +140,8 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '13:2550 docs/next-session.md',
   '13:2550 src/components/panels/JackpotMenu.tsx',
   '13:2552 src/components/panels/JackpotMenu.tsx',
+  '1:8536 src/components/layout/HeaderPostlogin.tsx',
+  '1:8536 src/components/layout/HeaderVip.tsx',
   '21:2896 docs/next-session.md',
   '21:2896 docs/session-10-plan.md',
   '21:2896 docs/session-11-plan.md',

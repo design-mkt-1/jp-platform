@@ -107,7 +107,9 @@ export default function SearchSuggestions({
                   <span className="truncate font-flex text-sm font-semibold text-primary">
                     {game.title}
                   </span>
-                  <span className="truncate font-flex text-[11px] font-medium text-muted">
+                  {/* Node 1:4587, the provider line, is 11px at `line-height: normal`; for Roboto
+                      Flex that measures 13px. */}
+                  <span className="truncate font-flex text-[11px] leading-[13px] font-medium text-muted">
                     {provider}
                   </span>
                 </span>

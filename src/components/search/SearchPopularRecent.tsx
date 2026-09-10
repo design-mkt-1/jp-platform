@@ -30,7 +30,9 @@ const SECTION_LABEL_CLASSES =
 /** Node 1:4435: 16/8 padding, pill radius, on the field fill with a separator hairline. */
 const TAG_CLASSES = [
   'rounded-full border border-solid border-separator bg-field px-4 py-2',
-  'font-flex text-[13px] font-medium text-primary',
+  // 15px, not the 16 the Inter sites use: this is `font-flex`, Roboto Flex, and `line-height:
+  // normal` measures differently per family. Node 1:4436 writes `normal` at 13px.
+  'font-flex text-[13px] leading-[15px] font-medium text-primary',
   'transition-colors hover:border-medium hover:bg-elevated',
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue',
 ].join(' ')
@@ -75,7 +77,7 @@ export default function SearchPopularRecent({
                   <button
                     type="button"
                     onClick={() => onSelect(term)}
-                    className="min-w-0 flex-1 truncate px-3 py-2 text-left font-flex text-[13px] font-medium text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue"
+                    className="min-w-0 flex-1 truncate px-3 py-2 text-left font-flex text-[13px] leading-[15px] font-medium text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue"
                   >
                     {term}
                   </button>

@@ -54,7 +54,7 @@ const NAV_ITEMS: NavItem[] = [
 ]
 
 const NAV_ITEM_BASE =
-  'block whitespace-nowrap rounded-md px-2.5 py-2 text-[13px] uppercase transition-colors'
+  'block whitespace-nowrap rounded-md px-2.5 py-2 text-[13px] leading-4 uppercase transition-colors'
 const NAV_ITEM_ACTIVE = 'font-bold text-gold'
 const NAV_ITEM_IDLE = 'font-semibold text-nav hover:text-primary'
 

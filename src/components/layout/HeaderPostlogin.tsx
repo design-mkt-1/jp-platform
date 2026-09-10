@@ -42,7 +42,9 @@ export function VipBadge() {
     <span
       className={[
         'inline-flex shrink-0 items-center gap-1 rounded-xl px-2.5 py-1',
-        'bg-gradient-gold text-[11px] font-bold uppercase tracking-[1.5px] text-page',
+        // 14px is `line-height: normal` for Inter at 11px, measured. The node this badge was
+        // taken from, `1:8536`, is deleted, so the design has no height to check against.
+        'bg-gradient-gold text-[11px] leading-[14px] font-bold uppercase tracking-[1.5px] text-page',
         'shadow-[0_0_8px_color-mix(in_srgb,var(--gold-light)_50%,transparent)]',
       ].join(' ')}
     >
