@@ -14,6 +14,11 @@ import { citations } from '../../../scripts/dead-nodes.mjs'
  *
  * A test has no network, so it cannot ask Figma whether a node exists. It can hold the answers the
  * ledger already paid for and refuse to let a new citation of one of them in.
+ *
+ * Scope, stated rather than assumed: the scan covers `src/`, `docs/` and `public/`. Files at the
+ * repository root are outside it, which is deliberate — `CLAUDE.md` has to name deleted ids to
+ * explain why this guard exists, and a guard that fought the document describing it would be
+ * removed within a session.
  */
 
 describe('citations of deleted Figma nodes', () => {

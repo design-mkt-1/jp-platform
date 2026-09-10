@@ -139,9 +139,14 @@ routes, so every other href silently 404s in the background. It was fixed in `He
 `MobileNavBar`, then a third time across the footer, the menu and `Button` — twenty dead requests per
 page load, three times, because the first two fixes stopped where the bug was noticed.
 
-The same shape is still open elsewhere: `scripts/clean-svg.mjs` was extended twice and still misses
-six files, because its rule 2 only catches paths starting more than 1000 units outside the viewBox
-and those six start at −149 to −961. And `src/lib/__tests__/assets.test.ts` walks every asset path
+The same shape ran again with Figma node ids. `CategoryPill.tsx` sized the mobile chip from `1:5799`,
+a node the designers had deleted; that one citation was noticed and dealt with, and the class was
+not. `screens.ts` was still carrying `21:2896`, `13:2307` and `13:2519` as live `figmaNodeId` values,
+and `screens.test.ts` passed them every run because it validates the `^\d+:\d+$` **shape**, which a
+deleted id matches perfectly. Probing one id at a time put the real number at **70 dead ids cited
+under `src/`**. The class fix is `src/lib/__tests__/figma-dead-nodes.test.ts`.
+
+The same blindness is still open in `src/lib/__tests__/assets.test.ts`, which walks every asset path
 both ways but only ever calls `existsSync` — `slots.svg` shipped for weeks carrying the category
 bar's glass capsule, drawing a lighter square in the Must-Play Slots header, and the test passed it
 every time. **Look at the bytes, not just the path.**
