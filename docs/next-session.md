@@ -1,5 +1,43 @@
 # Next session — Jackpot demo
 
+## Handoff, 2026-09-10, session 16
+
+**The mobile category bar is rebuilt to the live frame `32:1893`.** The designers had redrawn it and
+the code still followed the deleted `21:2977` — session 15 re-pointed ids, not drawings. Now: a
+390x72 band (`#090E1A`, dashed `#1E293B` rule above and below), 56px tab row, 36px tabs in sentence
+case, and a **selected state**: blue tint, `#36BCFF` label and glyph, 4px dot. The old frame drew no
+selected state, which is what the "no active indicator" deviation in `docs/tokens.md` rested on; it
+is removed. Six tokens added with node ids, `border-chip` retired.
+
+Measured at an asserted `innerWidth` of 390, both motion modes, against `32:1813`:
+
+| point | Figma | before | now |
+| --- | --- | --- | --- |
+| category band | 263–335 | no band, chips 262–304 | 261–333 |
+| "Popular" title top | 457 | 426 | 455 |
+| footer top | 6019 | 5989.5 | 6018.5 |
+| Egypt grid → footer | 54 | 54 | 54 |
+
+Tab widths match to under 1px (Popular 104.2 / 104.23, Live Casino 122.9 / 123). The 2px left is the
+hero, 170 tall against Figma's 172, not touched. A real `page.tap()` moves the tint, glyph colour and
+dot from Popular to Slots and back, and focus stays on the tapped tab. Desktop at 1440 is
+pixel-identical except the two tournament countdowns' seconds. axe: zero on all nine states.
+
+Two glyph fixes came with it, both from the live nodes: `live-casino.svg` (16x11.3,
+`preserveAspectRatio="none"`) had been stretched into a 16x16 box and is now 12.8x9.04 as `32:1937`
+draws it; the jackpot crown is 17.9x16 per `32:1941`, not 16x16. On the phone the glyphs are drawn
+as a CSS mask over the existing files, so one file serves both colours.
+
+**Not done, and next:** the header's balance button, `32:1829` — Figma draws a dark rectangle with
+`$ 140.00` and a blue square plus; ours is the green pill. The owner asked for it after the bar.
+Also known and left alone: Figma's bar shows seven tabs and writes "Jackpot"; ours has the four
+categories in `categories.json` and "Jackpots".
+
+The ledger is 368 of 368 (the twelve new `32:*` ids read alive), and its "cited under src/" column
+was regenerated from `citations()` — it had drifted: `21:3296`…`21:3657` were still "yes" after
+session 15 removed them from `sections.ts`. Dead ids cited under `src/`: 117 → 108; guard baseline
+310 → 295 (292 in code and docs, plus three dead ids this entry names on purpose).
+
 ## Handoff, 2026-09-10, session 15 — read this first if you are on a different machine
 
 **The goal, stated by the owner this session:** this is a **demo of what is in Figma**, front-end
@@ -110,20 +148,22 @@ Open, in the order that matters for a Figma demo:
    fixed-height ancestor absorbs the line box. Optional cleanup, not a bug.
 4. ~~**Seven colour tokens justified by deleted nodes**~~ — **closed in session 15**: each re-cited
    to a live `32:*` node whose value was read and matches. See the session-15 entry above.
-5. **The 23.5px under the last phone row — an owner decision, not a bug.** Measured band by band in
-   the session-15 entry: without the 84px nav-bar reserve the page is 20.5px *shorter* than
-   `32:1813`, and −23.5 of that sits between the Egypt row and the footer. Closing it is one class —
-   `mobile:pb-[54px]` at `src/app/page.tsx:134`, whose comment still reasons from the dead
-   `21:3675`; the live row is `32:2608`, same 410. Whether to change it is the owner's call.
-6. **The 117 dead-id comments under `src/`** — optional cleanup. They mislead a reader, they render
+5. ~~**The 23.5px under the last phone row**~~ — **closed in session 16: the premise was wrong.**
+   Figma's Egypt grid ends at 5965 (`32:2608` y 5589 + 376) and the footer `32:2626` starts at
+   6019, so the design leaves **54** there — and ours was measured at **54**. The session-15 table
+   compared our title top with Figma's *frame* top, missing the padding each row frame keeps above
+   its `section-header` (16 on `32:1991`, 24 on `32:2608`). The real loss, **−31**, was above the
+   first row: the title of "Popular" sat at 426 against Figma's 457. See the session-16 entry.
+6. **The 108 dead-id comments under `src/`** — optional cleanup. They mislead a reader, they render
    nothing. **Do not replace them in bulk.** Many cite the old node for *metrics*, and the rebuilt
    node is not always built the same way: `Button.tsx` says `13:2340` "is padded 10/24", while its
    live counterpart `32:4885` is a fixed 113x38 box with no padding. Each one needs the live node
    read with `get_design_context` and the comment's claim re-checked against it.
 
-**Start here, next session.** Items 5 and 6 are all that is left, and 5 waits on the owner. Before
-measuring anything, read the port from the dev log: on the machine `BogdanLocal` another project
-("Top-Win — screens") holds :3000, so this repo's `next dev` comes up on :3001.
+**Start here, next session.** Superseded by the session-16 entry above: item 5 is closed, the
+balance button `32:1829` is next, then item 6 one comment at a time. Before measuring anything, read
+the port from the dev log: on the machine `BogdanLocal` another project ("Top-Win — screens") has
+held :3000, so this repo's `next dev` can come up on :3001 — in session 16 :3000 was free.
 
 **What does not travel to another machine.** The two owner rules are `UserPromptSubmit` hooks in
 `~/.claude/`, not in this repo — see `docs/start-here.txt`. The 17 declared plugins are recorded per

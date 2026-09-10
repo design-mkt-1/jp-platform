@@ -224,7 +224,12 @@ list becomes a dumping ground of ad-hoc colours and we are back to exactly the p
 | `#19191D`       | `border-flag`     | `--border-flag`     | `1:4016`                              | the ring around the language flags                                          |
 | `#7F7A85` ¹     | `text-legal`      | `--text-legal`      | `1:4115`                              | the footer's legal strip                                                    |
 | `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2448` ⁹                            | the separator in the wins ticker, **desktop only**                          |
-| `#222A4E` ⁶     | `border-chip`     | `--border-chip`     | `21:2978`                             | the 1px outline of **every** mobile category chip, selected one included    |
+| `#090E1A` ⁶     | `bg-tab-bar`      | `--bg-tab-bar`      | `32:1893`                             | the mobile category band behind the tabs                                    |
+| `#1E293B` ⁶     | `border-tab-bar`  | `--border-tab-bar`  | `32:1893`                             | its dashed rule, above and below                                            |
+| `#151F32` ⁶     | `bg-tab`          | `--bg-tab`          | `32:1900`                             | an unselected mobile category tab                                           |
+| `#94A3B8` ⁶     | `tab-label`       | `--text-tab`        | `32:1934`                             | that tab's label and glyph                                                  |
+| `#36BCFF` ⁶     | `tab-accent`      | `--tab-accent`      | `32:1898`, `32:1899`                  | the selected mobile tab's label, glyph and 4px dot                          |
+| `#007AFF @ 20%` ⁶ | `tab-accent-tint` | `--tab-accent-tint` | `32:1895`                           | the selected mobile tab's fill                                              |
 | `#A5A6B5`       | `text-subtitle`   | `--text-subtitle`   | `1:6254`                              | the mobile promo card's subtitle                                            |
 | `#F2C146`       | `amber-soft`      | `--amber-soft`      | `1:6255`                              | the "join + timer" pill on the mobile promo card, solid                     |
 | `#FF9500 @ 10%` ⁷ | `wager-tint`    | `--wager-tint`      | `32:1852`                             | the fill of the mobile hero's `20X WAGER` badge                             |
@@ -289,13 +294,16 @@ because that is how every other glow in this codebase is written and the two are
 on a solid `rounded-full` pill. Figma writes the hex bare, so it is taken as fully opaque; the 60%
 blue mix it replaces was not something any node justified.
 
-⁶ Added 2026-09-10, sampled on the top edge of node `21:2978` where the border is a clean 1px. It is
-a **solid** colour deliberately, unlike `--border-divider` / `--border-medium` / `--border-strong`,
-which are white alphas: `#222A4E` over `--bg-section` is not any of them, and the chips sit on
-`--bg-page`, where an alpha border would composite to a third value again. The node id matters here
-more than usual — the chip metrics this replaces were cited to `1:5799`, which had been deleted when
-the mobile subtree was rebuilt on 2026-09-09, and `screens.test.ts` only checks the `^\d+:\d+$`
-shape, so nothing failed. See "Stale node citations" below.
+⁶ Added 2026-09-10 from `get_design_context` on node `32:1893`, the mobile category bar the
+designers rebuilt in place of the deleted `21:2977`. They replace `--border-chip` (`#222A4E`, sampled
+off `21:2978`), which is gone: the new tabs have no border at all. **The new frame draws a selected
+state** — a blue tint, a `#36BCFF` label and glyph, a 4px dot — where `21:2977` painted all four
+chips alike; that is what retired the "no active indicator" deviation below. Contrast: `#94A3B8` on
+`#151F32` measures **6.43:1**; `#36BCFF` on the tint composited over `#090E1A` (`#072448`) measures
+**7.23:1**. `#36BCFF` is the same value note ² keeps out of the theme while it lived only in SVG
+files; it is now written in CSS, so by that note's own rule it gets a variable and a token. The
+glyphs reach it as a CSS mask over the existing icon files, so `search-blue.svg` and `bonus-buy.svg`
+still carry the hex themselves.
 
 ⁵ This used to be `bg-elevated`, that is white at 6%. While the panel was `--bg-card` the two were
 indistinguishable: 6% over `#151624` composites to `#232431`, one unit off what Figma draws. Moving
@@ -353,7 +361,6 @@ no visible gain. They are noted here so they are not rediscovered as a "bug" at 
 | `#FFFFFF @ 9%` (the active pill's background)                     | `bg-elevated` `@ 6%` | 3 points of opacity                                                                                                                  |
 | `#11111A` (the game card's background, node `1:2602`)             | `bg-card` `#151624`  | `#11111A` is the **desktop** page background, which the "mobile wins" decision replaced with `#0F121D`                                |
 | `#000000` (the pill button's label, node `I1:6256;112:330`)       | `ink` `#09090D`      | Figma writes pure black on the button and `#09090D` on the clock 3px away. The difference is imperceptible, so both use `ink`         |
-| **No active indicator on the mobile category chips** (node `21:2977`) — owner's decision, 2026-09-10 | all four chips use `bg-section` + `border-chip` + `text-primary` | Figma paints `Chip-Active` (`21:2978`) identically to `21:2982` / `21:3017` / `21:3022` — measured pixel by pixel, not inferred from the layer name. Ours drew a cyan ring on the selected chip and `text-muted` on the rest, and the owner rejected it. **This contradicts `ui-ux-pro-max`'s Navigation → "Active State" rule on purpose** (severity Medium; *Do:* "Highlight active nav item with color/underline", *Don't:* "All links same style"). It is a deliberate design decision, not an oversight, and it is mobile-only: **desktop keeps its cyan ring**, because node `1:2503` genuinely draws one there. `aria-current` (link form) and `aria-pressed` (button form) stay in the markup and become the only selection signal on the phone — which satisfies WCAG 1.4.1 Use of Colour, since the state was never carried by colour alone for assistive tech |
 
 ### Stale node citations — the `1:5720`–`1:8234` band
 
@@ -479,6 +486,7 @@ track has to render its items twice so the loop has no seam. Both respect
 
 - 26 colours in the Desktop UI Kit, 22 in the Mobile UI Kit
 - **37 distinct tokens** after unifying the duplicate names and resolving the conflicts (30 from the first wave, plus `text-subtitle`, `amber-soft` and `ink`, required by the mobile promo cards, plus `blue-text`, required by the AA threshold, plus `wager-tint`, `wager-amber` and `violet-glow`, required by the rebuilt mobile hero)
+- plus six for the rebuilt mobile category bar (`32:1893`), replacing `border-chip` — see §2b note ⁶
 - 2 composed gradients
 - 1 documented exception
 - of those 37, one — `violet-glow` — is a CSS variable with no Tailwind token, because it is only

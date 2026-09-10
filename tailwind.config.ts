@@ -64,6 +64,12 @@ export default {
         'menu-row': 'var(--bg-menu-row)',
         'balance-chip': 'var(--bg-balance-chip)',
         cyan: 'var(--cyan)',
+        // The mobile category bar, node 32:1893 — see globals.css.
+        'tab-bar': 'var(--bg-tab-bar)',
+        tab: 'var(--bg-tab)',
+        'tab-label': 'var(--text-tab)',
+        'tab-accent': 'var(--tab-accent)',
+        'tab-accent-tint': 'var(--tab-accent-tint)',
 
         // Gradient stops
         'gold-light': 'var(--gold-light)',
@@ -81,7 +87,7 @@ export default {
         header: 'var(--border-header)',
         flag: 'var(--border-flag)',
         emphasis: 'var(--border-emphasis)',
-        chip: 'var(--border-chip)',
+        'tab-bar': 'var(--border-tab-bar)',
       },
 
       fontFamily: {

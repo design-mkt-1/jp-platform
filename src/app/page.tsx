@@ -110,8 +110,8 @@ export default function Home() {
 
         {/*
           Desktop stacks hero → ticker → category bar (1:2436, 1:2438, 1:2500). The mobile frame
-          puts the category strip above the ticker instead (1:5799 at y=187 of the top block,
-          1:5859 below it), so the two are swapped by `order` rather than rendered twice. DOM order
+          puts the category strip above the ticker instead (32:1893 at y=263, the ticker 32:1968
+          at y=355), so the two are swapped by `order` rather than rendered twice. DOM order
           follows the desktop frame; the only consequence on mobile is that the ticker is reached
           before the tabs by keyboard, which is the cheaper of the two costs.
         */}
@@ -119,19 +119,22 @@ export default function Home() {
 
         {/* 24px between the hero and the ticker card (468 → 492 in the frame): half of it is the
             gap between the two frames, half the ticker's own inset. The wrapper carries the first
-            half rather than overriding `py-3`, so the two paddings cannot fight. */}
-        <div className="pt-3 mobile:order-3 mobile:pt-0">
+            half rather than overriding `py-3`, so the two paddings cannot fight. On the phone the
+            ticker `32:1968` starts 20 below the category band (335 → 355): 8 here plus that 12. */}
+        <div className="pt-3 mobile:order-3 mobile:pt-2">
           <RecentWinsTicker />
         </div>
 
-        {/* 24px below the ticker frame on desktop; 16px below the hero on mobile. */}
-        <CategoryNavBar className="pt-6 mobile:order-2 mobile:pt-4" />
+        {/* 24px below the ticker frame on desktop. On the phone the band `32:1893` starts 15 below
+            the hero (248 → 263) and pads its tabs 7 inside its 1px dashed rule. */}
+        <CategoryNavBar className="pt-6 mobile:order-2 mobile:mt-[15px] mobile:pt-[7px]" />
 
-        {/* 54px below the last row on the phone, not 20. Frame `21:3675` is 410 tall for 376 of
-            content, so the design leaves 34 more under the final grid than `pb-5` did — measured at
-            20.00px from the last row's bottom to the footer's top before this. Desktop keeps its
-            own 48 (`pb-12`), which the mobile frame has no say over. */}
-        <div className="w-full px-page-x pb-12 pt-12 mobile:px-4 mobile:pb-[54px] mobile:pt-2 mobile:order-4">
+        {/* 54px below the last row on the phone, not 20. The last row frame `32:2608` is 410 tall
+            with its grid ending at 376, and the footer `32:2626` starts 20 below the frame: 34 + 20.
+            Measured 54 in Chrome at 390 on 2026-09-10, equal to the design. Desktop keeps its own
+            48 (`pb-12`), which the mobile frame has no say over. At the top, the first row's title
+            sits 36 below the ticker (421 → 457 in `32:1813`): the ticker's own 12 plus 24 here. */}
+        <div className="w-full px-page-x pb-12 pt-12 mobile:px-4 mobile:pb-[54px] mobile:pt-6 mobile:order-4">
           {/*
             44px between rows on mobile, not 20. Figma's rebuilt mobile frames (node `21:2896`)
             build that gap out of two pieces: 20px between one row frame and the next, plus 24px of

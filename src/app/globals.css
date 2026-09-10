@@ -125,12 +125,18 @@
      same hue and saturation at lightness 50% instead of 39.8% measures 4.59:1. */
   --text-legal: #7f7a85;
   --border-emphasis: rgb(255 255 255 / 0.15); /* wins-ticker divider, node 1:2433 */
-  /* The mobile category chip's outline, node 21:2978. Every chip in the mobile Horizontal-Chips-
-     Track (21:2977) carries it, the selected one included — the phone frame draws no active ring.
-     It is a solid colour and not a white alpha like --border-divider/-medium/-strong: over
-     --bg-section it composites to #262E51, four units off, and the chips sit on --bg-page anyway,
-     where an alpha border would read a different colour again. */
-  --border-chip: #222a4e;
+  /*
+   * The mobile category bar, node 32:1893 (ios-category-tabs), which replaced the deleted 21:2977.
+   * The band paints its own near-black with a dashed rule above and below; each tab is a filled
+   * pill, and the selected one is a blue tint with a lighter blue label, icon and 4px dot. All six
+   * values read with `get_design_context` on 32:1893 on 2026-09-10. Contrast in docs/tokens.md §2b.
+   */
+  --bg-tab-bar: #090e1a; /* 32:1893 */
+  --border-tab-bar: #1e293b; /* 32:1893, dashed, top and bottom */
+  --bg-tab: #151f32; /* inactive tab, 32:1900 */
+  --text-tab: #94a3b8; /* inactive label and glyph, 32:1934 */
+  --tab-accent: #36bcff; /* selected label, glyph and dot, 32:1898 / 32:1899 */
+  --tab-accent-tint: rgb(0 122 255 / 0.2); /* selected fill, 32:1895 */
   /* The solid form of the same #F2C146 that --amber-tint carries at 10%: the join/countdown pill
      of the mobile promo cards, node 1:6255, is filled with it outright. */
   --amber-soft: #f2c146;

@@ -1,4 +1,4 @@
-# Figma node id ledger — 356 of 356
+# Figma node id ledger — 368 of 368
 
 File `2MyylxdZblfGnf05nQacUz`. Started 2026-09-10 session 13, finished session 15. Every id cited
 anywhere in `src/`, `docs/`, `public/` or the repository root is settled.
@@ -136,7 +136,7 @@ Things measured rather than quoted, worth keeping:
   `1:2435` and `1:2655`, cited in `public/review/index.html` — a directory the earlier count did
   not scan. Both are alive; `1:2655` is 40x40.
 
-## Dead ids that are cited under `src/` — 117
+## Dead ids that are cited under `src/` — 108
 
 These are the ones that would earn a guard test. Every row is a citation in shipped source of a node
 that no longer exists in the file.
@@ -149,8 +149,6 @@ that no longer exists in the file.
 | `1:5741` | src/components/layout/HeaderPostlogin.tsx, src/components/primitives/Icon.tsx, src/lib/types.ts |
 | `1:5743` | src/components/layout/Header.tsx |
 | `1:5751` | src/lib/assets.ts |
-| `1:5799` | src/app/page.tsx |
-| `1:5859` | src/app/page.tsx |
 | `1:5882` | src/components/sections/GameGrid.tsx |
 | `1:5884` | src/components/sections/SectionHeader.tsx |
 | `1:5887` | src/components/sections/GameGrid.tsx |
@@ -239,13 +237,7 @@ that no longer exists in the file.
 | `21:2937` | src/components/layout/HeroBanner.tsx |
 | `21:2938` | src/components/layout/HeroBanner.tsx |
 | `21:2939` | src/app/globals.css, src/components/layout/HeroBanner.tsx |
-| `21:2975` | src/components/layout/CategoryNavBar.tsx |
-| `21:2977` | src/app/globals.css, src/components/layout/CategoryNavBar.tsx, src/components/primitives/CategoryPill.tsx |
-| `21:2978` | src/app/globals.css, src/components/primitives/CategoryPill.tsx |
-| `21:2979` | src/components/primitives/CategoryPill.tsx |
-| `21:2982` | src/components/primitives/CategoryPill.tsx |
-| `21:3017` | src/components/primitives/CategoryPill.tsx |
-| `21:3022` | src/components/primitives/CategoryPill.tsx |
+| `21:2977` | src/app/globals.css, src/components/primitives/CategoryPill.tsx |
 | `21:3035` | src/components/layout/RecentWinsTicker.tsx |
 | `21:3036` | src/components/cards/RecentWinItem.tsx |
 | `21:3037` | src/components/cards/RecentWinItem.tsx |
@@ -256,7 +248,6 @@ that no longer exists in the file.
 | `21:3095` | src/components/sections/ProviderRow.tsx |
 | `21:3118` | src/components/cards/ProviderCard.tsx |
 | `21:3297` | src/app/page.tsx |
-| `21:3675` | src/app/page.tsx |
 | `21:3693` | src/components/layout/Footer.tsx |
 | `21:3785` | src/components/layout/Footer.tsx |
 | `21:4020` | src/components/layout/Footer.tsx |
@@ -450,8 +441,8 @@ that no longer exists in the file.
 | `1:5758` | dead | - | docs only |
 | `1:5761` | dead | - | docs only |
 | `1:5762` | dead | - | docs only |
-| `1:5799` | dead | - | yes |
-| `1:5859` | dead | - | yes |
+| `1:5799` | dead | - | docs only |
+| `1:5859` | dead | - | docs only |
 | `1:5882` | dead | - | yes |
 | `1:5884` | dead | - | yes |
 | `1:5887` | dead | - | yes |
@@ -478,8 +469,8 @@ that no longer exists in the file.
 | `1:6478` | dead | - | yes |
 | `1:6479` | dead | - | yes |
 | `1:6480` | dead | - | yes |
-| `1:6499` | dead | - | yes |
-| `1:6517` | dead | - | yes |
+| `1:6499` | dead | - | docs only |
+| `1:6517` | dead | - | docs only |
 | `1:6978` | dead | - | yes |
 | `1:6980` | dead | - | yes |
 | `1:6994` | dead | - | yes |
@@ -499,7 +490,7 @@ that no longer exists in the file.
 | `1:8285` | dead | - | yes |
 | `1:8305` | dead | - | yes |
 | `1:8503` | dead | - | yes |
-| `1:8504` | dead | - | yes |
+| `1:8504` | dead | - | docs only |
 | `1:8528` | dead | - | yes |
 | `1:8536` | dead | — | yes |
 | `1:8751` | dead | - | yes |
@@ -523,7 +514,7 @@ that no longer exists in the file.
 | `13:2362` | dead | — | yes |
 | `13:2486` | dead | — | yes |
 | `13:2487` | dead | — | yes |
-| `13:2491` | dead | — | yes |
+| `13:2491` | dead | — | not cited |
 | `13:2492` | dead | — | yes |
 | `13:2519` | dead | — | yes |
 | `13:2550` | dead | — | yes |
@@ -548,13 +539,13 @@ that no longer exists in the file.
 | `21:2937` | dead | — | yes |
 | `21:2938` | dead | — | yes |
 | `21:2939` | dead | — | yes |
-| `21:2975` | dead | — | yes |
+| `21:2975` | dead | — | docs only |
 | `21:2977` | dead | — | yes |
-| `21:2978` | dead | — | yes |
-| `21:2979` | dead | — | yes |
-| `21:2982` | dead | — | yes |
-| `21:3017` | dead | — | yes |
-| `21:3022` | dead | — | yes |
+| `21:2978` | dead | — | docs only |
+| `21:2979` | dead | — | docs only |
+| `21:2982` | dead | — | not cited |
+| `21:3017` | dead | — | not cited |
+| `21:3022` | dead | — | not cited |
 | `21:3035` | dead | — | yes |
 | `21:3036` | dead | — | yes |
 | `21:3037` | dead | — | yes |
@@ -562,34 +553,46 @@ that no longer exists in the file.
 | `21:3043` | dead | — | yes |
 | `21:3050` | dead | — | yes |
 | `21:3057` | dead | — | yes |
-| `21:3058` | dead | — | yes |
-| `21:3077` | dead | — | yes |
+| `21:3058` | dead | — | docs only |
+| `21:3077` | dead | — | not cited |
 | `21:3095` | dead | — | yes |
 | `21:3118` | dead | — | yes |
-| `21:3296` | dead | — | yes |
+| `21:3296` | dead | — | not cited |
 | `21:3297` | dead | — | yes |
-| `21:3314` | dead | — | yes |
-| `21:3332` | dead | — | yes |
-| `21:3350` | dead | — | yes |
-| `21:3368` | dead | — | yes |
-| `21:3384` | dead | — | yes |
-| `21:3402` | dead | — | yes |
-| `21:3420` | dead | — | yes |
-| `21:3437` | dead | — | yes |
-| `21:3455` | dead | — | yes |
-| `21:3657` | dead | — | yes |
-| `21:3675` | dead | — | yes |
+| `21:3314` | dead | — | not cited |
+| `21:3332` | dead | — | not cited |
+| `21:3350` | dead | — | not cited |
+| `21:3368` | dead | — | not cited |
+| `21:3384` | dead | — | not cited |
+| `21:3402` | dead | — | not cited |
+| `21:3420` | dead | — | not cited |
+| `21:3437` | dead | — | not cited |
+| `21:3455` | dead | — | not cited |
+| `21:3657` | dead | — | not cited |
+| `21:3675` | dead | — | docs only |
 | `21:3693` | dead | — | yes |
 | `21:3785` | dead | — | yes |
 | `21:4020` | dead | — | yes |
 | `21:4026` | dead | — | docs only |
-| `21:4154` | dead | — | yes |
+| `21:4154` | dead | — | docs only |
 | `32:1812` | alive | 3358x7788 | docs only |
-| `32:1813` | alive | 390x7159 | docs only |
+| `32:1813` | alive | 390x7159 | yes |
 | `32:1814` | alive | 390x335 | docs only |
 | `32:1852` | alive | 80x18 | yes |
 | `32:1853` | alive | 64x12 | yes |
-| `32:1968` | alive | 390x66 | docs only |
+| `32:1893` | alive | 390x72 | yes |
+| `32:1894` | alive | 791x56 | yes |
+| `32:1895` | alive | 104x36 | yes |
+| `32:1896` | alive | 11x16 | yes |
+| `32:1898` | alive | 49x16 | yes |
+| `32:1899` | alive | 4x4 | yes |
+| `32:1900` | alive | 82x36 | yes |
+| `32:1901` | alive | 16x16 | yes |
+| `32:1934` | alive | 32x16 | yes |
+| `32:1936` | alive | 16x16 | yes |
+| `32:1937` | alive | 13x9 | yes |
+| `32:1941` | alive | 18x16 | yes |
+| `32:1968` | alive | 390x66 | yes |
 | `32:1991` | alive | 390x368 | yes |
 | `32:2010` | alive | 390x376 | yes |
 | `32:2028` | alive | 390x264 | yes |
@@ -605,9 +608,9 @@ that no longer exists in the file.
 | `32:2388` | alive | 390x284 | yes |
 | `32:2590` | alive | 390x376 | yes |
 | `32:2608` | alive | 390x410 | yes |
-| `32:2626` | alive | 390x1140 | docs only |
+| `32:2626` | alive | 390x1140 | yes |
 | `32:3087` | alive | 390x769 | docs only |
-| `32:3284` | alive | 390x84 | docs only |
+| `32:3284` | alive | 390x84 | yes |
 | `32:3296` | alive | 35x12 | yes |
 | `32:3308` | alive | 390x769 | docs only |
 | `32:3530` | alive | 390x7159 | yes |

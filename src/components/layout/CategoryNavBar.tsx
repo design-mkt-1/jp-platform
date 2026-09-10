@@ -28,7 +28,7 @@ import type { Category, CategoryId } from '@/lib/types'
  *
  * So this component owns the desktop dropdown and `SearchOverlay` stands down while it does, which
  * it learns from `useSearchBarHost`. Below the `mobile:` breakpoint the design has no search
- * control in this bar at all (node 21:2975) — it is the header magnifier's job there — so the claim
+ * control in this bar at all (node 32:1893) — it is the header magnifier's job there — so the claim
  * is dropped, the trigger is hidden and the chip track takes the whole row.
  *
  * ## How the panel is positioned
@@ -50,7 +50,7 @@ const SEARCH_TRIGGER_CLASSES = [
   'text-left text-[13px] font-semibold text-nav',
   'transition-colors hover:border-medium hover:text-primary',
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue',
-  // Node 21:2975 lays the chips across the whole 390 row and carries no search field: on mobile
+  // Node 32:1893 lays the tabs across the whole 390 row and carries no search field: on mobile
   // the search control is the header magnifier, which calls the same `openSearch`.
   // A second trigger here claimed 244px of the row and left the scroller showing one chip.
   'mobile:hidden',
@@ -171,7 +171,14 @@ export default function CategoryNavBar({
 
   return (
     <div
-      className={['relative w-full px-page-x pb-6 mobile:pl-4 mobile:pr-0', className]
+      className={[
+        'relative w-full px-page-x pb-6',
+        // Node 32:1893 is a full-width 390x72 band with its own fill and a dashed rule above and
+        // below. Figma strokes inside the frame, so 7 + 1 each side keeps it 72 tall, not 74; the
+        // top 7 is `mobile:pt-[7px]` on the call site, which owns the top padding on both sizes.
+        'mobile:border-y mobile:border-dashed mobile:border-tab-bar mobile:bg-tab-bar mobile:px-0 mobile:pb-[7px]',
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
     >
@@ -202,13 +209,10 @@ export default function CategoryNavBar({
           'relative z-10 mx-auto flex max-w-content scroll-mt-6 items-center justify-between gap-4 p-4',
           // 44px, not `rounded-full`: the capsule is 78px tall, so a pill radius would be 39.
           'rounded-[44px] border border-solid border-divider bg-card',
-          // Node 21:2975 has no capsule *at all* on mobile — it is a bare 390x42 band on the page
-          // background. The element stays for layout and for the scroll container, but none of the
-          // desktop chrome paints: the fill was measured as `#151624` in the 6px gap between two
-          // chips where Figma has the page's `#0F121D`, and the 1px border as `#262633` in the last
-          // column where Figma has the clipped chip's own artwork. The track starts 16px from the
-          // page edge, which the wrapper's own `mobile:pl-4` already gives it, and runs to the
-          // right edge so the chip that does not fit is visibly cut rather than hidden.
+          // Node 32:1893 has no capsule on mobile: the band is the wrapper's, and this element
+          // stays only for layout and the scroll container, so none of the desktop chrome paints.
+          // The track runs to the right edge so the tab that does not fit is visibly cut rather
+          // than hidden.
           //
           // One `mobile:` utility per Tailwind family, deliberately: `mobile:border-0` (width) and
           // not `mobile:border-none` (style), so it never competes with `border-solid`. Against the
@@ -218,10 +222,11 @@ export default function CategoryNavBar({
           'mobile:rounded-none mobile:border-0 mobile:bg-transparent mobile:p-0',
         ].join(' ')}
       >
-        {/* `mobile:gap-1.5` is node 21:2977, the Horizontal-Chips-Track, which sets the chips 6px
-            apart rather than the desktop bar's 12px. The track is 42 tall and its background is
-            `--bg-page`, which is what the page already paints behind it. */}
-        <div className="no-scrollbar flex min-w-0 items-center gap-3 overflow-x-auto mobile:gap-1.5">
+        {/* Node 32:1894, Tab Bar - Modern: 56 tall, 16px inset, 10px above and below the 36px
+            tabs, 8px between them. The padding sits on the scroller itself, so the first tab
+            starts 16px in and the vertical 10 leaves room for the focus ring the scroller would
+            otherwise clip. */}
+        <div className="no-scrollbar flex min-w-0 items-center gap-3 overflow-x-auto mobile:gap-2 mobile:px-4 mobile:py-2.5">
           {categories.map((category) => (
             <CategoryPill
               key={category.id}

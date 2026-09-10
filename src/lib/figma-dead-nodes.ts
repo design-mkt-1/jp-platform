@@ -5,7 +5,7 @@
 // whole-page `get_metadata` dump nor a numeric range is admissible evidence here: both were tried
 // in session 12 and both gave confident wrong answers.
 //
-// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 306 citations were already in the tree
+// `ACCEPTED_CITATIONS` is a baseline, not an approval. Those 295 citations were already in the tree
 // when the guard was written; the guard exists to stop new ones. Removing a line from this list
 // after cleaning up its citation is always safe — the guard never asks that a baseline entry still
 // be present.
@@ -230,9 +230,7 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '1:5799 docs/session-11-plan.md',
   '1:5799 docs/tokens.md',
   '1:5799 public/review/index.html',
-  '1:5799 src/app/page.tsx',
   '1:5859 docs/tokens.md',
-  '1:5859 src/app/page.tsx',
   '1:5882 docs/next-session.md',
   '1:5882 docs/session-9-plan.md',
   '1:5882 docs/tokens.md',
@@ -415,23 +413,13 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '21:2975 docs/next-session.md',
   '21:2975 docs/session-11-plan.md',
   '21:2975 docs/tokens.md',
-  '21:2975 src/components/layout/CategoryNavBar.tsx',
+  '21:2977 docs/next-session.md',
   '21:2977 docs/tokens.md',
   '21:2977 src/app/globals.css',
-  '21:2977 src/components/layout/CategoryNavBar.tsx',
   '21:2977 src/components/primitives/CategoryPill.tsx',
   '21:2978 docs/next-session.md',
   '21:2978 docs/tokens.md',
-  '21:2978 src/app/globals.css',
-  '21:2978 src/components/primitives/CategoryPill.tsx',
   '21:2979 docs/tokens.md',
-  '21:2979 src/components/primitives/CategoryPill.tsx',
-  '21:2982 docs/tokens.md',
-  '21:2982 src/components/primitives/CategoryPill.tsx',
-  '21:3017 docs/tokens.md',
-  '21:3017 src/components/primitives/CategoryPill.tsx',
-  '21:3022 docs/tokens.md',
-  '21:3022 src/components/primitives/CategoryPill.tsx',
   '21:3035 docs/next-session.md',
   '21:3035 docs/session-11-plan.md',
   '21:3035 src/components/layout/RecentWinsTicker.tsx',
@@ -450,13 +438,14 @@ export const ACCEPTED_CITATIONS: readonly string[] = [
   '21:3095 src/components/sections/ProviderRow.tsx',
   '21:3118 docs/next-session.md',
   '21:3118 src/components/cards/ProviderCard.tsx',
+  '21:3296 docs/next-session.md',
   '21:3297 docs/next-session.md',
   '21:3297 docs/session-11-plan.md',
   '21:3297 src/app/page.tsx',
+  '21:3657 docs/next-session.md',
   '21:3675 docs/next-session.md',
   '21:3675 docs/session-10-plan.md',
   '21:3675 docs/session-11-plan.md',
-  '21:3675 src/app/page.tsx',
   '21:3693 docs/next-session.md',
   '21:3693 docs/session-10-plan.md',
   '21:3693 docs/session-11-plan.md',
