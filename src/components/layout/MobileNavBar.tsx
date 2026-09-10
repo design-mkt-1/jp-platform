@@ -291,8 +291,10 @@ function NavTab({
 }
 
 /**
- * Node 32:4798 / 32:4823: the signed-out strip on top of the bar — 390x70 in the bar's own colour,
- * its top corners at 34, holding Log In and Sign In side by side, 12 apart, 20 in from each edge.
+ * Node 32:4798 / 32:4823: the signed-out strip on top of the bar, in the bar's own colour, its top
+ * corners at 34, holding Log In and Sign In side by side, 12 apart, 20 in from each edge. Figma
+ * draws it 70 tall with 13 under the buttons; it is 57 with none, so the buttons end where the
+ * capsule starts. Owner's decision of 2026-09-10 — see `--mobile-auth-h` in globals.css.
  *
  * It replaces the Log In / Register pair the phone header and the pre-login jackpot menu used to
  * carry: the rebuilt frames (32:3308, 32:5279) draw neither, only this. "Sign In" is Figma's word
@@ -312,7 +314,7 @@ function AuthStrip() {
   }
 
   return (
-    <div data-auth-strip className="h-[70px] rounded-t-[34px] bg-quaternary px-5 pt-[17px]">
+    <div data-auth-strip className="h-[var(--mobile-auth-h)] rounded-t-[34px] bg-quaternary px-5 pt-[17px]">
       <div className="flex gap-3 drop-shadow-[0_12px_14px_rgb(0_0_0/0.2)]">
         <button
           type="button"
@@ -352,11 +354,13 @@ export default function MobileNavBar() {
     >
       {signedOut ? <AuthStrip /> : null}
 
-      {/* Node 32:4828: `bg-quaternary` (#0D1420) under a 1px white-8% rule, 20px to the first tab.
-          Its 84 is declared once as `--mobile-nav-h` in globals.css, because two other places
+      {/* Node 32:4828: `bg-quaternary` (#0D1420), 20px to the first tab. Figma adds a 1px white-8%
+          rule and 10px above and below the capsule; the owner dropped all three on 2026-09-10, so
+          the bar is the capsule's own 64. It is declared once as `--mobile-nav-h` in globals.css,
+          because two other places
           measure this bar: MobileShell's end-of-document spacer and the jackpot menu's sheet,
           which stops its scrim exactly here. */}
-      <div className="relative flex h-[var(--mobile-nav-h)] w-full items-center justify-between border-t border-solid border-medium bg-quaternary px-5">
+      <div className="relative flex h-[var(--mobile-nav-h)] w-full items-center justify-between bg-quaternary px-5">
         {/* Node 32:4829, the glass capsule: 360 wide at 390 (15px each side), 64 tall, centred.
             Decorative, so it takes no pointer events and the tabs above it keep every tap. */}
         <span

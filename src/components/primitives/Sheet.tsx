@@ -43,7 +43,7 @@ export interface SheetProps {
    * our own decision and is deliberately left as it was.
    *
    * The clearance is scoped to the `mobile:` breakpoint because that is where the bar exists at
-   * all — above 767px `MobileNavBar` renders nothing, and reserving 84px there would leave an
+   * all — above 767px `MobileNavBar` renders nothing, and reserving the bar's height there would leave an
    * undimmed strip of page with no bar in it.
    */
   clearsNavBar?: boolean

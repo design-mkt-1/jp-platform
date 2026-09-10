@@ -240,9 +240,11 @@ What is genuinely open right now:
    and the 71px between them attribute completely: header -1, category bar +8,
    content rows +34, footer -112. The old note's 7150 does not reproduce and
    its "7122 accounting" had missed the header and the category bar. There was
-   never an unexplained 28px in the browser. Today the page is 7223 and
-   decomposes to the pixel: header 60 + main 5929.5 + footer 1149.38 + the 84px
-   the page reserves for the fixed nav bar.
+   never an unexplained 28px in the browser. Today (2026-09-10, signed in) the
+   page is 7232 and decomposes to the pixel: header 60 + main 5958.5 + footer
+   1149.38 + the 64px the page reserves for the fixed nav bar. Signed out it
+   is 7289, the strip's 57 on top. The bar was 84 until the owner cut its
+   gaps that day; main grew 29 with the category-bar rebuild.
 
    Figma's own number is now 7159 on node 32:1813, confirmed alive 2026-09-10.
 2. Game cards stay <article> with no link, by your decision of 2026-08-08: a

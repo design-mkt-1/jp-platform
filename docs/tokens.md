@@ -359,6 +359,7 @@ Not colours, but recorded here for the same reason: so the visual check does not
 | Design | Ours | Why |
 | --- | --- | --- |
 | Text fields at 13–14px (search, providers, category bar) | **16px on the phone**, one rule in `globals.css` | iOS zooms the page when a field under 16px takes focus; seen on the owner's iPhone |
+| Bottom bar `32:4828` 84 tall: 1px rule, 10 above and below the 64px capsule; strip `32:4798` 70 tall, 13 under the buttons | **bar 64, no rule; strip 57**, the buttons touching the capsule, in every account state | "nu avem nevoie de spațiul ăla liber dintre secțiuni" — option B of three shown to the owner |
 
 ### Stale node citations — the `1:5720`–`1:8234` band
 

@@ -162,15 +162,19 @@
   /*
    * Geometry, not colour, and the only length in this list.
    *
-   * The mobile tab bar's own height (node 1:8235, 390x84). Three places need it: the bar draws it,
+   * The mobile tab bar's own height. Figma draws it 84 (`32:4828`, 390x84): the 64px capsule with 10
+   * above and 10 below, under a 1px rule. The owner cut both gaps and the rule on 2026-09-10 ("nu
+   * avem nevoie de spațiul ăla liber dintre secțiuni"), so the bar is the capsule's own 64, in every
+   * account state. Three places need it: the bar draws it,
    * `MobileShell` reserves it at the end of the document so the last section is not covered, and a
    * `Sheet` with `clearsNavBar` stops its scrim above it. A bar that is 84 in one of them and 80 in
    * another is a strip of live page showing under a modal, which is exactly the defect this fixes.
    */
-  --mobile-nav-h: 84px;
+  --mobile-nav-h: 64px;
   /*
-   * The pre-login strip that sits on top of that bar, node 32:4798 (390x70): Log In and Sign In
-   * above the tabs. Zero while signed in; the rule below turns it on whenever the strip
+   * The pre-login strip that sits on top of that bar: Log In and Sign In above the tabs. Figma's
+   * `32:4798` is 390x70 with 13 under the buttons; the same decision of 2026-09-10 drops that 13, so
+   * it is the 17px top padding plus the 40px buttons. Zero while signed in; the rule below turns it on whenever the strip
    * is in the document, so the same three places that read the bar's height clear the strip too.
    */
   --mobile-auth-h: 0px;
@@ -189,7 +193,7 @@
 }
 
 :root:has([data-auth-strip]) {
-  --mobile-auth-h: 70px;
+  --mobile-auth-h: 57px;
 }
 
 /*
