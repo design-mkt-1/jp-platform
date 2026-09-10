@@ -14,8 +14,8 @@ deploy each, and the owner checks each on Pages before the next one starts:
 | — | category bar | `32:1893` | **done**, `ea74e86` |
 | 1 | bottom nav bar: glass capsule, disc inside it, no "Menu" label | `32:4828` | **done**, `a039912` |
 | 2 | signed-out header (logo centred) and the Log In / Sign In strip | `32:3532`, `32:4797` | **done**, `a63cf52` |
-| 3 | signed-in balance button | `32:1829` | **next** |
-| 4 | the three jackpot menus | `32:4852`, `32:5063`, `32:5279` | open |
+| 3 | signed-in balance button, and the header magnifier beside it | `32:1829`, `32:3536` | **done**, `4bcab7c` |
+| 4 | the three jackpot menus | `32:4852`, `32:5063`, `32:5279` | **next** |
 
 **Owner's decisions, 2026-09-10.** Keep **£ and our amounts** — item 3 is a restyle only, even though
 Figma writes `$ 140.00`. The gold button reads **"Sign In"** on the phone, as Figma has it; desktop
@@ -62,7 +62,17 @@ visible label.
 (8/8), the a11y run with `next dev` stopped (zero on nine states), a 1440 pixel diff before/after
 (only the two countdowns' seconds may differ), `node scripts/ledger-sync.mjs` plus
 `node scripts/dead-nodes.mjs` for any new id, then commit by file name, push, `gh run watch`, and
-re-measure on the Pages URL. Ledger now 382 of 382; dead ids cited under `src/` 102.
+re-measure on the Pages URL. Ledger now 388 of 388; dead ids cited under `src/` 99.
+`ledger-sync.mjs` still reports three ids cited only in this file and never read: `32:4797`,
+`1:1748`, `1:1989`. Read them before anyone relies on them.
+
+**Item 3 found a second defect in the same frame.** The phone magnifier had lost its disc to
+`search_header.svg` on 2026-09-10 but kept the old glyph, the grey 16px `search.svg` outline, so
+both headers drew a grey outline where Figma draws a white fill. `32:1838` and `32:3536` export the
+same bytes; it is now `search-header.svg`. Item 2 was signed off without that being noticed.
+
+**A trap re-paid, item 3.** Stopping the dev server's background task ended the npm wrapper and
+not `next dev` (`start-server.js` kept :3000). Check the port, not the task, before the a11y build.
 
 ### The category bar, in detail
 
