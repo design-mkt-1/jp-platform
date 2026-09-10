@@ -71,12 +71,24 @@ collision corrupts it, and every route starts returning 500 with `ENOENT … _bu
 while the source is perfectly fine. It looks like an application bug and it is not.
 
 **That includes the accessibility run above**, which is the trap session 11 paid for. It exists to
-avoid `.next` and so it reads as exempt. Measured on 2026-09-10: with `next dev` running, that build
-put the export in `.next-a11y` correctly *and* wrote `export-detail.json`, `export-marker.json`,
-`BUILD_ID` and `required-server-files.json` into the shared `.next`, timestamped inside its own
-window, and every route went to 500 until `.next` was deleted and the server restarted. Why it wrote
-to both is **unknown** — the evidence was deleted to recover the server. Recovery is the same either
-way: delete `.next`, restart `next dev`.
+avoid `.next` and so it reads as exempt. It is not, and session 12 measured why.
+
+With `.next` deleted first and **no dev server running**, so nothing else could have created it:
+
+| build | `NEXT_DIST_DIR` | what appeared |
+| --- | --- | --- |
+| `GITHUB_PAGES=true npx next build --turbopack` | `.next-a11y` | `.next-a11y` 187 files **and `.next` 239 files** — a whole build tree: `build/chunks`, `server/app`, `cache`, `BUILD_ID`, every manifest, 5 HTML |
+| `npx next build --turbopack` | `.next-probe` | `.next-probe` 238 files, **`.next` never created** |
+
+So `distDir` works. What breaks it is the `isPages` branch of `next.config.ts` — the one that adds
+`output: 'export'`. Which of that block's four keys does it was **not** isolated; the block was.
+
+Two things follow. **`npm run build:check` really is safe** while `next dev` is up — that is the
+second row, measured, not assumed. **The accessibility run is not**, and it is not a mystery any
+more: it writes a complete second build into `.next` and tramples the dev server's. Session 11 saw
+only four stray JSON files because it looked after deleting most of the evidence.
+
+Recovery, if it happens anyway: delete `.next`, restart `next dev`.
 
 ### Two measuring traps already paid for
 
@@ -141,10 +153,29 @@ artwork, masks, sometimes the canvas frame — with no way to tell them apart. T
 `search-btn.svg` arrived: a 20x20 file containing the whole page, rendering as a giant magnifier
 spilling off the edge.
 
-A node id here can go stale without anything failing. The mobile subtree was rebuilt on 2026-09-09
-and `1:5720`, `1:5799` and `1:6517` all resolve to nothing; the live pair is `21:2896` / `21:4154`.
-The menu frames were rebuilt before that. `screens.test.ts` only checks the `^\d+:\d+$` shape, which
-a dead id still matches — so when a comparison looks wrong, check the id against the file first.
+**A node id here goes stale without anything failing, and it has now happened three times.** The
+menu frames were rebuilt first, the mobile subtree on 2026-09-09, and the designers rebuilt the
+mobile subtree again on or before 2026-09-10 — this time into a new **`32:*`** range. So do not
+write a "live pair" into this file again; the last one was wrong within a day. As of 2026-09-10 the
+mobile page is `32:1813` **mob main**, 390x7159, but treat that the same way: check it before you
+use it.
+
+**How to check, and the only way that is sound.** `get_metadata` on a single id answers plainly — a
+deleted node returns *"The provided node ID was not found in the file"*. Do **not** classify by
+numeric range and do **not** classify from a whole-page dump. Both were tried on 2026-09-10 and both
+gave confident wrong answers:
+
+- By range: session 11 recorded a dead band `1:5720`–`1:8234` and put `1:5687` inside the rot. It is
+  **alive** — a UI-Kit spec frame, not a page node, and the three citations of it in `IconButton.tsx`,
+  `Header.tsx` and `globals.css` are correct. Meanwhile `21:3297`, `21:3675` and `21:3693` are dead
+  and sit nowhere near the band.
+- By dump: `get_metadata` on page `0:1` and on `32:1812` both exceed the tool's limit and are written
+  to a file **truncated**. Seven ids confirmed alive one at a time were absent from the dump. A
+  classification built on it reported 149 dead ids under `src/`, which is not true. **Absence from a
+  dump proves nothing.** Only the per-id call does.
+
+`screens.test.ts` only checks the `^\d+:\d+$` shape, which a dead id still matches — so when a
+comparison looks wrong, check the id against the file first.
 
 ## Orchestration — one worktree per worker, always
 

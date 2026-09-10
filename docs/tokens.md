@@ -223,13 +223,14 @@ list becomes a dumping ground of ad-hoc colours and we are back to exactly the p
 | `#F2C146 @ 10%` | `bg-amber-tint`   | `--amber-tint`      | `1:3446`, `1:3538`, `1:3594`–`1:3600` | the warning pills on the promo banners                                      |
 | `#19191D`       | `border-flag`     | `--border-flag`     | `1:4016`                              | the ring around the language flags                                          |
 | `#7F7A85` ¹     | `text-legal`      | `--text-legal`      | `1:4115`                              | the footer's legal strip                                                    |
-| `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2433`                              | the separator in the wins ticker                                            |
+| `#FFFFFF @ 15%` | `border-emphasis` | `--border-emphasis` | `1:2448` ⁹                            | the separator in the wins ticker, **desktop only**                          |
 | `#222A4E` ⁶     | `border-chip`     | `--border-chip`     | `21:2978`                             | the 1px outline of **every** mobile category chip, selected one included    |
 | `#A5A6B5`       | `text-subtitle`   | `--text-subtitle`   | `1:6254`                              | the mobile promo card's subtitle                                            |
 | `#F2C146`       | `amber-soft`      | `--amber-soft`      | `1:6255`                              | the "join + timer" pill on the mobile promo card, solid                     |
 | `#FF9500 @ 10%` ⁷ | `wager-tint`    | `--wager-tint`      | `21:2934`                             | the fill of the mobile hero's `20X WAGER` badge                             |
 | `#FFAE00` ⁷     | `wager-amber`     | `--wager-amber`     | `21:2935`                             | the label written on it                                                     |
 | `#3030D6` ⁸     | — (shadow only)   | `--violet-glow`     | `21:2939`                             | the glow under the mobile hero's `Get` pill                                 |
+| `#3B82F6` ¹⁰    | — (gradient/shadow) | `--action-blue`   | `21:2916`                             | the mobile plus action: its gradient's far stop and its blue shadow layer   |
 | `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | the text written **on** that pill: the button label, "Time left" and the clock |
 | `#36BCFF` ²     | — (SVG only)      | —                   | `1:2239`, `1:4323`                    | the magnifier in the provider search field (`public/images/icons/search-blue.svg`) |
 | `rgba(8,8,20,0.75)` ³ | — (inline)  | —                   | `1:6179`                              | the game card's shadow on mobile: `-2px 2px 12px`                           |
@@ -250,6 +251,33 @@ and two `text-*` utilities on one element and the winner would be stylesheet ord
 Contrast, over the hero artwork's flat `#050C1C`: `#FFAE00` on `#FF9500 @ 10%` composites to
 `#1E1A19` and measures **9.29:1**, against **7.77:1** for the `#F59E0B`-on-`--amber-tint` pair it
 replaces. Both pass; the design's own pair is the better of the two.
+
+¹⁰ Added 2026-09-10 from `get_design_context` on node `21:2916`, which returns
+`from-[#00f299] to-[#3b82f6]` and `shadow-[0px_6px_14px_0px_rgba(59,130,246,0.2),0px_10px_18px_0px_rgba(0,242,153,0.2)]`.
+The second shadow layer was the one we already had; the blue one was missing entirely, so the
+button was sitting on half its designed glow. **This is a third blue.** It is not `--blue`
+(`#006ee6`) and it is not the `#007AFF` that `--blue` was darkened from for AA, so neither of those
+decisions reaches it. Owner's decision of 2026-09-10 was to take the design's value and move the
+gradient's far stop onto it too, rather than leave one button carrying two different blues. No
+Tailwind token, for the same reason `--violet-glow` has none: both consumers are arbitrary values
+reading the variable directly, and a `colors` entry would advertise a `bg-`/`text-` use that does
+not exist. Contrast is not in play — it sits behind `plus.svg`, a graphical object under 1.4.11's
+3:1 bar, and white on `#3B82F6` measures 3.68:1.
+
+**A known deviation recorded beside it, not fixed.** The same frame's emerald pill, node `21:2913`,
+strokes `rgba(0,163,114,0.5)` and fills `rgba(0,92,64,0.04)` — two darker greens, `#00A372` and
+`#005C40`. Ours uses `--emerald` `#00F299` at those two alphas, so the green channel differs by 79
+and the blue by 39. Owner's decision of 2026-09-10: keep one emerald rather than mint two more
+tokens for a 1.5px stroke at half opacity. The pill's *shadow* already matches the design exactly,
+`rgba(0,242,153,0.12)` on both sides.
+
+⁹ Corrected 2026-09-10. This row used to cite `1:2433`, which nobody had checked. `get_design_context`
+on the desktop ticker `1:2438` returns white 15% on its four dividers — `1:2448`, `1:2457`, `1:2466`,
+`1:2475` — so the **value** was right and only the citation was loose; `1:2448` is the first of them
+and is the one now quoted. **Desktop only:** the phone's divider, node `21:3043`, is white **8%**,
+which is `--border-medium` and already in §2 — no new colour, and none needed. The row said "the
+separator in the wins ticker" without qualification, which is how a desktop value gets carried onto a
+phone by somebody reading this table instead of the frame.
 
 ⁸ Added 2026-09-10, from `get_design_context` on node `21:2939`, which returns
 `drop-shadow-[0px_0px_10px_#3030d6]`. The only violet in the file, and the only colour here that is

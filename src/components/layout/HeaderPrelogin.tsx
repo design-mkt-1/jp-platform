@@ -21,6 +21,12 @@ import { useAppStore } from '@/store/useAppStore'
  * The demo has no authentication, no backend and no /login route. Rather than ship two dead links,
  * both controls flip the mocked account state, which is the only way to reach the post-login header
  * from the page itself.
+ *
+ * Both log-in controls carry `data-login-control`. `Header` puts focus on one of them after a sign
+ * out, because the control that was focused a moment earlier — the username pill — is unmounted by
+ * the same state change. There are two of them and only one is ever on screen, so `Header` picks by
+ * `offsetParent` rather than by document order: focusing the `display: none` one would be a silent
+ * no-op, which is exactly how the provider search lost focus at 390.
  */
 
 /**
@@ -51,7 +57,7 @@ export default function HeaderPrelogin() {
     <>
       {/* Desktop — node 1:4309 */}
       <div className="flex items-center gap-3.5 mobile:hidden">
-        <button type="button" onClick={signIn} className={OUTLINE_PILL}>
+        <button type="button" onClick={signIn} className={OUTLINE_PILL} data-login-control>
           Login
         </button>
         {/* The primitive's gold variant is 16px; the header sets every label at 13px, and at 16px
@@ -64,7 +70,7 @@ export default function HeaderPrelogin() {
 
       {/* Mobile — node 1:6994 */}
       <div className="hidden items-center mobile:flex">
-        <button type="button" onClick={signIn} className={GHOST_PILL}>
+        <button type="button" onClick={signIn} className={GHOST_PILL} data-login-control>
           Log In
         </button>
         <Button onClick={signIn} className="!h-10 !w-[95px] !text-sm tracking-[-0.14px]">

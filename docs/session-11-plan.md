@@ -1,10 +1,15 @@
 # Session 11 — the mobile demo, after four leaks were closed
 
-> **Live as of 2026-09-10, after session 11. §2 has never been executed.** The 11 in the filename is
-> not staleness — this is the plan in force, and it is amended in place rather than replaced. A new
+> **Live as of 2026-09-10, after session 12. §2 areas A, C and D are CLOSED; B is open and its
+> premise was wrong — see §2 B below and `next-session.md` §16.** The 11 in the filename is not
+> staleness: this is the plan in force, amended in place rather than replaced. A new
 > `session-N-plan.md` opens only when the previous one's §2 has been drained. Copying a plan forward
 > is how four copies of one setup checklist came to disagree with each other, which `3257db2` spent a
 > commit undoing.
+>
+> **Before anything else, read §2 B.** The designers rebuilt the mobile subtree into a new `32:*`
+> range on or before 2026-09-10, so every mobile node id written anywhere in this repo — including
+> the ones §2 lists as replacements — has to be re-checked before it is used.
 
 ## Context
 
@@ -59,8 +64,8 @@ asserted.
 | Gate, 2026-09-10 | 65 tests · `tsc` 0 · `eslint` 0 · `build:check` 0 |
 | axe over the nine states | 0 critical / 0 serious / 0 moderate / 0 minor |
 | Plugins installed for this checkout | 17/17 |
-| Mobile page height | **7150**, measured 2026-09-10. It was 7228. The two do not reconcile — the known changes account for 7122 — and the 28px difference is **unknown**. Figma's 7129 is **unconfirmed**: nothing re-measured it after the mobile subtree was rebuilt on 2026-09-09, so it may be stale the way the footer's 1221.4 was |
-| Mobile footer | 1069.38, from 1181.38. Figma `21:3693` is 1140.4 |
+| Mobile page height | **7143** after session 12's ticker work, measured on the dev server *and* on the static export, identical on both. The baseline it came from is **7157**, re-measured at HEAD with the same script; the −14 is the wins band going 80→66. The **7150** this row used to carry does not reproduce on either dev or export, and it is not a dev-versus-export difference — that possibility was tested and ruled out. Figma's own number is now **7159**, node `32:1813` |
+| Mobile footer | 1069.38, from 1181.38. The 1140.4 target was read from `21:3693`, which is **dead**; the figure survives because the designers' new `32:2626` **footer-mobile** is 390x1140 |
 
 ### What session 11 landed — and what it did not
 
@@ -74,12 +79,12 @@ Session 11 closed this plan's §0 and §3 preconditions and **executed none of �
 
 Re-measured on 2026-09-10 so the next session does not derive it again:
 
-| Area | State | Evidence |
+| Area | State after session 12 | Evidence |
 | --- | --- | --- |
-| A — focus defects | **not started** | `scripts/focus-restore.mjs` does not exist; `HeaderNavMenu.tsx:76-80`'s `onPointerDown` still calls `setOpen(false)` with no `focus()` |
-| B — dead node ids | **not started** | **38** distinct band ids across **18** files under `src/`, **47** across **6** under `docs/`; `1:5687` is dead too and sits below the band |
-| C — header and hero differences | **not started** | all five rows still undecided; `IconButton.tsx` unchanged and still citing `1:5687` |
-| D — recent-wins strip | **not started** | `RecentWinsTicker.tsx` and `RecentWinItem.tsx` untouched; the mobile node is still not in hand |
+| A — focus defects | **CLOSED** | four sites, not three — `CategoryNavBar` was missing from this plan. `scripts/focus-restore.mjs` now exists: 8/8 with the fix, **4/8 against HEAD**, failing on exactly the four broken paths |
+| B — dead node ids | **open, and this plan's premise for it is wrong** | `1:5687` is **alive**; range classification does not work; `21:2896`/`21:4154`/`21:3693` are dead; the subtree was rebuilt again into `32:*`. See below |
+| C — header and hero differences | **CLOSED** | all five decided by the owner on 2026-09-10; #1 and #4 implemented, #2, #3 and #5 recorded as deliberate deviations |
+| D — recent-wins strip | **CLOSED** | mobile node was `21:3035`; band 80→66, full-bleed, divider 44 at white 8%, amount 12/22. Desktop unchanged on all thirteen measured values |
 
 ### What session 10 landed
 
@@ -137,32 +142,57 @@ beside the a11y run at fan-in, not in `npm test`.
 
 ### B — the dead node citations
 
-Counted on 2026-09-10, not estimated: **38 distinct ids across 18 files under `src/`** (55 citations),
-and **47 across 6 files under `docs/`** (105 citations), all in the deleted `1:5720`–`1:8234` band.
-The band went when the mobile subtree was rebuilt on 2026-09-09.
+**Read this section before the counts. Session 12 measured the premise and it does not hold.**
 
-**The band is not the whole set.** `1:5687` is dead as well and sits *below* it, cited in three
-places — `IconButton.tsx:4`, `Header.tsx:106` and `globals.css:26`. A grep written to the band alone
-misses all three, which is the same shape as the defect this area exists to fix: a rule narrow enough
-to look complete.
+The original framing — "one deleted band, `1:5720`–`1:8234`, repoint everything in it" — is wrong in
+three ways, each measured on 2026-09-10 with `get_metadata` on single ids:
 
-Nothing breaks today. What breaks is every future comparison: `CategoryPill.tsx` derived the mobile
-chip's 32px height and 12px label from `1:5799`, a node that no longer exists, and that is exactly the
-bar the owner rejected. `screens.test.ts` validates the `^\d+:\d+$` **shape**, which a dead id matches.
+1. **`1:5687` is alive.** This plan said it was dead and told the next session to repoint three
+   citations of it. It is a **UI-Kit** spec frame, not a page node, and the kits were never rebuilt;
+   it returns in full, with the `DEFAULT` / `HOVER` / `ACTIVE` fills of 6% / 12% / 4% that
+   `IconButton.tsx`, `Header.tsx` and `globals.css` quote. Repointing them would have destroyed three
+   correct references. `1:5325` and `1:5655` are alive for the same reason.
+2. **A numeric range cannot classify these.** `21:3297`, `21:3675` and `21:3693` are dead and are
+   nowhere near the band — they are ids that were *added* after the 2026-09-09 rebuild.
+3. **The mobile subtree was rebuilt again**, by the designers, into a new **`32:*`** range, confirmed
+   by the owner. `21:2896` and `21:4154` — the "live pair" named below, in `CLAUDE.md`, in
+   `start-here.txt` and in `next-session.md` — are **both dead**. So is `21:3693`, which §1's
+   "Figma footer 1140.4" was read from.
 
-Already repointed: `CategoryPill.tsx`, `CategoryNavBar.tsx`, `sections.ts` (session 9).
-Known live replacements: `1:5750`→`21:2926`, `1:5751`→`21:2927`, `1:5756`→`21:2932`,
-`1:5758`→`21:2934`, `1:5761`→`21:2937`, `1:5762`→`21:2938`, `1:5799`→`21:2977`, mobile frame
-`21:2896` post-login / `21:4154` pre-login.
+The counts themselves were confirmed for the state before the second rebuild: **38 distinct ids
+across 18 files under `src/`** (55 citations) and **47 across 6 files under `docs/`** (107, not the
+105 recorded). They are now a lower bound, not a total.
+
+**The new mobile tree, for whoever picks this up** — read out of `32:1812` on 2026-09-10:
+`32:1813` **mob main** 390x7159 · `32:1814` header+hero 390x335 · `32:1968` wins ticker 390x66 at
+y=355 · `32:2626` footer-mobile 390x1140 · `32:3087` mob postlogin homepage · `32:3308` mob prelogin
+homepage · `32:3284` mobile-navigation-bar postlog 390x84.
+
+**The method, and the one that looks right and is not.** `get_metadata` on a single id answers
+plainly: a deleted node returns *"The provided node ID was not found in the file"*. Do **not** build
+the live set from a whole-page dump. `get_metadata` on `0:1` and on `32:1812` both exceed the tool's
+limit and are written to a file **truncated**; a classification built on the first reported 149 dead
+ids under `src/`, which is false. It was caught by checking the dump against ids already established
+one at a time — seven known-alive ones were missing from it. **Absence from a dump proves nothing.**
+
+What is still true and still wanted: nothing breaks today, but every future comparison does.
+`CategoryPill.tsx` derived the mobile chip's 32px height and 12px label from `1:5799`, a node that no
+longer exists, and that is exactly the bar the owner rejected. `screens.test.ts` validates the
+`^\d+:\d+$` **shape**, which a dead id matches.
+
+Already repointed: `CategoryPill.tsx`, `CategoryNavBar.tsx`, `sections.ts` (session 9). The
+replacement list this section used to carry — `1:5750`→`21:2926` and the rest — points into the
+`21:*` range and **has to be re-derived against `32:*` before any of it is used.**
 
 Still stale, listed in `docs/tokens.md`: `page.tsx`, `screens.ts`, `assets.ts`, `types.ts`,
 `PromoBannerMobile.tsx` (~20 ids), `GameCard.tsx`, `HeroBanner.tsx`, `Header.tsx`,
 `HeaderPostlogin.tsx`, `MobileShell.tsx`, `SectionHeader.tsx`, `ProviderRow.tsx`, `ContentRow.tsx`,
 `PromoRow.tsx`, `GameGrid.tsx`, `Badge.tsx`, `Icon.tsx`, `globals.css`.
 
-**Check every replacement against the live file before writing it.** Consider strengthening
-`screens.test.ts` so a shape check is not mistaken for an existence check — but that needs network
-access in a test, which the current setup does not have. Decide deliberately.
+**Check every replacement against the live file before writing it**, one id at a time. Strengthening
+`screens.test.ts` so a shape check is not mistaken for an existence check still needs network access
+a test does not have; the workable shape is a checked-in list of verified-dead ids plus a test that
+fails when a new citation of one appears. Decide deliberately.
 
 ### C — the rest of the header and hero differences, all measured, none decided
 
@@ -184,7 +214,14 @@ design, but the owner declined it in session 10 and it stays declined until they
 The right cluster also sits 23.59px left of Figma's, and that is **not a bug**: our demo balance
 string is `£5,500.00` where Figma's is `$ 140.00`. Same structure, different data.
 
-### D — the recent-wins strip
+### D — the recent-wins strip — **CLOSED in session 12**
+
+> Closed 2026-09-10. The band is now 66 tall, full-bleed and card-less at 390, and desktop is
+> unchanged on all thirteen measured values. Two things below were wrong and are corrected in
+> `next-session.md` §16: `RecentWinItem.tsx:37` is **not** a leak — the mobile thumbnail `21:3037`
+> carries the identical 8px radius and white-10% border — and the mobile node was reachable directly
+> as `21:3035`, because `21:2896`, named as its parent below, is dead. The new file calls the same
+> band `32:1968`, still 390x66, so the work survives the designers' rebuild.
 
 Three sites paint desktop chrome with no `mobile:` scope, all rendered on the homepage:
 
@@ -231,14 +268,21 @@ Rules that earned their keep in session 10, worth quoting to workers:
   findings per state, then "proved" the session's changes were innocent by comparing the stale export
   against itself. **Confirm the served bytes equal the built bytes** and that the HTML references that
   exact file. An HTTP 200 proves a server is up, not what it is serving.
-- **The a11y build writes into the shared `.next` as well as into `NEXT_DIST_DIR`.** Session 11 ran it
-  with `next dev` up, which the gate below presents as safe. The export landed in `.next-a11y`
-  correctly — **and** `.next` gained `export-detail.json`, `export-marker.json`, `BUILD_ID` and
-  `required-server-files.json`, all stamped 13:02:25–13:02:33, exactly that build's window. Every route
-  returned 500 until `.next` was deleted and the server restarted. `next.config.ts:23` reads
-  `NEXT_DIST_DIR` and the export honoured it, so the redirect looked complete in the only direction
-  anyone checked. Why the same run also wrote into `.next` is **unknown**, and the evidence is gone —
-  `.next` was deleted to recover the server. **Stop the dev server before the a11y run.**
+- **The a11y build writes a whole second build into the shared `.next`. Cause measured in session 12.**
+  Session 11 ran it with `next dev` up, which the gate below presents as safe, and every route
+  returned 500. It recorded the cause as unknown because `.next` had been deleted to recover the
+  server. Reproduced cleanly on 2026-09-10 with `.next` deleted first and **no dev server running**:
+
+  | build | `NEXT_DIST_DIR` | result |
+  | --- | --- | --- |
+  | `GITHUB_PAGES=true npx next build --turbopack` | `.next-a11y` | `.next-a11y` 187 files **and `.next` 239** — `build/chunks`, `server/app`, `cache`, `BUILD_ID`, every manifest, 5 HTML |
+  | `npx next build --turbopack` | `.next-probe` | `.next-probe` 238 files, **`.next` never created** |
+
+  `distDir` is honoured; `next.config.ts:23` does read `NEXT_DIST_DIR`. What defeats it is the
+  `isPages` branch, the one that adds `output: 'export'`. **Which of that block's four keys is
+  responsible was not isolated** — the block was. Session 11 saw four stray JSON files rather than
+  239 because it looked after the fact. **Stop the dev server before the a11y run**; and
+  `npm run build:check` is now measured, not merely asserted, to be safe while it is up.
 - **A written measurement ages.** The footer's recorded 1221.4 was taken before session 9's own commit
   `0855c23` removed 40px from the partner slots. The real baseline was 1181.38, and the "40px
   dev-vs-export divergence" that cost an hour did not exist.

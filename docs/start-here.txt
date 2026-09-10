@@ -54,10 +54,15 @@ Open Claude Code in the jp-platform folder and give it this:
     live in the repo and a stale checkout does not have them. Two sessions
     running have opened stale, 22 commits behind and then 13. Then run
     `npm ci` and `npm run plugins`; if anything is missing, `npm run
-    plugins:install` and restart. Then read docs/session-11-plan.md: §2 is the
-    work and §4 is the list of traps this project has already paid for. Then
-    CLAUDE.md and docs/next-session.md §15. The setup checklist lives in this
-    file, docs/start-here.txt, and nowhere else.
+    plugins:install` and restart. Then read docs/session-11-plan.md: §2 B is
+    the only area still open and its premise was wrong, §4 is the list of traps
+    this project has already paid for. Then CLAUDE.md and docs/next-session.md
+    §16. The setup checklist lives in this file, docs/start-here.txt, and
+    nowhere else.
+    The designers rebuilt the mobile subtree into a new 32:* range. Every
+    mobile node id written anywhere in this repo is suspect until you have
+    checked it with get_metadata on that one id — a whole-page dump comes back
+    truncated and will tell you live nodes are dead.
     Mobile at 390px is the only priority; 95% of traffic is a phone.
     Verify before you assume.
 
@@ -150,8 +155,18 @@ That is what this exists for:
 which sends the build to .next-build and cannot touch the running server.
 
 The accessibility run is NOT exempt, even though it points at .next-a11y for
-exactly this reason. On 2026-09-10 it wrote into .next as well and took every
-route to 500. Why it wrote to both is unknown. Stop the dev server before it.
+exactly this reason, and on 2026-09-10 it took every route to 500. The cause is
+no longer a mystery. With .next deleted first and no dev server running:
+
+    GITHUB_PAGES=true NEXT_DIST_DIR=.next-a11y next build
+        -> .next-a11y 187 files AND .next 239 files, a whole second build
+    NEXT_DIST_DIR=.next-probe next build          (no GITHUB_PAGES)
+        -> .next-probe 238 files, .next never created
+
+distDir works. The `isPages` branch of next.config.ts, the one that turns on
+`output: 'export'`, is what writes into .next anyway. So `npm run build:check`
+genuinely is safe while the dev server is up — that is the second line, measured
+— and the accessibility run genuinely is not. Stop the dev server before it.
 
 The same thing happens after you edit next.config.ts while dev is running: Next
 restarts itself when the config changes and treads on itself. After any change
@@ -170,6 +185,8 @@ USEFUL COMMANDS
     node scripts/shot.mjs <url> <out.png> <width> <height> viewport '<selector|offset>'
     node scripts/review.mjs <dir>          all 15 states, in both motion modes
     node scripts/a11y.mjs <dir> [url]      axe-core over 9 states; exits 1 on serious violations
+    node scripts/focus-restore.mjs [url]   where the caret lands after 8 overlay dismissals;
+                                           real presses only, exits 1 on any wrong landing
     node scripts/clean-svg.mjs public/images --dry
     node scripts/to-webp.mjs public/images --dry   re-encode any new PNG export
 
@@ -258,12 +275,13 @@ DOCUMENTS IN THE REPO
 
 README.md                  what the project is, how to run it
 docs/next-session.md       what is left to do
-docs/session-11-plan.md    STILL THE LIVE PLAN. Its §2 has never been executed,
-                           so the next session amends this file rather than
-                           opening a session-12-plan.md. The four areas of work
-                           and the traps already paid for. Its §0 points back
-                           here — THIS file is the only setup checklist,
-                           because four copies of it diverged
+docs/session-11-plan.md    STILL THE LIVE PLAN, amended in place rather than
+                           replaced by a session-12-plan.md. Of its four areas
+                           A, C and D closed in session 12; only B is open, and
+                           §2 B now opens with the three ways its own premise
+                           was measured to be wrong. Its §0 points back here —
+                           THIS file is the only setup checklist, because four
+                           copies of it diverged
 docs/session-10-plan.md    the previous plan, executed 2026-09-10; kept for its
                            record of how the six owner choices were put in front
                            of you before anything was edited

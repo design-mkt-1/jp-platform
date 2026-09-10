@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useRef } from 'react'
 import type { ComponentType } from 'react'
 import { LOGO } from '@/lib/assets'
 import Icon from '../primitives/Icon'
@@ -103,10 +104,18 @@ function MobileSearchButton() {
   const openSearch = useAppStore((state) => state.openSearch)
 
   // `hidden` beats the primitive's own `flex` (Tailwind emits `.hidden` after `.flex`), and the
-  // `mobile:` variant beats both, so the button is the 40x40 circle of node 1:5687 under 768px
-  // and absent above it.
+  // `mobile:` variant beats both, so the button exists under 768px and is absent above it.
+  //
+  // `disc={false}`: node 21:2919 is a bare magnifier. Its asset, `search_header.svg`, is a single
+  // white `<path>` — no rect, no radius — with the glyph filling 18 of a 40x40 box. Owner's
+  // decision of 2026-09-10. The 40x40 box is unchanged, so the touch target does not shrink.
   return (
-    <IconButton onClick={openSearch} aria-label="Search games" className="hidden mobile:flex">
+    <IconButton
+      onClick={openSearch}
+      aria-label="Search games"
+      disc={false}
+      className="hidden mobile:flex"
+    >
       <Icon name="search" width={20} height={20} className="size-5" />
     </IconButton>
   )
@@ -116,6 +125,39 @@ export default function Header() {
   const authMode = useAppStore((state) => state.authMode)
   const pathname = usePathname()
   const Variant = VARIANTS[authMode]
+
+  /*
+   * Where focus goes after a sign out.
+   *
+   * `PersonalInfoPanel`'s Sign out row calls `setAuthMode('prelogin')`, and that one state change
+   * both closes the panel and swaps this cluster. The username pill the panel hung off is gone by
+   * the time `useOverlayBehavior` tries to hand focus back, so its `isConnected` test finds nothing
+   * on either the early or the late capture and focus falls to `<body>` — measured at 1440 on
+   * 2026-09-10. Nothing inside the panel can fix it: the replacement does not exist until React has
+   * committed. This component spans both sides of the swap, so it is the one that can.
+   *
+   * Owner's decision of 2026-09-10: the log-in control. Picked by `offsetParent` because
+   * `HeaderPrelogin` renders two of them behind a breakpoint and `focus()` on the hidden one would
+   * do nothing at all, quietly.
+   *
+   * The ref starts from the first render's value so arriving straight on `?auth=prelogin` is not
+   * mistaken for a sign out and does not steal focus on load.
+   */
+  const wasSignedIn = useRef(authMode !== 'prelogin')
+
+  useEffect(() => {
+    const signedIn = authMode !== 'prelogin'
+    const justSignedOut = wasSignedIn.current && !signedIn
+    wasSignedIn.current = signedIn
+    if (!justSignedOut) return
+
+    const controls = document.querySelectorAll<HTMLElement>('[data-login-control]')
+    for (const control of controls) {
+      if (control.offsetParent === null) continue
+      control.focus()
+      return
+    }
+  }, [authMode])
 
   return (
     // Node 1:4245: the bar is painted darker than the page behind it and closed with its own rule,
@@ -131,6 +173,16 @@ export default function Header() {
     // Against the unprefixed `border-b` the order is defined — verified here with
     // `getComputedStyle` and by sampling row y=60, not by reading the diff.
     <header className="w-full border-b border-solid border-header bg-header mobile:border-0">
+      {/*
+        `mobile:px-4` is 16 on both sides, and the design is not: container `21:2899` starts at
+        x=16 and its logo child sits at a further x=10, while the right-hand cluster ends 10 short
+        of the container's own edge — an effective 26 left / 10 right. Measured 2026-09-10.
+
+        Kept symmetric by the owner's decision of the same day, and it is a decision rather than an
+        oversight: whether that x=10 is intent or an auto-layout child nobody moved is **unknown**,
+        and 16 is what the category track and the hero card below already use. Adopting 26/10 on the
+        strength of one node would put the header out of line with every row under it.
+      */}
       <div className="mx-auto flex h-20 max-w-shell items-center justify-between gap-4 px-page-x mobile:h-[60px] mobile:gap-0 mobile:px-4">
         {/*
           `min-w-0` so this group is allowed to shrink. Between 768 and 1279 px — a range the Figma

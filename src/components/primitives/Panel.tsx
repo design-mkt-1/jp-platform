@@ -173,6 +173,31 @@ export function useOverlayBehavior(open: boolean, onClose: () => void): OverlayB
 }
 
 /**
+ * Does this press have a focusable destination of its own?
+ *
+ * An anchored dropdown dismissed by an outside press has to ask this before it restores focus, and
+ * the reason is the one `onBackdropMouseDown` above spells out: once the handler returns, the
+ * browser performs `mousedown`'s default action and focuses the nearest focusable ancestor of the
+ * press target — clearing focus to `<body>` when there is none. That overwrites a restoration that
+ * had already succeeded. `keydown` has no such default action, and that is the whole of the
+ * difference.
+ *
+ * `Panel` and `Sheet` can guard on "the press landed on the backdrop", because they have one. An
+ * anchored dropdown does not: its listener sits on the document and every press outside the surface
+ * reaches it, including presses on real controls. So the guard becomes this question instead.
+ *
+ * Measured on 2026-09-10 with real mouse presses. `HeaderNavMenu` at 1024 and `CategoryNavBar` at
+ * 1440 both returned focus to their trigger on Escape and both left it on `<body>` after an outside
+ * press — same component, same ref, different event. And pressing the "Jackpot — home" logo while
+ * the burger menu was open focused the logo, which is correct: that is why the press is cancelled
+ * only when it lands on nothing focusable, rather than always.
+ */
+export function pressLandsOnAControl(event: MouseEvent): boolean {
+  const { target } = event
+  return target instanceof Element && target.closest(FOCUSABLE_SELECTOR) !== null
+}
+
+/**
  * The `mobile:` variant is `max-width: 767px` and `md:` is its exact complement, so this constant
  * and the two Tailwind variants below always agree on where the breakpoint is.
  */

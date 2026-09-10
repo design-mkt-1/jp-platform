@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useEffect, useRef } from 'react'
 import { providers } from '@/lib/data'
 import { SEARCH_BUTTON_ICON } from '@/lib/assets'
 import type { ProvidersSectionSpec } from '@/lib/sections'
@@ -57,6 +58,33 @@ export default function ProviderRow({
   const openProviderSearch = useAppStore((state) => state.openProviderSearch)
   const query = useAppStore((state) => state.providerQuery)
 
+  /*
+   * Where the field hands focus back.
+   *
+   * On desktop `useOverlayBehavior` already does this and the guard below sees the button is
+   * focused and leaves it alone. On the phone the hook is inert — `ProviderSearch` passes
+   * `shown && variant === 'popover'` as its first argument — and the inline form's own Escape
+   * handler only closes. Measured at 390 on 2026-09-10: Escape left focus on `<body>`.
+   *
+   * It cannot be done inside the press either. While the field is up this button's wrapper carries
+   * `mobile:hidden` (see below), and `focus()` on a `display: none` element is a silent no-op — the
+   * same failure as focusing a detached node. Closing removes that class, so the restoration waits
+   * for the commit and then checks `offsetParent` rather than trusting it.
+   */
+  const searchButtonRef = useRef<HTMLButtonElement | null>(null)
+  const wasOpen = useRef(false)
+
+  useEffect(() => {
+    const justClosed = wasOpen.current && query === null
+    wasOpen.current = query !== null
+    if (!justClosed) return
+
+    const button = searchButtonRef.current
+    if (!button || button.offsetParent === null) return
+    if (document.activeElement === button) return
+    button.focus()
+  }, [query])
+
   const term = (query ?? '').trim().toLowerCase()
   const matches = term ? list.filter((provider) => provider.name.toLowerCase().includes(term)) : list
   const secondBand = rotate(matches)
@@ -72,6 +100,7 @@ export default function ProviderRow({
     // away while the field is up — node 1:2222 has nothing left in this slot.
     <div className={`relative shrink-0 ${query === null ? '' : 'mobile:hidden'}`}>
       <IconButton
+        ref={searchButtonRef}
         onClick={openProviderSearch}
         aria-label="Search providers"
         aria-expanded={query !== null}

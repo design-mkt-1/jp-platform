@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef } from 'react'
 import CategoryPill from '../primitives/CategoryPill'
 import Icon from '../primitives/Icon'
-import { useOverlayBehavior } from '../primitives/Panel'
+import { pressLandsOnAControl, useOverlayBehavior } from '../primitives/Panel'
 import {
   SEARCH_PANEL_CLASSES,
   SearchDropdownBody,
@@ -138,7 +138,22 @@ export default function CategoryNavBar({
 
     const onMouseDown = (event: MouseEvent) => {
       const surface = surfaceRef.current
-      if (surface && !surface.contains(event.target as Node)) closeSearch()
+      if (!surface || surface.contains(event.target as Node)) return
+
+      const stranded = surface.contains(document.activeElement)
+      closeSearch()
+
+      /*
+       * Nothing is focused here. The trigger does not exist yet — opening unmounted it, and its
+       * replacement arrives with the next commit, which the effect below catches. All this press
+       * has to do is not clear focus out from under that effect.
+       *
+       * Measured at 1440 on 2026-09-10: with the field open, Escape put focus back on the
+       * "Search games..." button and an outside press left it on `<body>`. Same component, same
+       * ref, same effect below — the only difference is that `mousedown` has a default action and
+       * `keydown` has none. See `pressLandsOnAControl`.
+       */
+      if (stranded && !pressLandsOnAControl(event)) event.preventDefault()
     }
 
     document.addEventListener('mousedown', onMouseDown)

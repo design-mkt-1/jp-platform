@@ -136,8 +136,12 @@ export function AccountCluster({ tier }: AccountClusterProps) {
             'flex size-8 shrink-0 items-center justify-center rounded-[20px]',
             'border border-solid border-[color:color-mix(in_srgb,var(--text-primary)_40%,transparent)]',
             // Explicit `image:` hint so Tailwind cannot mistake the gradient for a colour.
-            'bg-[image:linear-gradient(90deg,var(--emerald),var(--blue))]',
-            'shadow-[0_10px_18px_color-mix(in_srgb,var(--emerald)_20%,transparent)]',
+            'bg-[image:linear-gradient(90deg,var(--emerald),var(--action-blue))]',
+            // Node 21:2916 casts two shadows, not one: a blue at 6/14 under an emerald at 10/18.
+            // Only the emerald was here, so the button sat on half its designed glow. Both are the
+            // design's own colours at 20%; see `--action-blue` in globals.css for why the blue is
+            // its own value rather than `--blue`. Owner's decision 2026-09-10.
+            'shadow-[0_6px_14px_color-mix(in_srgb,var(--action-blue)_20%,transparent),0_10px_18px_color-mix(in_srgb,var(--emerald)_20%,transparent)]',
             FOCUS_RING,
           ].join(' ')}
         >

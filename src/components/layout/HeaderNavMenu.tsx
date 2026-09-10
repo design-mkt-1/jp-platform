@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useId, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { pressLandsOnAControl } from '../primitives/Panel'
 
 /**
  * The primary nav, collapsed behind a burger between 768 and 1279 px.
@@ -76,7 +77,26 @@ export default function HeaderNavMenu({ items, className }: HeaderNavMenuProps) 
     const onPointerDown = (event: MouseEvent) => {
       const target = event.target as Node
       if (panelRef.current?.contains(target) || triggerRef.current?.contains(target)) return
+
+      /*
+       * Closing only strands focus when focus is inside the panel that is about to go. Opening the
+       * menu with the mouse leaves focus on the burger, which survives, and a press on empty page
+       * chrome should blur it the way pressing empty space always does.
+       *
+       * Measured at 1024 on 2026-09-10: press the burger, Tab once so focus sits on the "Casino"
+       * link inside the panel, then press the header's own flex container — the menu closed and
+       * focus landed on `<body>`. This branch used to call `setOpen(false)` and nothing else, while
+       * the Escape branch above restored correctly, which is why only the mouse path was broken.
+       */
+      const stranded = !!panelRef.current?.contains(document.activeElement)
+
       setOpen(false)
+
+      // `pressLandsOnAControl` carries the why: without the cancel, the browser's own default
+      // action for this press clears focus to `<body>` after we have already restored it.
+      if (!stranded || pressLandsOnAControl(event)) return
+      event.preventDefault()
+      triggerRef.current?.focus()
     }
 
     document.addEventListener('keydown', onKeyDown)

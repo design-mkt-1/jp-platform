@@ -125,14 +125,13 @@ logo, banner and slide *generation* — session 8 fired it by name and got a tab
 logos with Gemini. `:brand`, `:banner-design` and `:slides` make marketing assets and have nothing
 to do with this product.
 
-**A known-stale fact, recorded so nobody re-derives it.** The mobile subtree in Figma was rebuilt on
-2026-09-09. Roughly **54 distinct node ids across ~87 sites** in the `1:5720`–`1:6517` band now
-resolve to nothing — they are spread over 18 files including `globals.css`, mostly as comments.
-The live mobile pair is **`21:2896`** (post-login) and **`21:4154`** (pre-login), both 390x7129;
-the mobile footer is `21:3693`. Only the ids that *do* something are being corrected —
-`src/lib/screens.ts` and `MOBILE_NODE_IDS` in `src/lib/sections.ts`, which drive the `/dev/screens`
-deep links. `screens.test.ts` cannot catch any of this: it checks that an id matches `^\d+:\d+$`,
-which a dead id still does.
+**A known-stale fact — and the replacement it was given is stale too. See §16.** The mobile subtree
+in Figma was rebuilt on 2026-09-09, which killed **38 distinct ids across 55 citations in 18 files**
+under `src/` (counted, not estimated, on 2026-09-10; this paragraph used to say "roughly 54 across
+~87 sites"). It was then rebuilt **again**, by the designers, into a new `32:*` range — so
+`21:2896`, `21:4154` and `21:3693`, which this paragraph named as the live ones, now resolve to
+nothing themselves. Do not read a "live pair" out of this file. `screens.test.ts` cannot catch any
+of it: it checks that an id matches `^\d+:\d+$`, which a dead id still does.
 
 ## Local commands
 
@@ -1025,6 +1024,12 @@ under `docs/`. One trap inside the trap: `1:5687`, which `IconButton.tsx:4`, `He
 `globals.css:26` all cite, is dead too and sits **below** the band — a grep written to the band alone
 misses all three.
 
+> **The last sentence is wrong, disproven on 2026-09-10 — see §16.** `1:5687` is **alive**. It is a
+> UI-Kit spec frame, not a page node, and the kits were never rebuilt. `get_metadata` returns it in
+> full, States and all: `DEFAULT` fill `#FFFFFF @ 6%`, `HOVER` 12%, `ACTIVE` 4% — exactly what those
+> three citations claim. Acting on this paragraph would have replaced three correct references with
+> something else. The counts either side of it are right; the classification rule behind them is not.
+
 **`audit-session-8.md` was not touched.** Nothing in that audit closed today, so the file gets no new
 date and no churn. `session-11-plan.md` §6 asks for it to be updated at fan-in; this is the answer,
 recorded so the omission reads as a decision.
@@ -1039,6 +1044,144 @@ looked complete because in the direction anyone checked it was: `next.config.ts:
 `NEXT_DIST_DIR`, and the export honoured it. Why the same run also wrote into `.next` is **unknown**,
 and the evidence is gone — `.next` was deleted to recover the server. Stop the dev server before the
 accessibility run, the same as for `npm run build`.
+
+### 16. Session 12 — three of the plan's four areas closed, and the Figma file moved under us
+
+Session 11's `session-11-plan.md` §2 had four areas and none had been started. **D, A and C are
+closed. B is not, and its premise turned out to be false** — that is most of what this section is
+about.
+
+**D — the recent-wins strip.** The mobile node was found: `21:3035`, 390x66, a bare full-bleed band
+with no card at all. Everything the desktop card contributes — `h-20`, `rounded-xl`, the border, the
+24px padding — was desktop chrome painting at 390, the same shape as the four leaks session 10
+closed. Measured with one script before and after, at `innerWidth` 390 asserted:
+
+| | before | after | Figma `21:3035` |
+| --- | --- | --- | --- |
+| band | 80 tall, 1px border, radius 12, inset 16 | **66, no border, no radius, full-bleed 0→390** | 66, none, none, 390 |
+| first entry | x=41 | **x=16** | x=16 |
+| gap | 14 | **12** | 12 |
+| divider | 40 at white 15% | **44 at white 8%** | 44 at white 8% |
+| amount | 14/18 | **12/22** | 12/22 |
+| text column gap | 1px | **2px** | 2px |
+| page height | 7157 | **7143** | — |
+
+Desktop at 1440 is unchanged on all thirteen measured values. `documentElement.scrollWidth` stays
+390, so the ticker's deliberate overflow is contained in the rail and not in the page.
+
+Three corrections came out of it. **The plan named three leak sites and one was not a leak:**
+`RecentWinItem.tsx:37`'s thumbnail radius and border are identical in the mobile node `21:3037`, so
+they were left alone. **The plan's baseline of 7150 did not reproduce** — measured at HEAD with the
+same script it is **7157**, and the −14 delta is the band's 80→66; whether the 7 is dev-versus-export
+or drift was not established. **`--border-emphasis` was cited to `1:2433`, which nobody had checked**;
+the desktop dividers are `1:2448`/`1:2457`/`1:2466`/`1:2475` and the row now says so and says
+*desktop only*, because the phone's divider is white 8%, which is `--border-medium` and already a
+token. The mobile title also caps at 90px with an ellipsis — read from node `21:3042`, the only one
+of the three mobile titles that carries the cap, so it is read as a cap rather than a per-entry
+style and that reading is written at the call site.
+
+Three deviations were found that touch **desktop** and were deliberately **not** fixed, by the
+owner's decision: the ticker card's fill (`#161621` against `--bg-card` `#151624`, three units of
+blue), its border, and the player name's opacity. Two of the three turned out not to be deviations
+at all — `Card Border` and `Secondary Text` are both recorded conflicts in `tokens.md` §1 that the
+owner already resolved in the Mobile kit's favour.
+
+**A — the overlay focus defects. Four sites, not three, and two distinct causes.** The plan listed
+three; `CategoryNavBar.tsx:139` has the identical shape and was not in it. Every reading below is a
+real press — `mouse.move`/`down`/`up`, `touchscreen.tap`, `keyboard.press` — never `element.click()`.
+
+| | Escape | outside press |
+| --- | --- | --- |
+| `HeaderNavMenu` @1024 | restored | **`<body>`** |
+| `CategoryNavBar` @1440 | restored | **`<body>`** |
+
+That table is the whole diagnosis. `CategoryNavBar` has the same ref and the same restoring effect on
+both rows, so the cause cannot be a missing or detached trigger: it is that `mousedown` has a default
+action — focus the nearest focusable ancestor of the press target, clear to `<body>` when there is
+none — and `keydown` has none. It overwrites a restoration that already succeeded. `Panel.tsx` had
+documented this for its backdrop since session 10; the two anchored dropdowns had not learned it.
+
+`HeaderNavMenu`'s cause was different and simpler: its `onPointerDown` branch called no `focus()` at
+all. Same symptom, different bug.
+
+The fix is one exported predicate, `pressLandsOnAControl` in `Panel.tsx`, used by both document-level
+listeners. Deliberately **not** a shared hook: `HeaderNavMenu` keeps its trigger across the close and
+`CategoryNavBar` unmounts and remounts its own, so the restoration strategies genuinely differ and
+only the cancellation is common. The guard matters — measured at 1024, pressing the "Jackpot — home"
+logo while the menu was open correctly focuses the logo, and an unconditional restore would have
+stolen it back.
+
+Two landings were chosen rather than restored, both owner decisions of 2026-09-10. After `Sign out`
+the username pill is unmounted by the same state change, so `Header` — which spans both sides of the
+swap — focuses the visible log-in control, picked by `offsetParent` because `HeaderPrelogin` renders
+two of them behind a breakpoint. And the provider search at 390 returns to its magnifier: the plan
+called that impossible because `ProviderRow.tsx:73` hides the trigger, and it does — `mobile:hidden`,
+`offsetParent: null` — but only while the field is open, so the restoration waits for the commit and
+checks visibility rather than trusting it.
+
+**`scripts/focus-restore.mjs` is the guard**, eight rows, real presses, refusing to report when
+`innerWidth` is wrong. It was validated by running it against HEAD: **4/8**, failing on exactly the
+four broken paths and passing the four that already worked. With the fix, 8/8.
+
+**C — the header and hero differences. All five now decided.**
+
+| # | decision | note |
+| --- | --- | --- |
+| 1 | remove the magnifier's disc on mobile | `search_header.svg` is a single white `<path>`, checked in the bytes because `search-btn.svg` once smuggled its own circle. Box stays 40x40; hover white 12% and pressed white 4% kept and measured |
+| 2 | keep 16/16 | Figma's 26/10 is one node and whether it is intent is **unknown**; the category track and hero card use 16. Written at the call site |
+| 3 | keep `--emerald` | Figma strokes `#00A372` and fills `#005C40`; ours differ by 79 in green, not the "~40" the plan recorded, which matched the blue channel |
+| 4 | add the second shadow layer **and** Figma's blue | `#3b82f6` is a **third** blue, neither `--blue` nor the `#007AFF` behind it. New `--action-blue`, cited to `21:2916`, and the gradient's far stop moved onto it so one button does not carry two blues |
+| 5 | desktop flame stays 20x20 | declined in session 10, still declined. Mobile was already correct |
+
+**B — not done, because the ground moved.** Three findings, in order of how much they cost:
+
+1. **Range classification does not work.** `1:5687` is alive (above). `21:3297`, `21:3675` and
+   `21:3693` are dead and sit nowhere near the recorded band.
+2. **`21:2896` and `21:4154` are dead** — the pair `CLAUDE.md`, `start-here.txt` and this file all
+   named as live. So is `21:3693`, the node §1's "Figma footer 1140.4" was read from; that figure is
+   no longer verifiable from its stated source, though 1140 is confirmed by the new file below.
+3. **The designers rebuilt the mobile subtree again**, into a new `32:*` range. Confirmed by the
+   owner mid-session. Page `0:1` now holds two groups: `1:97` and `32:1812`. Under the new one:
+
+   | node | what | size |
+   | --- | --- | --- |
+   | `32:1813` | **mob main** | 390x**7159** |
+   | `32:1814` | header + hero block | 390x**335** (was 305) |
+   | `32:1968` | Recent wins - Ticker (iOS) | 390x**66** at y=355 |
+   | `32:2626` | footer-mobile | 390x**1140** |
+   | `32:3087` / `32:3308` | mob postlogin / prelogin homepage | 390x769 |
+   | `32:3284` | mobile-navigation-bar postlog | 390x84 |
+
+   **This session's D work survives the rebuild**: the new file asks for the same 66px band.
+
+**A method trap, paid for and worth keeping.** `get_metadata` on `0:1` and on `32:1812` both exceed
+the tool's limit and get written to a file **truncated**. A classification built on the first one
+reported 149 dead ids under `src/` — false. It was caught only because the dump was checked against
+ids whose status had already been established one at a time, and seven known-alive ones were missing
+from it. **Absence from a dump proves nothing; only the per-id `get_metadata` call does.**
+
+**§15's "unknown" is now answered.** The accessibility build was reproduced with `.next` deleted
+first and no dev server running, so nothing else could have created it:
+
+| build | `NEXT_DIST_DIR` | result |
+| --- | --- | --- |
+| `GITHUB_PAGES=true npx next build --turbopack` | `.next-a11y` | `.next-a11y` 187 files **and `.next` 239** — `build/chunks`, `server/app`, `cache`, `BUILD_ID`, every manifest, 5 HTML |
+| `npx next build --turbopack` | `.next-probe` | `.next-probe` 238 files, **`.next` never created** |
+
+`distDir` works. The `isPages` branch of `next.config.ts`, the one adding `output: 'export'`, is what
+writes into `.next` regardless. Which of that block's four keys does it was **not** isolated. Session
+11 recorded four stray JSON files; there are 239, and it only looked like four because it looked
+after deleting most of them. Two consequences: `npm run build:check` is now measured to be safe with
+the dev server up, and the accessibility run is measured not to be.
+
+**The gate, run on the artefact that ships.** 65 tests, `tsc` 0, `eslint` 0, `build:check` 0. Then,
+with the dev server stopped, the static export served on :4180 with the served CSS proven
+byte-identical to the built one by SHA-256, and the served `index.html` at 363158 bytes matching the
+built file exactly: axe **0/0/0/0** across the nine states, and `focus-restore` **8/8**.
+
+The mobile band was re-measured on that export and is identical to dev on every value, page height
+included: **7143**. So the 7 px between this session's HEAD baseline of 7157 and the plan's recorded
+7150 is not a dev-versus-export difference. The plan's figure simply does not reproduce on either.
 
 ## Things worth remembering about this codebase
 
