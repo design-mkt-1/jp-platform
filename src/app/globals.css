@@ -208,6 +208,25 @@
   :root {
     --bg-overlay: rgb(22 22 37 / 0.8);
   }
+
+  /*
+   * 16px in every text field on the phone. iOS Safari, and every in-app browser built on it
+   * (Telegram's included), zooms the page when a field under 16px takes focus, and leaves it
+   * zoomed: the owner's iPhone showed the search sheet cut off at the left edge. Our fields were
+   * 13 and 14px, as the design draws them. Blocking zoom with `maximum-scale=1` would fix it by
+   * breaking pinch-zoom for everyone who needs it, so the text goes up instead. Owner's decision,
+   * 2026-09-10.
+   *
+   * One rule for the whole class rather than a `mobile:text-base` on each field, so a field added
+   * later cannot bring the zoom back. The attribute selectors are what make it win: 0,2,1 beats the
+   * single class of `text-sm` or `text-[13px]` without `!important`. Every field has a fixed height,
+   * so the larger line box does not move anything.
+   */
+  input:not([type='checkbox']):not([type='radio']),
+  textarea,
+  select {
+    font-size: 16px;
+  }
 }
 
 @layer base {

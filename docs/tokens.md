@@ -352,6 +352,14 @@ no visible gain. They are noted here so they are not rediscovered as a "bug" at 
 | `#11111A` (the game card's background, node `1:2602`)             | `bg-card` `#151624`  | `#11111A` is the **desktop** page background, which the "mobile wins" decision replaced with `#0F121D`                                |
 | `#000000` (the pill button's label, node `I1:6256;112:330`)       | `ink` `#09090D`      | Figma writes pure black on the button and `#09090D` on the clock 3px away. The difference is imperceptible, so both use `ink`         |
 
+### Layout deviations — owner's decisions, 2026-09-10
+
+Not colours, but recorded here for the same reason: so the visual check does not report them as bugs.
+
+| Design | Ours | Why |
+| --- | --- | --- |
+| Text fields at 13–14px (search, providers, category bar) | **16px on the phone**, one rule in `globals.css` | iOS zooms the page when a field under 16px takes focus; seen on the owner's iPhone |
+
 ### Stale node citations — the `1:5720`–`1:8234` band
 
 The mobile subtree was rebuilt in Figma on 2026-09-09 and the whole `1:5720`–`1:8234` id band was
