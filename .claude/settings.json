@@ -1,4 +1,28 @@
 {
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/plugins.mjs --quiet 2>/dev/null || node \"$CLAUDE_PROJECT_DIR/scripts/plugins.mjs\" --quiet 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/skill-triggers.mjs 2>/dev/null || node \"$CLAUDE_PROJECT_DIR/.claude/hooks/skill-triggers.mjs\" 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "ui-ux-pro-max@ui-ux-pro-max-skill": true,
     "ponytail@ponytail": true,
@@ -17,18 +41,5 @@
     "voltagent-lang@voltagent-subagents": true,
     "voltagent-domains@voltagent-subagents": true,
     "voltagent-biz@voltagent-subagents": true
-  },
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/skill-triggers.mjs 2>/dev/null || node \"$CLAUDE_PROJECT_DIR/.claude/hooks/skill-triggers.mjs\" 2>/dev/null || true",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
   }
 }

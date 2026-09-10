@@ -60,7 +60,7 @@ and full sentences, so it tightens explanations instead of truncating them.
 Write CLAUDE.md at the repo root, in English, as trigger rules rather than advice.
 Cover:
 
-  - Before any UI work: ui-ux-pro-max:design then ui-ux-pro-max:ui-styling;
+  - Before any UI work: ui-ux-pro-max:ui-ux-pro-max then ui-ux-pro-max:ui-styling;
     design-system when touching shared tokens or the Tailwind config;
     make-interfaces-feel-better for spacing, borders, shadows, hit areas and
     hover/focus states; motion-foundations before motion-ui; accessibility and
@@ -113,13 +113,23 @@ before you paste, rather than installing and ignoring them.
 not in any repo. On a colleague's machine or a fresh laptop, only source (b) works,
 and only because this repo now carries the set.
 
-## Known unverified
+## Answered, 2026-09-10: `enabledPlugins` alone is not enough
 
-Whether `ponytail` and `caveman` load from `enabledPlugins` alone, or still need
-`/plugin install ponytail@ponytail` run inside the target project. In this machine's
-`~/.claude/plugins/installed_plugins.json` both are recorded against
-`projectPath: D:\DesignTeamPlatform`, and plugins load at session start, so it cannot
-be tested mid-session.
+This section used to ask whether `ponytail` and `caveman` load from `enabledPlugins` alone
+or still need an install inside the target project. Measured: **they need the install.**
 
-The check takes ten seconds: restart the session and type `/ponytail-help`. If nothing
-answers, run `/plugin install ponytail@ponytail` in that repo.
+`~/.claude/plugins/installed_plugins.json` records one entry per install, each carrying the
+`projectPath` it was installed for. A plugin loads in a checkout only when a record's
+`projectPath` is that checkout — or the record is `scope: "user"`. Declaring it in
+`.claude/settings.json` does nothing on its own. Before the fix, this repo declared seventeen
+plugins and one had a record for `D:\jp-platform`; after `claude plugin install <id> --scope
+project` for the other sixteen, all seventeen did.
+
+**Do not verify with `claude plugin list`.** Its "enabled" column is machine-wide: it prints the
+current project's enabled flag beside a record that may belong to a different project. On
+2026-09-10 it reported fifteen plugins as enabled here while none of them was installed here. Use
+`npm run plugins`, which compares the two files directly, or `claude plugin list --json` and read
+`projectPath` per record.
+
+`/ponytail-help` is still a fine ten-second behavioural probe of one plugin after a restart. It
+does not scale to seventeen, and it has to be typed by hand.

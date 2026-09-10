@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "build:check": "node scripts/build-check.mjs",
+    "plugins": "node scripts/plugins.mjs",
+    "plugins:install": "node scripts/plugins.mjs --install",
     "test": "vitest run"
   },
   "dependencies": {

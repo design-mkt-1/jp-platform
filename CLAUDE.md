@@ -5,7 +5,13 @@ Next.js 15 + Tailwind casino platform, built against Figma. Static export, Vites
 ## Skills are in this repo — use them, don't improvise
 
 Project skills live in `.claude/skills/` and are committed, so every clone has them.
-Plugins are declared in `.claude/settings.json` and resolve from the marketplaces in `~/.claude/plugins`.
+
+Plugins do not work that way. `.claude/settings.json` only **declares** them; the install is
+recorded per project on the machine, keyed by that project's path. A plugin installed for another
+checkout does not load here. `npm run plugins` says which are actually installed for this one and
+`npm run plugins:install` fixes it — and do not read `claude plugin list` instead, because its
+"enabled" column is machine-wide. On 2026-09-10 it called fifteen plugins enabled while exactly one
+was installed for this checkout.
 
 The rules below are not suggestions. Invoke the named skill before doing the work, not after.
 
@@ -17,7 +23,7 @@ audit and eight fixes and invoked **none of them**. Being installed is not being
 
 | Trigger | Skill |
 | --- | --- |
-| Any new page, component, colour, type scale, or layout | `ui-ux-pro-max:design`, then `ui-ux-pro-max:ui-styling` |
+| Any new page, component, colour, type scale, or layout | `ui-ux-pro-max:ui-ux-pro-max`, then `ui-ux-pro-max:ui-styling` |
 | Changing shared tokens, `globals.css`, or `tailwind.config.ts` | `design-system` |
 | Spacing, borders, shadows, radii, hit areas, hover/focus/pressed states | `make-interfaces-feel-better` |
 | Deciding how something should look when the design does not say | `frontend-design-direction`, `taste` |
@@ -92,6 +98,10 @@ For a short Romanian answer when one is asked for: `ro-scurt`.
 
 - `ponytail` — simplest thing that works. YAGNI, stdlib first, no unrequested abstractions.
 - `react-patterns` / `react-performance` for component work, `react-testing` for tests.
+- `frontend-patterns` for anything above the component level — data flow, state, page composition.
+- `nextjs-turbopack` before touching the build, the dev server, or `next.config.ts`. This repo
+  builds with `--turbopack` and owns the `.next` collision trap described below; that is exactly
+  the ground this skill covers.
 - `no-ai-slop` and `taste` before shipping copy or visual design.
 
 `src/lib/sections.ts` is the spine: twelve of the fifteen homepage rows are one data-driven
@@ -157,7 +167,9 @@ artefact that ships, not on the worker's private build. And nothing scratch ente
 are staged by name, never with `git add -A`.
 
 Beyond Orca, `superpowers` carries `dispatching-parallel-agents`, `subagent-driven-development` and
-`using-git-worktrees`; read the matching one before inventing a fan-out shape.
+`using-git-worktrees`; read the matching one before inventing a fan-out shape. That holds only once
+`npm run plugins` reports `superpowers ok` — a rule pointing at a plugin that does not load is the
+failure this whole file opens with.
 
 ## Language
 
@@ -199,8 +211,14 @@ above. See `docs/start-here.txt`.
 
 That hook is also the mechanism this repo now copies. `.claude/hooks/skill-triggers.mjs` is a
 `UserPromptSubmit` hook, wired in `.claude/settings.json`, that injects the skill triggers on every
-turn — because this document alone already failed once. It is deliberately 551 characters: a long
-reminder on every turn becomes noise and gets skimmed, which is the failure it exists to fix.
+turn — because this document alone already failed once. Keep it short: a long reminder on every turn
+becomes noise and gets skimmed, which is the failure it exists to fix. (This sentence used to quote
+an exact character count. The count was wrong by the next edit, which is what a hardcoded
+measurement of a file that changes always does.)
+
+`.claude/settings.json` also wires a `SessionStart` hook running `scripts/plugins.mjs --quiet`. It
+prints nothing when every declared plugin is installed for this checkout, and the missing ones plus
+the one command to fix them when they are not. Silence is the pass condition.
 
 Measured when it was added, not assumed: hooks from this file execute with no restart, the hook's
 cwd is the repo root, and `CLAUDE_PROJECT_DIR` is set — so the command tries the relative path and

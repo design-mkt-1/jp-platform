@@ -37,6 +37,7 @@ GETTING STARTED
     git clone https://github.com/design-mkt-1/jp-platform.git
     cd jp-platform
     npm ci
+    npm run plugins
     npm run dev
 
 Then open http://localhost:3000
@@ -51,10 +52,12 @@ Open Claude Code in the jp-platform folder and give it this:
 
     git pull first, before reading anything — the plan, the skills and the hook
     live in the repo and a stale checkout does not have them. Two sessions
-    running have opened stale, 22 commits behind and then 13. Then read
-    docs/session-11-plan.md: §0 is the checklist of what does not travel with a
-    clone, §2 is the work, and §4 is the list of traps this project has already
-    paid for. Then CLAUDE.md and docs/next-session.md §14.
+    running have opened stale, 22 commits behind and then 13. Then run
+    `npm ci` and `npm run plugins`; if anything is missing, `npm run
+    plugins:install` and restart. Then read docs/session-11-plan.md: §2 is the
+    work and §4 is the list of traps this project has already paid for. Then
+    CLAUDE.md and docs/next-session.md §14. The setup checklist lives in this
+    file, docs/start-here.txt, and nowhere else.
     Mobile at 390px is the only priority; 95% of traffic is a phone.
     Verify before you assume.
 
@@ -84,11 +87,40 @@ triggers on every turn. That hook exists because the passive version failed:
 ui-ux-pro-max was enabled from the first commit and one whole session still ran
 a 49-control UI audit without invoking it once.
 
-The plugins themselves do NOT travel. .claude/settings.json declares
-ui-ux-pro-max, ponytail and caveman, but their code lives in ~/.claude/plugins/
-on the machine that installed them. On a new machine, check with /ponytail-help
-and install from: github:nextlevelbuilder/ui-ux-pro-max-skill,
-github:dietrichgebert/ponytail, github:JuliusBrussee/caveman.
+The plugins themselves do NOT travel. .claude/settings.json DECLARES them; their
+code lives in ~/.claude/plugins/ on the machine that installed them. Declaring is
+not installing: installs are recorded per project, keyed by the project's path,
+so a plugin installed for another checkout on the same machine still does not
+load here.
+
+Do not check this by eye and do not trust `claude plugin list`. Its "enabled"
+column is machine-wide — on 2026-09-10 it reported fifteen plugins as enabled
+while exactly one of them was installed for this checkout. Run:
+
+    npm run plugins            says what is actually installed here
+    npm run plugins:install    installs whatever is missing
+
+Then RESTART the session. Plugins resolve at session start, so nothing installed
+mid-session is live in that session. After installing, run
+`git diff .claude/settings.json` — the installer rewrites that committed file.
+
+You do not need to know which plugins those are. The list lives in
+.claude/settings.json and the script reads it from there. Writing the names into
+a document is what produced four checklists that disagreed with each other.
+
+Orca's state is per machine too, and parallel work on this repo runs as Orca
+workers with one git worktree each — see the Orchestration section of CLAUDE.md
+for why. `orca status` should answer runtimeState: ready. Verified command
+surface, so you do not rediscover it:
+
+    orca repo list                       this repo is registered as D:/jp-platform
+    orca worktree ps                     what is running now
+    orca orchestration run-create --objective ...
+    orca orchestration task-create --spec --task-title --display-name
+    orca orchestration task-update --id --status
+
+`--task` is NOT a flag, and `in_progress` is NOT a valid status. The set is:
+pending, ready, dispatched, completed, failed, blocked.
 
 UNKNOWN: I do not know whether the Figma MCP connection works automatically on
 another machine. It is tied to the claude.ai account, so probably yes, but there
@@ -204,8 +236,9 @@ DOCUMENTS IN THE REPO
 
 README.md                  what the project is, how to run it
 docs/next-session.md       what is left to do
-docs/session-11-plan.md    START HERE on a new machine — what does not travel,
-                           the four areas of work, and the traps already paid for
+docs/session-11-plan.md    the work: the four areas and the traps already paid
+                           for. Its §0 points back here — THIS file is the only
+                           setup checklist, because four copies of it diverged
 docs/session-10-plan.md    the previous plan, executed 2026-09-10; kept for its
                            record of how the six owner choices were put in front
                            of you before anything was edited

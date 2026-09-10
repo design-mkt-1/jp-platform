@@ -22,33 +22,18 @@ Closing them is most of what session 10 actually did, and the same shape is stil
 
 ---
 
-## 0. First, on the new machine — ten minutes, do not skip
+## 0. First, on the new machine
 
-**`git pull` before anything else.** Two sessions running have opened stale. A session that reads a
-plan before pulling is reading an old plan.
+```
+git pull          two sessions running have opened stale; a plan read before pulling is an old plan
+npm ci
+npm run plugins   17 ok, or `npm run plugins:install` then restart the session
+```
 
-Then `npm ci` and `npm run dev`. Then check what a clone does not carry:
-
-| Travels with the clone | Does **not** travel |
-| --- | --- |
-| `.claude/skills/` (20), `CLAUDE.md`, `.claude/hooks/skill-triggers.mjs` and its wiring in `.claude/settings.json`, `.caveman/config.json`, all of `docs/` | the plugins — `settings.json` only *declares* them |
-| | the owner's two global rules — `UserPromptSubmit` hooks in `~/.claude/settings.json` plus `~/.claude/CLAUDE.md` |
-| | Orca's state, which is per machine |
-| | the memory files under `~/.claude/projects/D--jp-platform/memory/` |
-
-1. **Plugins.** Measured on 2026-09-10: `ui-ux-pro-max@ui-ux-pro-max-skill` v2.13.0 **is** installed
-   for `D:\jp-platform`. **`ponytail` and `caveman` are NOT** — they are registered only against
-   `D:\DesignTeamPlatform`, `D:\tw-platform` and the orca workspaces. `CLAUDE.md` names `ponytail` as
-   the rule for writing code, and it does not load. Install if wanted:
-   `/plugin install ponytail@ponytail`, `/plugin install caveman@caveman`.
-   Verify with `claude plugin list`, not by reading a file.
-2. **The owner's rules.** "Never assume, verify" and "explain, do not just report".
-3. **Orca.** `orca status` should answer `runtimeState: ready`. Command surface, verified:
-   `orca orchestration run-create --objective`, `task-create --spec --task-title --display-name`,
-   `task-update --id --status`. **`--task` is not a flag** and `in_progress` is not a valid status —
-   the set is `pending, ready, dispatched, completed, failed, blocked`.
-4. **Figma.** `get_metadata` on `2MyylxdZblfGnf05nQacUz` must answer `0:1: Platform`.
-5. **Chrome** must be installed. `npx playwright install` is **not** needed.
+**The setup checklist lives in [`start-here.txt`](start-here.txt) and nowhere else.** It used to be
+copied into every session plan, which is how four copies came to disagree with one another — this
+one told you `ponytail` and `caveman` were not installed while `claude plugin list` said they were,
+and both readings were wrong in different ways. One list, one place.
 
 **Then confirm the repo's hook fires:** `PROJECT SKILLS (.claude/skills, committed)` must appear above
 your first message.

@@ -11,6 +11,10 @@ nothing under `~/.claude/` travels — not the plan, not the plugins, not the me
 
 ## 0. First, on the new machine — ten minutes, do not skip
 
+> **Superseded 2026-09-10.** The live checklist is [`start-here.txt`](start-here.txt) plus
+> `npm run plugins`. This section is kept as the record of what session 10 was instructed to do, not
+> as instructions to follow.
+
 **`git pull` before anything else.** Session 9 opened on a checkout **22 commits behind** `origin/main`,
 so the plan, the twenty skills in `.claude/skills/` and the hook that fires them were all on the
 remote and not on disk. The hook then fired from the very next prompt — no restart needed — but a

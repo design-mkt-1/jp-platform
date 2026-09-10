@@ -15,6 +15,10 @@ in `~/.claude/plans/` does not travel. Everything needed to execute is here.
 
 ## 0. First, on the new machine — ten minutes, do not skip
 
+> **Superseded 2026-09-10.** The live checklist is [`start-here.txt`](start-here.txt) plus
+> `npm run plugins`. This section is kept as the record of what session 9 was instructed to do, not
+> as instructions to follow.
+
 `git clone`, `npm ci`, `npm run dev`. Then check what did **not** come with the repo. Three things
 travel and three do not, and confusing them wastes an hour.
 
