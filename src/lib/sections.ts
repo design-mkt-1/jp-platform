@@ -188,30 +188,30 @@ export const desktopSections: SectionSpec[] = [
 ]
 
 /**
- * The mobile frame (21:2896) repeats the same fifteen rows in the same order, but every games row
+ * The mobile frame (32:1813) repeats the same fifteen rows in the same order, but every games row
  * is a single 3x2 grid — so each one asks for six games even where desktop asks for twelve.
  * Ids are shared with `desktopSections` so a component can be looked up by id on either viewport.
  */
 const MOBILE_NODE_IDS: Record<string, string> = {
-  // Rebuilt in Figma on 2026-09-09 together with the frame itself. Every id this map used to
-  // carry, 1:5882 to 1:6499, resolves to nothing; each replacement below was read back from the
-  // row's own `section-header` and matched on its title text, because the layer names are
-  // copy-paste — twelve of the fifteen row frames are still called `popular-section`.
-  'popular-games': '21:3058',
-  'new-games': '21:3077',
-  'leading-providers': '21:3095',
-  'recommended-games': '21:3296',
-  'crash-games': '21:3314',
-  'must-play-slots': '21:3332',
-  'bonus-buy': '21:3350',
-  'current-tournaments': '21:3368',
-  'megaways-games': '21:3384',
-  'jackpot-games': '21:3402',
-  'weekly-lottery': '21:3420',
-  'drops-and-wins': '21:3437',
-  wheel: '21:3455',
-  'instant-games': '21:3657',
-  'egypt-games': '21:3675',
+  // The row frames of `32:1813`, rebuilt in Figma twice; every earlier id is deleted. Each id below
+  // was matched on the title text inside the row's own `section-header`, read one at a time,
+  // because the layer names are copy-paste — the first row is called `new-games-section` and
+  // twelve of the others `popular-section`.
+  'popular-games': '32:1991',
+  'new-games': '32:2010',
+  'leading-providers': '32:2028',
+  'recommended-games': '32:2229',
+  'crash-games': '32:2247',
+  'must-play-slots': '32:2265',
+  'bonus-buy': '32:2283',
+  'current-tournaments': '32:2301',
+  'megaways-games': '32:2317',
+  'jackpot-games': '32:2335',
+  'weekly-lottery': '32:2353',
+  'drops-and-wins': '32:2370',
+  wheel: '32:2388',
+  'instant-games': '32:2590',
+  'egypt-games': '32:2608',
 }
 
 export const mobileSections: SectionSpec[] = desktopSections.map((section) => {

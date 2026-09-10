@@ -31,6 +31,55 @@ Closed in session 15, on a machine that had never run this repo:
   Re-proved by hand — a throwaway `docs/guard-probe.md` citing `1:6994` made it fail with
   `expected [ '1:6994 docs/guard-probe.md' ] to deeply equal []`, then was deleted.
 
+**Later in session 15: the ids that do something, re-pointed at the live frames.**
+
+- **`/dev/screens`** linked every phone screen to a deleted node. Now `mob-main` → `32:1813` (the
+  post-login frame; its header carries `$ 140.00`, `32:3530` is the pre-login twin), `mobile-nav`
+  → `32:4828`, the three jackpot menus → `32:5279` / `32:4852` / `32:5063`. Verified at 390 with a
+  real tap: the `32:1813` link opened `figma.com/design/2MyylxdZblfGnf05nQacUz?node-id=32-1813`,
+  and all five answered alive to `get_screenshot` beside the `1:2431` control.
+- **`MOBILE_NODE_IDS`** in `sections.ts`: all 15 were dead. Each new id was matched on the title text
+  inside the row's own `section-header`, read one at a time — "POpular", "New games", …, "egypt".
+  Every one landed exactly 1067 below the dead `21:*` id it replaces, which says the designers
+  duplicated the frame; that pattern was a hypothesis until each title was read.
+- **The seven colour tokens** now cite live nodes whose values were read and match exactly —
+  `#00b579` on `32:4885`, `#ff787a` on `32:5036`, `#222431` on `32:4907` / `32:4887`,
+  `rgba(0,92,64,0.04)` on `32:4870`, `rgba(255,149,0,0.1)` / `#ffae00` on `32:1852` / `32:1853`.
+  The component comments that cite the same old nodes for *metrics* (`Button.tsx`, `Badge.tsx`,
+  `JackpotMenu.tsx`) were left alone: `Button.tsx` says `13:2340` "is padded 10/24", and
+  `32:4885` is built as a fixed 113x38 box with no padding, so a blind swap would plant a false
+  claim. Those stay baselined.
+- The guard's baseline went **367 → 310** citations; dead ids cited under `src/` **135 → 117**. The
+  ledger is 356 of 356 and every cited id has a row.
+
+**The phone page is 64px taller than Figma — measured, not fixed.** 7223 against `32:1813`'s
+7159.4, in both motion modes, at an asserted `innerWidth` of 390:
+
+| where | ours | Figma | difference |
+| --- | --- | --- | --- |
+| reserve under the footer for the fixed nav bar | 84.12 | not drawn — the bar floats over the frame | +84.1 |
+| everything above the first row | 426 | 441 | −15 |
+| under the last row, to the footer | 352.5 + 54 = 406.5 | 410 + 20 = 430 | −23.5 |
+| footer | 1149.38 | 1140.4 | +9.0 |
+| row pitch, net | Popular +8.5, Leading Providers +8, the three card rows −4 each, eight games rows +0.5 each | | +8.5 |
+
+The rows sum to 63.6, which is 7223 − 7159.4. So the headline is the other way round: without the
+reserve the page is **20.5px shorter** than the design. Whether the reserve should count is a
+reading, not a measurement — Figma's frame ends at the footer and lets the bar sit on top of it;
+the page cannot, or the bar would cover the footer's last 84px.
+
+The −23.5 under the last row has an explanation in the numbers, stated as reasoning, not measured
+as a cause: Figma's games rows are 376 tall with 20px between them, ours 352.5 with 44 — the same
+396-ish pitch, built the other way round. After every row but the last, the larger gap pays back the
+shorter box. After the last one there is no gap to pay it back: session 10 restored the 34px Figma
+puts under that row (`start-here.txt` lists it CLOSED), giving 54, but 352.5 + 54 is still 23.5
+short of 376 + 34 + 20.
+
+**A trap paid for this session.** Another project's dev server — "Top-Win — screens", Figma file
+`s2CqwGqe0O0FcALhBNlTRe` — held port 3000, so `npm run dev` came up on **3001**, and the first
+check of `/dev/screens` read the wrong app. Read the port from the dev log before measuring. The
+recent-search measurement was re-run on 3001 and gave the same 13px / 15px, 286x31.
+
 **The handoff's stated reason for item 2 was wrong, and is worth knowing.** It said "a fresh browser
 context has no recent searches". `useAppStore.ts:81` seeds `search.recent` with
 `defaultRecentSearches`, four terms defined at `search.ts:90` — *Blackjack VIP*, *Lightning
@@ -51,9 +100,9 @@ Open, in the order that matters for a Figma demo:
 
 1. ~~**Unclassified Figma node ids**~~ — **closed in session 15**, 329 of 329. What it leaves is
    the list itself: 135 dead ids are still cited under `src/`, all baselined by the guard, none
-   rendering wrong. One is worth knowing about before it misleads someone — the
-   `?panel=jackpotMenu` deep link below names `1:8751`, `13:2307` and `13:2519`, and all three
-   are deleted.
+   rendering wrong. The ones that *do* something — the `/dev/screens` Figma links, the mobile row map in
+   `sections.ts` and the seven colour tokens — were re-pointed at the live `32:*` frames in the
+   same session; see the session-15 entry above.
 2. ~~**`SearchPopularRecent.tsx:78`**~~ — **closed in session 15**, see above. Measured against
    `1:4457`, correct as written.
 3. **Nine `LOCKED` sites** in `docs/text-arbitrary-leading-audit.md` are cosmetically inert because a
@@ -109,7 +158,7 @@ Verified on the live site: zero failing requests, `noindex` header served, `/dev
 | `?auth=prelogin` / `?auth=vip` | header and menu in that account state              |
 | `?panel=balance`               | the balance popover, Figma node 1:4116             |
 | `?panel=personalInfo`          | the account dropdown, node 1:4153                  |
-| `?panel=jackpotMenu`           | the mobile menu, nodes 1:8751 / 13:2307 / 13:2519    |
+| `?panel=jackpotMenu`           | the mobile menu, nodes 32:5279 / 32:4852 / 32:5063 (pre-login / post-login / VIP) |
 | `?q=swe`                       | the search suggestions state, node 1:4479          |
 | `?pq=xyzgame`                  | the provider filter with no match, 1:2218 / 1:4321 |
 
@@ -127,16 +176,16 @@ flight.
 | ~~1~~ | The countdown period | **24 hours.** `PERIOD_MS` is a day, so the hours field keeps the two digits the design draws. The editorial cost was stated and accepted: the copy beside the clock still reads "Weekly tournament active" and "Bi-Weekly Lottery draw is now open", and a timer that never exceeds 24 hours disagrees with both. Changing that copy is not done. | §12 |
 | ~~2~~ | 768–1279 px          | **A burger.** Four treatments were rendered at 768, 1024 and 1279 and put side by side — accept it, thin the 80px gutter, drop two links, wrap onto a second row — and the owner picked the one none of them were. All six links now collapse behind a burger below 1280px, which costs no header height where wrapping cost 91px. | §12 |
 
-**Still open from the session 8 audit — the owner has seen the list and picked from it:**
+**From the session 8 audit — every row is now closed; kept so the trail is findable:**
 
 | # | What | Why it is still here | Where |
 | - | ---- | -------------------- | ----- |
-| 3 | Thirteen inert `See All (206)` pills | Every row header carries one; none has an `href` or an `onClick`, and the 206 is a Figma placeholder over a 60-game catalogue. Making them work means deciding what "see all" means for a row, which is a product question, not a wiring one. | audit §1.3 |
-| 4 | "More" in the mobile menu opens a corner popover | It closes the full-screen sheet and raises a 171px desktop panel in the top-right of the phone. The decision behind it is recorded and defensible; the result on a phone is not. | audit §2.5 |
-| 5 | Three menu rows promise a submenu | `Sport`, `Casino` and `Payments` draw a disclosure chevron and navigate instead. `Casino` goes to `/`, the page you are already on. | audit §2.6 |
-| 6 | The provider filter's results ride a 40s marquee | Filter to `net` and the only match slides across the row, clipped 25px by its own container, off-screen for part of every cycle. | audit §2.7 |
-| 7 | The no-results copy points at nothing | "browse our categories below" — the panel below it holds one button and no categories. | audit §2.9 |
-| 8 | Two spellings of one auth label | Half of this closed in session 10: the mobile *register* button no longer reads as log-in, and `HeaderPrelogin.tsx:71` and `JackpotMenu.tsx:135` both say `Register`. What survives is desktop `Login` against mobile `Log In` — one label, two spellings. Still the design owner's question. | audit §3.4, §14 |
+| ~~3~~ | ~~Thirteen inert `See All (206)` pills~~ — **a closed decision**, not a defect | The owner's goal of session 14: this is a demo of what is in Figma, and a control that looks right and does nothing is on target. The pills look exactly as Figma draws them. | audit §1.3 |
+| ~~4~~ | ~~"More" in the mobile menu opens a corner popover~~ — **fixed** in `5a7ddc9` | The account menu is a `Sheet` below 768: 390 wide, flush to left, right and bottom, focus lands on Wallet. Measured in `audit-session-8.md`'s status table, row 2.5. | audit §2.5 |
+| ~~5~~ | ~~Three menu rows promise a submenu~~ — **fixed** in `8809c1a` | Chevron glyphs in the eight menu rows went 3 → 0; the rows stay 44x350. Status table row 2.6. | audit §2.6 |
+| ~~6~~ | ~~The provider filter's results ride a 40s marquee~~ — **fixed** in `b061207` | With `net` typed the badge x holds at 16 across four 1s samples, inside a 16→374 row. Status table row 2.7. | audit §2.7 |
+| ~~7~~ | ~~The no-results copy points at nothing~~ — **fixed** in `08594a7` | Reads "No games found / Try a different search term" at 390 and 1440. Status table row 2.9. | audit §2.9 |
+| ~~8~~ | ~~Two spellings of one auth label~~ — **closed in session 13** | Owner decision: the phone spelling wins, `Log In` on both. See §17. | audit §3.4, §14 |
 | ~~9~~ | ~~Six SVGs still carry the Figma artboard~~ — **closed in `eb99091`** | Closed as a class, not as six instances: `clean-svg.mjs` now judges the geometry's own bounding box instead of how far the artboard happened to sit, so the −149 to −961 cases rule 2 missed are caught. `assets.test.ts` fails if it returns. This row contradicted both §13 and `start-here.txt` and is struck rather than deleted so the trail stays findable. | §13 |
 
 **Agreed and done:**

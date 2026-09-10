@@ -32,7 +32,7 @@ clicked to.
 | `?auth=prelogin` · `?auth=vip` | header and menu in that account state        |
 | `?panel=balance`               | balance popover — Figma node 1:4116          |
 | `?panel=personalInfo`          | account dropdown — node 1:4153               |
-| `?panel=jackpotMenu`           | mobile menu — nodes 1:8751 / 13:2307 / 13:2519, the last two **deleted** from the Figma file; do not measure against them, see `docs/figma-node-ledger.md` |
+| `?panel=jackpotMenu`           | mobile menu — nodes 32:5279 / 32:4852 / 32:5063 (pre-login / post-login / VIP) |
 | `?q=swe`                       | search suggestions — node 1:4479             |
 | `?pq=xyzgame`                  | provider search — nodes 1:2218 / 1:4321      |
 

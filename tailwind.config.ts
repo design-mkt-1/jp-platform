@@ -49,7 +49,7 @@ export default {
         amber: 'var(--amber)',
         'amber-tint': 'var(--amber-tint)',
         'amber-soft': 'var(--amber-soft)',
-        // The mobile hero's wager badge, nodes 21:2934 / 21:2935 — its own amber, so that
+        // The mobile hero's wager badge, nodes 32:1852 / 32:1853 — its own amber, so that
         // `amber-tint` stays bound to the desktop promo pills it was measured from.
         'wager-tint': 'var(--wager-tint)',
         'wager-amber': 'var(--wager-amber)',
@@ -57,8 +57,8 @@ export default {
         gold: 'var(--gold)',
         green: 'var(--green)',
         emerald: 'var(--emerald)',
-        // The jackpot menu's deposit fill (node 13:2340), its sign-out label (node 13:2491), the
-        // flat fill of its rows and ID field (13:2362 / 13:2342) and its balance pill (13:2325).
+        // The jackpot menu's deposit fill (node 32:4885), its sign-out label (node 32:5036), the
+        // flat fill of its rows and ID field (32:4907 / 32:4887) and its balance pill (32:4870).
         'deposit-green': 'var(--deposit-green)',
         signout: 'var(--text-signout)',
         'menu-row': 'var(--bg-menu-row)',

@@ -69,12 +69,11 @@ export const screens: ScreenSpec[] = [
     id: 'mob-main',
     label: 'Mobile — main',
     viewport: 390,
-    // `1:5720` until 2026-09-09, when it was found to resolve to nothing. The whole mobile subtree
-    // had been rebuilt in Figma — `1:5799` (category strip) and `1:6517` (footer) are dead too —
-    // the same thing that happened to the menu frames in session 6. The rebuilt pair is `21:2896`
-    // post-login and `21:4154` pre-login, both 390x7129 and structurally identical; this entry
-    // shows the post-login header, so it takes the first.
-    figmaNodeId: '21:2896',
+    // The mobile frames have been rebuilt in Figma twice; every id this entry carried before is
+    // deleted. The live pair is `32:1813` post-login and `32:3530` pre-login, both 390x7159 and
+    // structurally identical. This entry shows the post-login header — `32:1813` is the one whose
+    // header carries the `$ 140.00` balance — so it takes that one.
+    figmaNodeId: '32:1813',
     description: 'The mobile homepage: bonus carousel, category tabs, wins ticker, the same 15 sections, footer.',
   },
   {
@@ -89,7 +88,9 @@ export const screens: ScreenSpec[] = [
     id: 'mobile-nav',
     label: 'Mobile — navigation',
     viewport: 390,
-    figmaNodeId: '1:8235',
+    // `mobile-navigation-bar postlog`, the standalone 390x84 frame. `32:3284` is a copy of it
+    // placed inside the post-login homepage.
+    figmaNodeId: '32:4828',
     description:
       'The tab bar fixed to the bottom of every mobile page: Casino, Live Casino, the raised Menu disc, Sport, Promos.',
   },
@@ -97,23 +98,21 @@ export const screens: ScreenSpec[] = [
     id: 'jackpot-menu-prelogin',
     label: 'Jackpot menu — pre-login',
     viewport: 390,
-    figmaNodeId: '1:8751',
+    figmaNodeId: '32:5279',
     description: 'Account menu for a visitor who has not signed in.',
   },
   {
     id: 'jackpot-menu-postlogin',
     label: 'Jackpot menu — post-login',
     viewport: 390,
-    // Rebuilt in Figma on 2026-09-09; the id this entry used to carry, 1:8260, no longer resolves.
-    figmaNodeId: '13:2307',
+    figmaNodeId: '32:4852',
     description: 'Account menu for a signed-in standard player.',
   },
   {
     id: 'jackpot-menu-vip',
     label: 'Jackpot menu — VIP',
     viewport: 390,
-    // Rebuilt alongside the post-login frame; 1:8503 and 1:8504 are both gone.
-    figmaNodeId: '13:2519',
+    figmaNodeId: '32:5063',
     description: 'Account menu for a VIP player.',
   },
 ]

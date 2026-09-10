@@ -134,7 +134,7 @@
   /* The solid form of the same #F2C146 that --amber-tint carries at 10%: the join/countdown pill
      of the mobile promo cards, node 1:6255, is filled with it outright. */
   --amber-soft: #f2c146;
-  /* The mobile hero's "20X WAGER" badge, nodes 21:2934 (fill) and 21:2935 (label). A third amber,
+  /* The mobile hero's "20X WAGER" badge, nodes 32:1852 (fill) and 32:1853 (label). A third amber,
      and deliberately not --amber-tint: that token is bound to the *desktop* promo pills (1:3446,
      1:3538, 1:3594-1:3600), so moving it to #FF9500 would have silently retinted all of them. The
      hero draws #FF9500 at a tenth under a #FFAE00 label, which no other node in the file asks for. */
@@ -150,20 +150,20 @@
      nodes 1:6256 to 1:6260. Not --bg-page: the pill is a light surface and the design gives it its
      own ink, two points darker than the page it sits on. */
   --ink: #09090d;
-  /* The deposit button of the rebuilt jackpot-menu frames, node 13:2340. Not the emerald family:
+  /* The deposit button of the rebuilt jackpot-menu frames, node 32:4885. Not the emerald family:
      that token is the far brighter #00F299 of the support buttons, and this is a flat fill the
      design paints only here. Figma writes DEPOSIT on it in white, which measures 2.66:1; the
      label is --bg-page instead, 7.01:1. See docs/tokens.md §2b. */
   --deposit-green: #00b579;
-  /* Sign out, node 13:2491 — the only red in the file. 7.22:1 on the menu's --bg-quaternary. */
+  /* Sign out, node 32:5036 — the only red in the file. 7.22:1 on the menu's --bg-quaternary. */
   --text-signout: #ff787a;
-  /* The rows and the ID field of the rebuilt jackpot-menu frames, nodes 13:2362 and 13:2342, which
+  /* The rows and the ID field of the rebuilt jackpot-menu frames, nodes 32:4907 and 32:4887, which
      both declare this as a flat fill. It used to be reachable as `bg-elevated` — white 6% over
      --bg-card composites to #232431, one unit off — but the panel now sits on --bg-quaternary,
      where that same 6% falls to #1C222D. An opaque token is what the design actually specifies and
      is the only form that survives a change of surface. */
   --bg-menu-row: #222431;
-  /* The balance pill in that menu's header, node 13:2325. A green so faint it reads as a shade of
+  /* The balance pill in that menu's header, node 32:4870. A green so faint it reads as a shade of
      the panel rather than as a colour; nothing else in the design uses it. */
   --bg-balance-chip: rgb(0 92 64 / 0.04);
 

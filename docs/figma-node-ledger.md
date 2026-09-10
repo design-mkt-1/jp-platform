@@ -1,4 +1,4 @@
-# Figma node id ledger — 329 of 329
+# Figma node id ledger — 356 of 356
 
 File `2MyylxdZblfGnf05nQacUz`. Started 2026-09-10 session 13, finished session 15. Every id cited
 anywhere in `src/`, `docs/`, `public/` or the repository root is settled.
@@ -92,7 +92,7 @@ The 45 settled this way: `1:2435` `1:2655` `1:3638` `1:4154` `1:4797` `1:5697` a
 
 ## What the sweep is worth, and what it is not
 
-329 settled — **179 alive, 150 dead**, none left to check. The whole of `21:*` (55 ids),
+356 settled — **206 alive, 150 dead**, none left to check. The whole of `21:*` (55 ids),
 the whole of `13:*` (16 ids) and `112:330` are dead. The whole of `32:*` is alive: that is the
 subtree the designers rebuilt, and it is where the dead `21:*` work went.
 
@@ -127,29 +127,31 @@ Things measured rather than quoted, worth keeping:
   `?panel=jackpotMenu` deep link in `docs/next-session.md` names three nodes, `1:8751`, `13:2307`
   and `13:2519`; all three are now confirmed deleted.
 - `1:4154` is alive and is an **Image**, 1440x1036 — the same frame size as `1:4116` and `1:4153`.
-- The inventory is **329**. Session 13 recorded 322 and session 14 324; each count missed
+- The inventory is **356**. Session 13 recorded 322 and session 14 324; each count missed
   citations its scan did not reach. The check that closes this is mechanical — every id `citations()`
-  in `scripts/dead-nodes.mjs` finds must have a row here — and it passed at 329.
+  in `scripts/dead-nodes.mjs` finds must have a row here. It passed at 329, and again at 356
+  after the live `32:*` ids replaced the dead ones in `screens.ts`, `sections.ts` and the seven
+  colour tokens: 27 new rows, every one read from the live metadata of `32:1812`.
 - Earlier: 324, not the 322 session 13 recorded. The difference is
   `1:2435` and `1:2655`, cited in `public/review/index.html` — a directory the earlier count did
   not scan. Both are alive; `1:2655` is 40x40.
 
-## Dead ids that are cited under `src/` — 135
+## Dead ids that are cited under `src/` — 117
 
 These are the ones that would earn a guard test. Every row is a citation in shipped source of a node
 that no longer exists in the file.
 
 | id | cited in |
 | --- | --- |
-| `1:5720` | src/app/page.tsx, src/components/layout/MobileShell.tsx, src/lib/screens.ts |
+| `1:5720` | src/app/page.tsx, src/components/layout/MobileShell.tsx |
 | `1:5722` | src/components/layout/Header.tsx |
 | `1:5736` | src/components/layout/HeaderPostlogin.tsx |
 | `1:5741` | src/components/layout/HeaderPostlogin.tsx, src/components/primitives/Icon.tsx, src/lib/types.ts |
 | `1:5743` | src/components/layout/Header.tsx |
 | `1:5751` | src/lib/assets.ts |
-| `1:5799` | src/app/page.tsx, src/lib/screens.ts |
+| `1:5799` | src/app/page.tsx |
 | `1:5859` | src/app/page.tsx |
-| `1:5882` | src/components/sections/GameGrid.tsx, src/lib/sections.ts |
+| `1:5882` | src/components/sections/GameGrid.tsx |
 | `1:5884` | src/components/sections/SectionHeader.tsx |
 | `1:5887` | src/components/sections/GameGrid.tsx |
 | `1:5888` | src/components/cards/GameCard.tsx |
@@ -173,13 +175,11 @@ that no longer exists in the file.
 | `1:6478` | src/components/cards/PromoBannerMobile.tsx |
 | `1:6479` | src/components/cards/PromoBannerMobile.tsx |
 | `1:6480` | src/components/cards/PromoBannerMobile.tsx |
-| `1:6499` | src/lib/sections.ts |
-| `1:6517` | src/lib/screens.ts |
 | `1:6978` | src/components/layout/MobileShell.tsx |
 | `1:6980` | src/components/layout/Header.tsx |
 | `1:6994` | src/components/layout/HeaderPrelogin.tsx |
 | `1:7000` | src/components/layout/Header.tsx |
-| `1:8235` | src/app/globals.css, src/app/layout.tsx, src/components/layout/MobileNavBar.tsx, src/lib/screens.ts |
+| `1:8235` | src/app/globals.css, src/app/layout.tsx, src/components/layout/MobileNavBar.tsx |
 | `1:8236` | src/components/layout/MobileNavBar.tsx |
 | `1:8239` | src/components/layout/MobileNavBar.tsx |
 | `1:8244` | src/components/layout/MobileNavBar.tsx |
@@ -189,14 +189,13 @@ that no longer exists in the file.
 | `1:8254` | src/components/layout/MobileNavBar.tsx |
 | `1:8257` | src/components/layout/MobileNavBar.tsx |
 | `1:8259` | src/components/layout/MobileNavBar.tsx |
-| `1:8260` | src/components/panels/JackpotMenu.tsx, src/lib/screens.ts |
+| `1:8260` | src/components/panels/JackpotMenu.tsx |
 | `1:8285` | src/components/panels/JackpotMenu.tsx |
 | `1:8305` | src/components/panels/JackpotMenu.tsx |
-| `1:8503` | src/components/panels/JackpotMenu.tsx, src/lib/screens.ts |
-| `1:8504` | src/lib/screens.ts |
+| `1:8503` | src/components/panels/JackpotMenu.tsx |
 | `1:8528` | src/components/panels/JackpotMenu.tsx |
 | `1:8536` | src/components/layout/HeaderPostlogin.tsx, src/components/layout/HeaderVip.tsx |
-| `1:8751` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx, src/lib/screens.ts |
+| `1:8751` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx |
 | `1:8753` | src/components/panels/JackpotMenu.tsx |
 | `1:8772` | src/components/panels/JackpotMenu.tsx |
 | `1:8781` | src/components/panels/JackpotMenu.tsx |
@@ -206,23 +205,22 @@ that no longer exists in the file.
 | `1:8885` | src/components/panels/JackpotMenu.tsx |
 | `1:8908` | src/components/panels/JackpotMenu.tsx |
 | `1:8910` | src/components/panels/JackpotMenu.tsx |
-| `13:2307` | src/app/dev/screens/page.tsx, src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx, src/lib/screens.ts |
-| `13:2325` | src/app/globals.css, src/components/panels/JackpotMenu.tsx |
+| `13:2307` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx |
+| `13:2325` | src/components/panels/JackpotMenu.tsx |
 | `13:2333` | src/components/panels/JackpotMenu.tsx |
 | `13:2338` | src/components/panels/JackpotMenu.tsx |
 | `13:2339` | src/components/panels/JackpotMenu.tsx |
-| `13:2340` | src/app/globals.css, src/components/panels/JackpotMenu.tsx, src/components/primitives/Button.tsx |
-| `13:2342` | src/app/globals.css, src/components/panels/JackpotMenu.tsx |
+| `13:2340` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Button.tsx |
+| `13:2342` | src/components/panels/JackpotMenu.tsx |
 | `13:2345` | src/components/panels/JackpotMenu.tsx |
-| `13:2362` | src/app/globals.css, src/components/panels/JackpotMenu.tsx |
+| `13:2362` | src/components/panels/JackpotMenu.tsx |
 | `13:2486` | src/components/panels/JackpotMenu.tsx |
 | `13:2487` | src/components/panels/JackpotMenu.tsx |
-| `13:2491` | src/app/globals.css |
 | `13:2492` | src/components/panels/JackpotMenu.tsx |
-| `13:2519` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx, src/lib/screens.ts |
+| `13:2519` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx |
 | `13:2550` | src/components/panels/JackpotMenu.tsx |
 | `13:2552` | src/components/panels/JackpotMenu.tsx |
-| `21:2896` | src/app/page.tsx, src/lib/screens.ts, src/lib/sections.ts |
+| `21:2896` | src/app/page.tsx |
 | `21:2897` | src/components/layout/Header.tsx |
 | `21:2898` | src/components/layout/Header.tsx |
 | `21:2899` | src/components/layout/Header.tsx |
@@ -236,8 +234,8 @@ that no longer exists in the file.
 | `21:2931` | src/components/layout/HeroBanner.tsx |
 | `21:2932` | src/app/globals.css, src/components/layout/HeroBanner.tsx, src/components/primitives/Badge.tsx |
 | `21:2933` | src/components/primitives/Badge.tsx |
-| `21:2934` | src/app/globals.css, src/components/layout/HeroBanner.tsx, src/components/primitives/Badge.tsx |
-| `21:2935` | src/app/globals.css, src/components/primitives/Badge.tsx |
+| `21:2934` | src/components/layout/HeroBanner.tsx, src/components/primitives/Badge.tsx |
+| `21:2935` | src/components/primitives/Badge.tsx |
 | `21:2937` | src/components/layout/HeroBanner.tsx |
 | `21:2938` | src/components/layout/HeroBanner.tsx |
 | `21:2939` | src/app/globals.css, src/components/layout/HeroBanner.tsx |
@@ -255,27 +253,13 @@ that no longer exists in the file.
 | `21:3043` | src/components/layout/RecentWinsTicker.tsx |
 | `21:3050` | src/components/cards/RecentWinItem.tsx |
 | `21:3057` | src/components/cards/RecentWinItem.tsx |
-| `21:3058` | src/lib/sections.ts |
-| `21:3077` | src/lib/sections.ts |
-| `21:3095` | src/components/sections/ProviderRow.tsx, src/lib/sections.ts |
+| `21:3095` | src/components/sections/ProviderRow.tsx |
 | `21:3118` | src/components/cards/ProviderCard.tsx |
-| `21:3296` | src/lib/sections.ts |
 | `21:3297` | src/app/page.tsx |
-| `21:3314` | src/lib/sections.ts |
-| `21:3332` | src/lib/sections.ts |
-| `21:3350` | src/lib/sections.ts |
-| `21:3368` | src/lib/sections.ts |
-| `21:3384` | src/lib/sections.ts |
-| `21:3402` | src/lib/sections.ts |
-| `21:3420` | src/lib/sections.ts |
-| `21:3437` | src/lib/sections.ts |
-| `21:3455` | src/lib/sections.ts |
-| `21:3657` | src/lib/sections.ts |
-| `21:3675` | src/app/page.tsx, src/lib/sections.ts |
+| `21:3675` | src/app/page.tsx |
 | `21:3693` | src/components/layout/Footer.tsx |
 | `21:3785` | src/components/layout/Footer.tsx |
 | `21:4020` | src/components/layout/Footer.tsx |
-| `21:4154` | src/lib/screens.ts |
 
 ## Settled
 
@@ -603,14 +587,41 @@ that no longer exists in the file.
 | `32:1812` | alive | 3358x7788 | docs only |
 | `32:1813` | alive | 390x7159 | docs only |
 | `32:1814` | alive | 390x335 | docs only |
+| `32:1852` | alive | 80x18 | yes |
+| `32:1853` | alive | 64x12 | yes |
 | `32:1968` | alive | 390x66 | docs only |
+| `32:1991` | alive | 390x368 | yes |
+| `32:2010` | alive | 390x376 | yes |
+| `32:2028` | alive | 390x264 | yes |
+| `32:2229` | alive | 390x376 | yes |
+| `32:2247` | alive | 390x376 | yes |
+| `32:2265` | alive | 390x376 | yes |
+| `32:2283` | alive | 390x376 | yes |
+| `32:2301` | alive | 390x284 | yes |
+| `32:2317` | alive | 390x376 | yes |
+| `32:2335` | alive | 390x376 | yes |
+| `32:2353` | alive | 390x284 | yes |
+| `32:2370` | alive | 390x376 | yes |
+| `32:2388` | alive | 390x284 | yes |
+| `32:2590` | alive | 390x376 | yes |
+| `32:2608` | alive | 390x410 | yes |
 | `32:2626` | alive | 390x1140 | docs only |
 | `32:3087` | alive | 390x769 | docs only |
 | `32:3284` | alive | 390x84 | docs only |
 | `32:3296` | alive | 35x12 | yes |
 | `32:3308` | alive | 390x769 | docs only |
+| `32:3530` | alive | 390x7159 | yes |
+| `32:4828` | alive | 390x84 | yes |
+| `32:4852` | alive | 390x874 | yes |
+| `32:4870` | alive | 78x40 | yes |
+| `32:4885` | alive | 113x38 | yes |
+| `32:4887` | alive | 358x44 | yes |
+| `32:4907` | alive | 358x46 | yes |
+| `32:5036` | alive | 58x20 | yes |
+| `32:5063` | alive | 390x874 | yes |
+| `32:5279` | alive | 390x769 | yes |
 | `112:330` | dead | — | docs only |
 
 ## Still to check — none
 
-Every one of the 329 ids is settled.
+Every one of the 356 ids is settled.

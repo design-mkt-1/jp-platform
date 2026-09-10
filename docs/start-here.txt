@@ -199,7 +199,7 @@ Append these to the demo's address:
     ?auth=prelogin   or  ?auth=vip     the header and menu in that state
     ?panel=balance                     the balance panel, Figma node 1:4116
     ?panel=personalInfo                the account menu, node 1:4153
-    ?panel=jackpotMenu                 the mobile menu, nodes 1:8751 / 13:2307 / 13:2519
+    ?panel=jackpotMenu                 the mobile menu, nodes 32:5279 / 32:4852 / 32:5063
     ?q=swe                             the search suggestions state, node 1:4479
 
 They exist because a state you cannot link to cannot be reviewed. A capture

@@ -227,17 +227,17 @@ list becomes a dumping ground of ad-hoc colours and we are back to exactly the p
 | `#222A4E` ⁶     | `border-chip`     | `--border-chip`     | `21:2978`                             | the 1px outline of **every** mobile category chip, selected one included    |
 | `#A5A6B5`       | `text-subtitle`   | `--text-subtitle`   | `1:6254`                              | the mobile promo card's subtitle                                            |
 | `#F2C146`       | `amber-soft`      | `--amber-soft`      | `1:6255`                              | the "join + timer" pill on the mobile promo card, solid                     |
-| `#FF9500 @ 10%` ⁷ | `wager-tint`    | `--wager-tint`      | `21:2934`                             | the fill of the mobile hero's `20X WAGER` badge                             |
-| `#FFAE00` ⁷     | `wager-amber`     | `--wager-amber`     | `21:2935`                             | the label written on it                                                     |
+| `#FF9500 @ 10%` ⁷ | `wager-tint`    | `--wager-tint`      | `32:1852`                             | the fill of the mobile hero's `20X WAGER` badge                             |
+| `#FFAE00` ⁷     | `wager-amber`     | `--wager-amber`     | `32:1853`                             | the label written on it                                                     |
 | `#3030D6` ⁸     | — (shadow only)   | `--violet-glow`     | `21:2939`                             | the glow under the mobile hero's `Get` pill                                 |
 | `#3B82F6` ¹⁰    | — (gradient/shadow) | `--action-blue`   | `21:2916`                             | the mobile plus action: its gradient's far stop and its blue shadow layer   |
 | `#09090D`       | `ink`             | `--ink`             | `1:6256`–`1:6260`                     | the text written **on** that pill: the button label, "Time left" and the clock |
 | `#36BCFF` ²     | — (SVG only)      | —                   | `1:2239`, `1:4323`                    | the magnifier in the provider search field (`public/images/icons/search-blue.svg`) |
 | `rgba(8,8,20,0.75)` ³ | — (inline)  | —                   | `1:6179`                              | the game card's shadow on mobile: `-2px 2px 12px`                           |
-| `#00B579` ⁴     | `deposit-green`   | `--deposit-green`   | `13:2340`                             | the `Deposit` button's fill in the jackpot menu                             |
-| `#FF787A`       | `signout`         | `--text-signout`    | `13:2491`                             | the "Sign out" label in the jackpot menu                                    |
-| `#222431` ⁵     | `menu-row`        | `--bg-menu-row`     | `13:2362`, `13:2342`                  | the rows and the ID field in the jackpot menu                               |
-| `rgba(0,92,64,0.04)` | `balance-chip` | `--bg-balance-chip` | `13:2325`                          | the balance pill in that menu's header                                      |
+| `#00B579` ⁴     | `deposit-green`   | `--deposit-green`   | `32:4885`                             | the `Deposit` button's fill in the jackpot menu                             |
+| `#FF787A`       | `signout`         | `--text-signout`    | `32:5036`                             | the "Sign out" label in the jackpot menu                                    |
+| `#222431` ⁵     | `menu-row`        | `--bg-menu-row`     | `32:4907`, `32:4887`                  | the rows and the ID field in the jackpot menu                               |
+| `rgba(0,92,64,0.04)` | `balance-chip` | `--bg-balance-chip` | `32:4870`                          | the balance pill in that menu's header                                      |
 
 ¹ Figma writes `#65616A`. Raised to `#7F7A85` for AA — see "Contrast deviations" below.
 
@@ -439,7 +439,7 @@ the same numbers in `passes`:
 #### Addition, 2026-09-09: the `Deposit` button's label
 
 The rebuilt menu frames take the `Deposit` button off the gold ramp and make it solid green,
-`#00B579` (node `13:2340`), with the `DEPOSIT` label written in white. White on that green measures
+`#00B579` (node `32:4885`), with the `DEPOSIT` label written in white. White on that green measures
 **2.66:1** — under 4.5 — and two of the nine states `scripts/a11y.mjs` checks are exactly this menu
 (`mob-menu`, `mob-menu-prelogin`), so drawing it as Figma has it would have turned the Pages
 workflow red.
