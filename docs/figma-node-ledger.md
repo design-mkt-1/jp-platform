@@ -1,7 +1,7 @@
-# Figma node id ledger — INCOMPLETE, 67 of 322
+# Figma node id ledger — INCOMPLETE, 173 of 324
 
-File `2MyylxdZblfGnf05nQacUz`. Started 2026-09-10, session 13. **Do not read this as a finished
-inventory.** It stops where the Figma MCP quota stopped it:
+File `2MyylxdZblfGnf05nQacUz`. Started 2026-09-10 session 13, continued session 14. **Do not read
+this as a finished inventory.** It stops where the Figma MCP quota stopped it, for the second time:
 
 > You've reached the Figma MCP tool call limit for your Full seat on the Professional plan.
 
@@ -32,20 +32,110 @@ Two methods that were tried in session 12 and gave confident wrong answers:
 - **Numeric ranges.** `1:5687` sits inside a band recorded as dead and is alive — a UI-Kit spec
   frame, not a page node. `21:3297`, `21:3675` and `21:3693` are dead and sit nowhere near it.
 
+A third guard was added in session 14 and is cheap: **put one known-alive id in every batch**. In the
+batch where 39 of 40 answered *"not found"*, `1:2431` answered alive at 1440x7453 in the same turn,
+so the run was the tool working, not the tool failing. Without that control, forty identical errors
+and a dead connector look the same.
+
 ## What the sweep is worth so far, and what it is not
 
-67 settled, **66 alive, 1 dead**, 255 still to check. Everything reached is in the `1:*` desktop
-tree, which is intact. The ids already known to be dead live in `21:*`, which the quota cut off
-before. **So the part of this table that would earn its keep is the part that is missing.** A guard
-test built on it today would know one dead id and would give false confidence.
+173 settled — **100 alive, 73 dead**, 151 still to check. The whole of `21:*` (55 ids),
+the whole of `13:*` (16 ids) and `112:330` are dead. The whole of `32:*` is alive: that is the
+subtree the designers rebuilt, and it is where the dead `21:*` work went.
 
-Two things worth keeping came out of it anyway, both measured rather than quoted:
+Things measured rather than quoted, worth keeping:
 
 - `1:2504` is **14x20**, confirming session 11's §2 C #5 against the live file: the desktop flame is
   forced to 20x20 in our CSS, which is why the `Popular` pill is 143.30 against Figma's 135.
 - `1:2433` is alive but is a **1440x643 block**, not a divider. The desktop dividers are
-  `1:2448` / `1:2457` / `1:2466` / `1:2475`, all **1x40**. Session 12 moved `--border-emphasis` onto
-  those on that reading; the reading is now verified.
+  `1:2448` / `1:2457` / `1:2466` / `1:2475`, all **1x40**.
+- `32:1968` is still **390x66**, so the wins-ticker band survived the designers' rebuild.
+- `32:2626` **footer-mobile** is **390x1140**, which is where the mobile footer's 1140.4 target
+  survives even though `21:3693`, the id it was originally read from, is dead.
+- `21:3035` — *Recent wins - Ticker (iOS)*, 390x66 — is **dead**. `session-11-plan.md` tells a
+  future session to go and read `21:2897` and `21:3035` before touching the mobile ticker. Both are
+  dead. That instruction is now a dead end and the live pair to read is `32:1968`.
+- The inventory is **324**, not the 322 session 13 recorded. The difference is
+  `1:2435` and `1:2655`, cited in `public/review/index.html` — a directory the earlier count did
+  not scan. Both are still unchecked.
+
+## Dead ids that are cited under `src/` — 70
+
+These are the ones that would earn a guard test. Every row is a citation in shipped source of a node
+that no longer exists in the file.
+
+| id | cited in |
+| --- | --- |
+| `13:2307` | src/app/dev/screens/page.tsx, src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx, src/lib/screens.ts |
+| `13:2325` | src/app/globals.css, src/components/panels/JackpotMenu.tsx |
+| `13:2333` | src/components/panels/JackpotMenu.tsx |
+| `13:2338` | src/components/panels/JackpotMenu.tsx |
+| `13:2339` | src/components/panels/JackpotMenu.tsx |
+| `13:2340` | src/app/globals.css, src/components/panels/JackpotMenu.tsx, src/components/primitives/Button.tsx |
+| `13:2342` | src/app/globals.css, src/components/panels/JackpotMenu.tsx |
+| `13:2345` | src/components/panels/JackpotMenu.tsx |
+| `13:2362` | src/app/globals.css, src/components/panels/JackpotMenu.tsx |
+| `13:2486` | src/components/panels/JackpotMenu.tsx |
+| `13:2487` | src/components/panels/JackpotMenu.tsx |
+| `13:2491` | src/app/globals.css |
+| `13:2492` | src/components/panels/JackpotMenu.tsx |
+| `13:2519` | src/components/panels/JackpotMenu.tsx, src/components/primitives/Sheet.tsx, src/lib/screens.ts |
+| `13:2550` | src/components/panels/JackpotMenu.tsx |
+| `13:2552` | src/components/panels/JackpotMenu.tsx |
+| `21:2896` | src/app/page.tsx, src/lib/screens.ts, src/lib/sections.ts |
+| `21:2897` | src/components/layout/Header.tsx |
+| `21:2898` | src/components/layout/Header.tsx |
+| `21:2899` | src/components/layout/Header.tsx |
+| `21:2916` | src/app/globals.css, src/components/layout/HeaderPostlogin.tsx |
+| `21:2919` | src/components/layout/Header.tsx, src/components/primitives/IconButton.tsx |
+| `21:2922` | src/components/layout/CategoryNavBar.tsx |
+| `21:2926` | src/components/layout/HeroBanner.tsx |
+| `21:2927` | src/components/layout/HeroBanner.tsx |
+| `21:2929` | src/components/layout/HeroBanner.tsx |
+| `21:2930` | src/components/layout/HeroBanner.tsx |
+| `21:2931` | src/components/layout/HeroBanner.tsx |
+| `21:2932` | src/app/globals.css, src/components/layout/HeroBanner.tsx, src/components/primitives/Badge.tsx |
+| `21:2933` | src/components/primitives/Badge.tsx |
+| `21:2934` | src/app/globals.css, src/components/layout/HeroBanner.tsx, src/components/primitives/Badge.tsx |
+| `21:2935` | src/app/globals.css, src/components/primitives/Badge.tsx |
+| `21:2937` | src/components/layout/HeroBanner.tsx |
+| `21:2938` | src/components/layout/HeroBanner.tsx |
+| `21:2939` | src/app/globals.css, src/components/layout/HeroBanner.tsx |
+| `21:2975` | src/components/layout/CategoryNavBar.tsx |
+| `21:2977` | src/app/globals.css, src/components/layout/CategoryNavBar.tsx, src/components/primitives/CategoryPill.tsx |
+| `21:2978` | src/app/globals.css, src/components/primitives/CategoryPill.tsx |
+| `21:2979` | src/components/primitives/CategoryPill.tsx |
+| `21:2982` | src/components/primitives/CategoryPill.tsx |
+| `21:3017` | src/components/primitives/CategoryPill.tsx |
+| `21:3022` | src/components/primitives/CategoryPill.tsx |
+| `21:3035` | src/components/layout/RecentWinsTicker.tsx |
+| `21:3036` | src/components/cards/RecentWinItem.tsx |
+| `21:3037` | src/components/cards/RecentWinItem.tsx |
+| `21:3042` | src/components/cards/RecentWinItem.tsx |
+| `21:3043` | src/components/layout/RecentWinsTicker.tsx |
+| `21:3050` | src/components/cards/RecentWinItem.tsx |
+| `21:3057` | src/components/cards/RecentWinItem.tsx |
+| `21:3058` | src/lib/sections.ts |
+| `21:3077` | src/lib/sections.ts |
+| `21:3095` | src/components/sections/ProviderRow.tsx, src/lib/sections.ts |
+| `21:3118` | src/components/cards/ProviderCard.tsx |
+| `21:3296` | src/lib/sections.ts |
+| `21:3297` | src/app/page.tsx |
+| `21:3314` | src/lib/sections.ts |
+| `21:3332` | src/lib/sections.ts |
+| `21:3350` | src/lib/sections.ts |
+| `21:3368` | src/lib/sections.ts |
+| `21:3384` | src/lib/sections.ts |
+| `21:3402` | src/lib/sections.ts |
+| `21:3420` | src/lib/sections.ts |
+| `21:3437` | src/lib/sections.ts |
+| `21:3455` | src/lib/sections.ts |
+| `21:3657` | src/lib/sections.ts |
+| `21:3675` | src/app/page.tsx, src/lib/sections.ts |
+| `21:3693` | src/components/layout/Footer.tsx |
+| `21:3785` | src/components/layout/Footer.tsx |
+| `21:4020` | src/components/layout/Footer.tsx |
+| `21:4154` | src/lib/screens.ts |
 
 ## Settled
 
@@ -116,30 +206,123 @@ Two things worth keeping came out of it anyway, both measured rather than quoted
 | `1:3456` | alive | 1294x324 | yes |
 | `1:3485` | alive | 1294x324 | yes |
 | `1:3524` | alive | 1280x302 | yes |
+| `1:3531` | alive | 160x1 | yes |
+| `1:3532` | alive | 1280x260 | yes |
+| `1:3534` | alive | 372x260 | yes |
+| `1:3535` | alive | 249x24 | yes |
+| `1:3537` | alive | 308x23 | yes |
+| `1:3538` | alive | 176x23 | yes |
+| `1:3540` | alive | 124x23 | yes |
+| `1:3543` | alive | 206x19 | yes |
+| `1:3544` | alive | 75x9 | yes |
+| `1:3545` | alive | 118x12 | yes |
+| `1:3547` | alive | 82x12 | yes |
+| `1:3548` | alive | 1294x324 | yes |
+| `1:3551` | alive | 20x20 | docs only |
+| `1:3556` | alive | 110x13 | docs only |
+| `1:3580` | alive | 1280x302 | yes |
+| `1:3586` | alive | 160x1 | yes |
+| `1:3587` | alive | 1280x260 | yes |
+| `1:3589` | alive | 344x260 | yes |
+| `1:3590` | alive | 278x24 | yes |
+| `1:3591` | alive | 256x28 | yes |
+| `1:3593` | alive | 180x120 | yes |
+| `1:3602` | alive | 64x14 | yes |
+| `1:3635` | alive | 1294x324 | yes |
+| `1:3993` | alive | 108x48 | yes |
+| `1:4016` | alive | 600x69 | yes |
+| `1:4116` | alive | 1440x1036 | yes |
+| `1:4125` | alive | 280x299 | yes |
+| `13:2307` | dead | — | yes |
+| `13:2325` | dead | — | yes |
+| `13:2333` | dead | — | yes |
+| `13:2338` | dead | — | yes |
+| `13:2339` | dead | — | yes |
+| `13:2340` | dead | — | yes |
+| `13:2342` | dead | — | yes |
+| `13:2345` | dead | — | yes |
+| `13:2362` | dead | — | yes |
+| `13:2486` | dead | — | yes |
+| `13:2487` | dead | — | yes |
+| `13:2491` | dead | — | yes |
+| `13:2492` | dead | — | yes |
+| `13:2519` | dead | — | yes |
+| `13:2550` | dead | — | yes |
+| `13:2552` | dead | — | yes |
 | `21:2896` | dead | — | yes |
+| `21:2897` | dead | — | yes |
+| `21:2898` | dead | — | yes |
+| `21:2899` | dead | — | yes |
+| `21:2913` | dead | — | docs only |
+| `21:2916` | dead | — | yes |
+| `21:2919` | dead | — | yes |
+| `21:2922` | dead | — | yes |
+| `21:2926` | dead | — | yes |
+| `21:2927` | dead | — | yes |
+| `21:2929` | dead | — | yes |
+| `21:2930` | dead | — | yes |
+| `21:2931` | dead | — | yes |
+| `21:2932` | dead | — | yes |
+| `21:2933` | dead | — | yes |
+| `21:2934` | dead | — | yes |
+| `21:2935` | dead | — | yes |
+| `21:2937` | dead | — | yes |
+| `21:2938` | dead | — | yes |
+| `21:2939` | dead | — | yes |
+| `21:2975` | dead | — | yes |
+| `21:2977` | dead | — | yes |
+| `21:2978` | dead | — | yes |
+| `21:2979` | dead | — | yes |
+| `21:2982` | dead | — | yes |
+| `21:3017` | dead | — | yes |
+| `21:3022` | dead | — | yes |
+| `21:3035` | dead | — | yes |
+| `21:3036` | dead | — | yes |
+| `21:3037` | dead | — | yes |
+| `21:3042` | dead | — | yes |
+| `21:3043` | dead | — | yes |
+| `21:3050` | dead | — | yes |
+| `21:3057` | dead | — | yes |
+| `21:3058` | dead | — | yes |
+| `21:3077` | dead | — | yes |
+| `21:3095` | dead | — | yes |
+| `21:3118` | dead | — | yes |
+| `21:3296` | dead | — | yes |
+| `21:3297` | dead | — | yes |
+| `21:3314` | dead | — | yes |
+| `21:3332` | dead | — | yes |
+| `21:3350` | dead | — | yes |
+| `21:3368` | dead | — | yes |
+| `21:3384` | dead | — | yes |
+| `21:3402` | dead | — | yes |
+| `21:3420` | dead | — | yes |
+| `21:3437` | dead | — | yes |
+| `21:3455` | dead | — | yes |
+| `21:3657` | dead | — | yes |
+| `21:3675` | dead | — | yes |
+| `21:3693` | dead | — | yes |
+| `21:3785` | dead | — | yes |
+| `21:4020` | dead | — | yes |
+| `21:4026` | dead | — | docs only |
+| `21:4154` | dead | — | yes |
+| `32:1812` | alive | 3358x7788 | docs only |
 | `32:1813` | alive | 390x7159 | docs only |
+| `32:1814` | alive | 390x335 | docs only |
+| `32:1968` | alive | 390x66 | docs only |
+| `32:2626` | alive | 390x1140 | docs only |
+| `32:3087` | alive | 390x769 | docs only |
+| `32:3284` | alive | 390x84 | docs only |
+| `32:3308` | alive | 390x769 | docs only |
+| `112:330` | dead | — | docs only |
 
-## Still to check — 255 ids
+## Still to check — 151 ids
 
 Grouped only for reading. **Do not classify by group**; that is the mistake above.
 
-**`1:*`** (176)
+Of these, thirteen were asked and answered with the quota error rather than with a status —
+`1:3594` `1:3600` `1:3604` `1:3605` `1:3638` `1:3666` `1:3998` `1:4007` `1:4114` `1:4115` `1:4118` `1:4124` `1:4140` — so they are unknown, not
+suspect. The rest were never reached.
 
-`1:3531` `1:3532` `1:3534` `1:3535` `1:3537` `1:3538` `1:3540` `1:3543` `1:3544` `1:3545` `1:3547` `1:3548` `1:3551` `1:3556` `1:3580` `1:3586` `1:3587` `1:3589` `1:3590` `1:3591` `1:3593` `1:3594` `1:3600` `1:3602` `1:3604` `1:3605` `1:3635` `1:3638` `1:3666` `1:3993` `1:3998` `1:4007` `1:4016` `1:4114` `1:4115` `1:4116` `1:4118` `1:4124` `1:4125` `1:4140` `1:4145` `1:4149` `1:4151` `1:4153` `1:4154` `1:4155` `1:4160` `1:4161` `1:4186` `1:4244` `1:4245` `1:4250` `1:4259` `1:4272` `1:4280` `1:4282` `1:4309` `1:4310` `1:4314` `1:4319` `1:4321` `1:4322` `1:4323` `1:4329` `1:4334` `1:4431` `1:4434` `1:4435` `1:4454` `1:4459` `1:4479` `1:4568` `1:4575` `1:4576` `1:4579` `1:4583` `1:4611` `1:4707` `1:4710` `1:4711` `1:4712` `1:4719` `1:4721` `1:4724` `1:4725` `1:4731` `1:4737` `1:4745` `1:4759` `1:4797` `1:4800` `1:5199` `1:5325` `1:5587` `1:5591` `1:5623` `1:5655` `1:5687` `1:5697` `1:5720` `1:5722` `1:5736` `1:5741` `1:5743` `1:5749` `1:5750` `1:5751` `1:5752` `1:5753` `1:5755` `1:5756` `1:5758` `1:5761` `1:5762` `1:5799` `1:5859` `1:5882` `1:5884` `1:5887` `1:5888` `1:5936` `1:6175` `1:6179` `1:6192` `1:6194` `1:6195` `1:6247` `1:6249` `1:6250` `1:6253` `1:6254` `1:6255` `1:6256` `1:6257` `1:6259` `1:6260` `1:6282` `1:6464` `1:6467` `1:6478` `1:6479` `1:6480` `1:6499` `1:6517` `1:6978` `1:6980` `1:6994` `1:7000` `1:8234` `1:8235` `1:8236` `1:8239` `1:8244` `1:8245` `1:8247` `1:8249` `1:8254` `1:8257` `1:8259` `1:8260` `1:8285` `1:8305` `1:8503` `1:8504` `1:8528` `1:8536` `1:8751` `1:8753` `1:8772` `1:8781` `1:8792` `1:8834` `1:8875` `1:8885` `1:8908` `1:8910`
+**`1:*`** (151)
 
-**`13:*`** (16)
-
-`13:2307` `13:2325` `13:2333` `13:2338` `13:2339` `13:2340` `13:2342` `13:2345` `13:2362` `13:2486` `13:2487` `13:2491` `13:2492` `13:2519` `13:2550` `13:2552`
-
-**`21:*`** (55)
-
-`21:2897` `21:2898` `21:2899` `21:2913` `21:2916` `21:2919` `21:2922` `21:2926` `21:2927` `21:2929` `21:2930` `21:2931` `21:2932` `21:2933` `21:2934` `21:2935` `21:2937` `21:2938` `21:2939` `21:2975` `21:2977` `21:2978` `21:2979` `21:2982` `21:3017` `21:3022` `21:3035` `21:3036` `21:3037` `21:3042` `21:3043` `21:3050` `21:3057` `21:3058` `21:3077` `21:3095` `21:3118` `21:3296` `21:3297` `21:3314` `21:3332` `21:3350` `21:3368` `21:3384` `21:3402` `21:3420` `21:3437` `21:3455` `21:3657` `21:3675` `21:3693` `21:3785` `21:4020` `21:4026` `21:4154`
-
-**`32:*`** (7)
-
-`32:1812` `32:1814` `32:1968` `32:2626` `32:3087` `32:3284` `32:3308`
-
-**`112:*`** (1)
-
-`112:330`
-
+`1:2435` `1:2655` `1:3594` `1:3600` `1:3604` `1:3605` `1:3638` `1:3666` `1:3998` `1:4007` `1:4114` `1:4115` `1:4118` `1:4124` `1:4140` `1:4145` `1:4149` `1:4151` `1:4153` `1:4154` `1:4155` `1:4160` `1:4161` `1:4186` `1:4244` `1:4245` `1:4250` `1:4259` `1:4272` `1:4280` `1:4282` `1:4309` `1:4310` `1:4314` `1:4319` `1:4321` `1:4322` `1:4323` `1:4329` `1:4334` `1:4431` `1:4434` `1:4435` `1:4454` `1:4459` `1:4479` `1:4568` `1:4575` `1:4576` `1:4579` `1:4583` `1:4611` `1:4707` `1:4710` `1:4711` `1:4712` `1:4719` `1:4721` `1:4724` `1:4725` `1:4731` `1:4737` `1:4745` `1:4759` `1:4797` `1:4800` `1:5199` `1:5325` `1:5587` `1:5591` `1:5623` `1:5655` `1:5687` `1:5697` `1:5720` `1:5722` `1:5736` `1:5741` `1:5743` `1:5749` `1:5750` `1:5751` `1:5752` `1:5753` `1:5755` `1:5756` `1:5758` `1:5761` `1:5762` `1:5799` `1:5859` `1:5882` `1:5884` `1:5887` `1:5888` `1:5936` `1:6175` `1:6179` `1:6192` `1:6194` `1:6195` `1:6247` `1:6249` `1:6250` `1:6253` `1:6254` `1:6255` `1:6256` `1:6257` `1:6259` `1:6260` `1:6282` `1:6464` `1:6467` `1:6478` `1:6479` `1:6480` `1:6499` `1:6517` `1:6978` `1:6980` `1:6994` `1:7000` `1:8234` `1:8235` `1:8236` `1:8239` `1:8244` `1:8245` `1:8247` `1:8249` `1:8254` `1:8257` `1:8259` `1:8260` `1:8285` `1:8305` `1:8503` `1:8504` `1:8528` `1:8536` `1:8751` `1:8753` `1:8772` `1:8781` `1:8792` `1:8834` `1:8875` `1:8885` `1:8908` `1:8910`
