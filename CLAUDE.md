@@ -146,10 +146,18 @@ and `screens.test.ts` passed them every run because it validates the `^\d+:\d+$`
 deleted id matches perfectly. Probing one id at a time put the real number at **70 dead ids cited
 under `src/`**. The class fix is `src/lib/__tests__/figma-dead-nodes.test.ts`.
 
-The same blindness is still open in `src/lib/__tests__/assets.test.ts`, which walks every asset path
-both ways but only ever calls `existsSync` — `slots.svg` shipped for weeks carrying the category
-bar's glass capsule, drawing a lighter square in the Must-Play Slots header, and the test passed it
-every time. **Look at the bytes, not just the path.**
+`src/lib/__tests__/assets.test.ts` is the closed version of the same blindness. It walked every
+asset path both ways and only ever called `existsSync`, which is how `slots.svg` shipped for weeks
+carrying the category bar's glass capsule, drew a lighter square in the Must-Play Slots header, and
+passed every time. `eb99091` closed the class and not the file: the test now runs `clean-svg.mjs
+--dry` and fails unless it reports zero changes. **Look at the bytes, not just the path.**
+
+One caution about that fix, since it has already cost a wasted worker. `eb99091` added
+`import { execFileSync }` on **line 1**, so line 2 still reads `import { existsSync, readdirSync }`.
+A backlog note written from line 2 alone declared the gap still open, and the task built on it was
+dispatched against a problem that no longer existed. `clean-svg.mjs` exports nothing either, though
+the same note said it exported `isFurniturePath`. **Read the file before quoting a note about it**,
+including a note in this document.
 
 ### Figma
 
